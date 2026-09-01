@@ -16,6 +16,9 @@ import assignmentRoutes from "./routes/assignmentRoutes.js";
 import termRoutes from "./routes/termRoutes.js";
 import attendanceRoutes from "./routes/attendanceRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
+import examRoutes from "./routes/examRoutes.js";
+import markRoutes from "./routes/markRoutes.js";
+import reportCardRoutes from "./routes/reportCardRoutes.js";
 
 // fail fast on a missing secret rather than signing tokens with undefined
 if (!process.env.JWT_SECRET) {
@@ -61,6 +64,9 @@ app.use("/api/assignments", assignmentRoutes);
 app.use("/api/terms", termRoutes);
 app.use("/api/attendance", attendanceRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/exams", examRoutes);
+app.use("/api/marks", markRoutes);
+app.use("/api/report-cards", reportCardRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
