@@ -26,6 +26,13 @@ import ResetPasswordPage from "./pages/ResetPasswordPage.jsx";
 import ChangePasswordPage from "./pages/ChangePasswordPage.jsx";
 
 import AdminDashboard from "./pages/AdminDashboard.jsx";
+import AdminUsersPage from "./pages/AdminUsersPage.jsx";
+import AdminStudentsPage from "./pages/AdminStudentsPage.jsx";
+import AdminClassesPage from "./pages/AdminClassesPage.jsx";
+import AdminSubjectsPage from "./pages/AdminSubjectsPage.jsx";
+import AdminStaffPage from "./pages/AdminStaffPage.jsx";
+import AdminTermsPage from "./pages/AdminTermsPage.jsx";
+import AdminApplicationsPage from "./pages/AdminApplicationsPage.jsx";
 import TeacherDashboard from "./pages/TeacherDashboard.jsx";
 import ParentDashboard from "./pages/ParentDashboard.jsx";
 import StudentDashboard from "./pages/StudentDashboard.jsx";
@@ -91,6 +98,13 @@ export default function App() {
           <Route element={<RoleRoute allow={["Admin"]} />}>
             <Route path="/admin" element={<PortalLayout />}>
               <Route index element={<AdminDashboard />} />
+              <Route path="users" element={<AdminUsersPage />} />
+              <Route path="students" element={<AdminStudentsPage />} />
+              <Route path="classes" element={<AdminClassesPage />} />
+              <Route path="subjects" element={<AdminSubjectsPage />} />
+              <Route path="staff" element={<AdminStaffPage />} />
+              <Route path="terms" element={<AdminTermsPage />} />
+              <Route path="applications" element={<AdminApplicationsPage />} />
             </Route>
           </Route>
           <Route element={<RoleRoute allow={["Teacher"]} />}>

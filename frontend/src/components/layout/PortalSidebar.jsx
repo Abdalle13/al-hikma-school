@@ -16,21 +16,22 @@ import {
 } from "lucide-react";
 import { cn } from "../../utils/formatter.js";
 
-// which modules each role will see once the portal screens are built.
-// in phase 1 only the dashboard link is live, the rest are shown as upcoming.
+// which modules each role sees. a "to" means the screen is built and live,
+// no "to" means it is still coming in a later phase (shown as "soon").
 const modulesByRole = {
   admin: [
-    { label: "Students", icon: Users },
-    { label: "Classes", icon: School },
-    { label: "Subjects", icon: BookOpen },
-    { label: "Staff", icon: Briefcase },
-    { label: "Terms", icon: CalendarRange },
+    { label: "Users", icon: Users, to: "/admin/users" },
+    { label: "Students", icon: GraduationCap, to: "/admin/students" },
+    { label: "Classes", icon: School, to: "/admin/classes" },
+    { label: "Subjects", icon: BookOpen, to: "/admin/subjects" },
+    { label: "Staff", icon: Briefcase, to: "/admin/staff" },
+    { label: "Terms", icon: CalendarRange, to: "/admin/terms" },
+    { label: "Applications", icon: FileText, to: "/admin/applications" },
     { label: "Attendance", icon: ClipboardCheck },
     { label: "Exams and report cards", icon: GraduationCap },
     { label: "Fees", icon: Wallet },
     { label: "Timetable", icon: CalendarClock },
     { label: "Announcements", icon: Megaphone },
-    { label: "Applications", icon: FileText },
     { label: "Reports", icon: BarChart3 },
   ],
   teacher: [
@@ -82,18 +83,36 @@ export function PortalSidebar({ role = "admin", basePath = "/admin", onNavigate 
         <ul className="flex flex-col gap-0.5">
           {modules.map((m) => {
             const Icon = m.icon;
+            if (!m.to) {
+              return (
+                <li
+                  key={m.label}
+                  className="flex items-center justify-between gap-3 rounded-2xl px-3 py-2 text-sm text-muted"
+                  title="Available in a later phase"
+                >
+                  <span className="flex items-center gap-3">
+                    <Icon className="h-4 w-4 shrink-0" />
+                    {m.label}
+                  </span>
+                  <span className="rounded-full bg-surface-2 px-2 py-0.5 text-[10px] font-medium">soon</span>
+                </li>
+              );
+            }
             return (
-              <li
+              <NavLink
                 key={m.label}
-                className="flex items-center justify-between gap-3 rounded-2xl px-3 py-2 text-sm text-muted"
-                title="Available in a later phase"
+                to={m.to}
+                onClick={onNavigate}
+                className={({ isActive }) =>
+                  cn(
+                    "flex items-center gap-3 rounded-2xl px-3 py-2 text-sm font-medium transition-colors",
+                    isActive ? "bg-primary/10 text-primary" : "text-muted hover:bg-surface-2 hover:text-fg"
+                  )
+                }
               >
-                <span className="flex items-center gap-3">
-                  <Icon className="h-4 w-4 shrink-0" />
-                  {m.label}
-                </span>
-                <span className="rounded-full bg-surface-2 px-2 py-0.5 text-[10px] font-medium">soon</span>
-              </li>
+                <Icon className="h-4 w-4 shrink-0" />
+                {m.label}
+              </NavLink>
             );
           })}
         </ul>
