@@ -33,9 +33,13 @@ import AdminSubjectsPage from "./pages/AdminSubjectsPage.jsx";
 import AdminStaffPage from "./pages/AdminStaffPage.jsx";
 import AdminTermsPage from "./pages/AdminTermsPage.jsx";
 import AdminApplicationsPage from "./pages/AdminApplicationsPage.jsx";
+import AdminAttendancePage from "./pages/AdminAttendancePage.jsx";
 import TeacherDashboard from "./pages/TeacherDashboard.jsx";
+import TeacherAttendancePage from "./pages/TeacherAttendancePage.jsx";
 import ParentDashboard from "./pages/ParentDashboard.jsx";
+import ParentAttendancePage from "./pages/ParentAttendancePage.jsx";
 import StudentDashboard from "./pages/StudentDashboard.jsx";
+import StudentAttendancePage from "./pages/StudentAttendancePage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
 
 function FullPageSpinner() {
@@ -105,21 +109,25 @@ export default function App() {
               <Route path="staff" element={<AdminStaffPage />} />
               <Route path="terms" element={<AdminTermsPage />} />
               <Route path="applications" element={<AdminApplicationsPage />} />
+              <Route path="attendance" element={<AdminAttendancePage />} />
             </Route>
           </Route>
           <Route element={<RoleRoute allow={["Teacher"]} />}>
             <Route path="/teacher" element={<PortalLayout />}>
               <Route index element={<TeacherDashboard />} />
+              <Route path="attendance" element={<TeacherAttendancePage />} />
             </Route>
           </Route>
           <Route element={<RoleRoute allow={["Parent"]} />}>
             <Route path="/parent" element={<PortalLayout />}>
               <Route index element={<ParentDashboard />} />
+              <Route path="attendance" element={<ParentAttendancePage />} />
             </Route>
           </Route>
           <Route element={<RoleRoute allow={["Student"]} />}>
             <Route path="/student" element={<PortalLayout />}>
               <Route index element={<StudentDashboard />} />
+              <Route path="attendance" element={<StudentAttendancePage />} />
             </Route>
           </Route>
         </Route>

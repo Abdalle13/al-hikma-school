@@ -27,7 +27,7 @@ const modulesByRole = {
     { label: "Staff", icon: Briefcase, to: "/admin/staff" },
     { label: "Terms", icon: CalendarRange, to: "/admin/terms" },
     { label: "Applications", icon: FileText, to: "/admin/applications" },
-    { label: "Attendance", icon: ClipboardCheck },
+    { label: "Attendance", icon: ClipboardCheck, to: "/admin/attendance" },
     { label: "Exams and report cards", icon: GraduationCap },
     { label: "Fees", icon: Wallet },
     { label: "Timetable", icon: CalendarClock },
@@ -35,7 +35,7 @@ const modulesByRole = {
     { label: "Reports", icon: BarChart3 },
   ],
   teacher: [
-    { label: "Attendance", icon: ClipboardCheck },
+    { label: "Attendance", icon: ClipboardCheck, to: "/teacher/attendance" },
     { label: "Exams and marks", icon: GraduationCap },
     { label: "Timetable", icon: CalendarClock },
     { label: "Announcements", icon: Megaphone },
@@ -49,7 +49,7 @@ const modulesByRole = {
   student: [
     { label: "Timetable", icon: CalendarClock },
     { label: "Grades", icon: GraduationCap },
-    { label: "Attendance", icon: ClipboardCheck },
+    { label: "Attendance", icon: ClipboardCheck, to: "/student/attendance" },
   ],
 };
 

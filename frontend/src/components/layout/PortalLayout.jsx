@@ -99,11 +99,11 @@ function SidebarShell({ user }) {
 // attendance, report cards and fees become live tabs once F4/F5/F6 wire them,
 // for now they sit next to the dashboard tab marked "soon" like the sidebar.
 const parentTabs = [
-  { label: "Dashboard", icon: LayoutDashboard, soon: false },
-  { label: "Attendance", icon: ClipboardCheck, soon: true },
-  { label: "Grades", icon: GraduationCap, soon: true },
-  { label: "Fees", icon: Wallet, soon: true },
-  { label: "News", icon: Megaphone, soon: true },
+  { label: "Dashboard", icon: LayoutDashboard, to: "/parent" },
+  { label: "Attendance", icon: ClipboardCheck, to: "/parent/attendance" },
+  { label: "Grades", icon: GraduationCap },
+  { label: "Fees", icon: Wallet },
+  { label: "News", icon: Megaphone },
 ];
 
 function ParentShell({ user }) {
@@ -181,7 +181,7 @@ function ParentShell({ user }) {
         <div className="mx-auto flex max-w-xl items-stretch justify-between px-2">
           {parentTabs.map((tab) => {
             const Icon = tab.icon;
-            if (tab.soon) {
+            if (!tab.to) {
               return (
                 <span
                   key={tab.label}
@@ -196,8 +196,8 @@ function ParentShell({ user }) {
             return (
               <NavLink
                 key={tab.label}
-                to={roleHome(user.role)}
-                end
+                to={tab.to}
+                end={tab.to === "/parent"}
                 className={({ isActive }) =>
                   cn(
                     "flex flex-1 flex-col items-center gap-1 py-2.5 transition-colors",
