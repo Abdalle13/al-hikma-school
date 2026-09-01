@@ -1,12 +1,16 @@
 import { useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { ScrollToTop } from "./components/routing/ScrollToTop.jsx";
+import { ProtectedRoute } from "./components/routing/ProtectedRoute.jsx";
+import { RoleRoute } from "./components/routing/RoleRoute.jsx";
 import { PublicLayout } from "./components/layout/PublicLayout.jsx";
 import { PortalLayout } from "./components/layout/PortalLayout.jsx";
+import { Spinner } from "./components/ui/Spinner.jsx";
 import { fetchPublicSettings } from "./redux/slices/settingsSlice.js";
+import { bootstrapAuth } from "./redux/slices/authSlice.js";
 
 import HomePage from "./pages/HomePage.jsx";
 import AboutPage from "./pages/AboutPage.jsx";
@@ -27,12 +31,26 @@ import ParentDashboard from "./pages/ParentDashboard.jsx";
 import StudentDashboard from "./pages/StudentDashboard.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
 
+function FullPageSpinner() {
+  return (
+    <div className="grid min-h-screen place-items-center bg-bg">
+      <Spinner size="lg" />
+    </div>
+  );
+}
+
 export default function App() {
   const dispatch = useDispatch();
+  const initialized = useSelector((s) => s.auth.initialized);
 
   useEffect(() => {
     dispatch(fetchPublicSettings());
+    dispatch(bootstrapAuth());
   }, [dispatch]);
+
+  // block the first paint until we know whether the stored token is still
+  // valid, so protected routes never flash and then redirect
+  if (!initialized) return <FullPageSpinner />;
 
   return (
     <BrowserRouter>
@@ -65,20 +83,31 @@ export default function App() {
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
-        <Route path="/change-password" element={<ChangePasswordPage />} />
 
-        {/* portal shells. ProtectedRoute and RoleRoute wrap these in frontend phase f2 */}
-        <Route path="/admin" element={<PortalLayout role="admin" basePath="/admin" />}>
-          <Route index element={<AdminDashboard />} />
-        </Route>
-        <Route path="/teacher" element={<PortalLayout role="teacher" basePath="/teacher" />}>
-          <Route index element={<TeacherDashboard />} />
-        </Route>
-        <Route path="/parent" element={<PortalLayout role="parent" basePath="/parent" />}>
-          <Route index element={<ParentDashboard />} />
-        </Route>
-        <Route path="/student" element={<PortalLayout role="student" basePath="/student" />}>
-          <Route index element={<StudentDashboard />} />
+        <Route element={<ProtectedRoute />}>
+          {/* any signed in role can be sent here after login or on their own */}
+          <Route path="/change-password" element={<ChangePasswordPage />} />
+
+          <Route element={<RoleRoute allow={["Admin"]} />}>
+            <Route path="/admin" element={<PortalLayout />}>
+              <Route index element={<AdminDashboard />} />
+            </Route>
+          </Route>
+          <Route element={<RoleRoute allow={["Teacher"]} />}>
+            <Route path="/teacher" element={<PortalLayout />}>
+              <Route index element={<TeacherDashboard />} />
+            </Route>
+          </Route>
+          <Route element={<RoleRoute allow={["Parent"]} />}>
+            <Route path="/parent" element={<PortalLayout />}>
+              <Route index element={<ParentDashboard />} />
+            </Route>
+          </Route>
+          <Route element={<RoleRoute allow={["Student"]} />}>
+            <Route path="/student" element={<PortalLayout />}>
+              <Route index element={<StudentDashboard />} />
+            </Route>
+          </Route>
         </Route>
 
         <Route path="*" element={<NotFoundPage />} />

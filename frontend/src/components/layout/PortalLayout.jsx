@@ -1,22 +1,51 @@
-import { useState } from "react";
-import { Link, Outlet } from "react-router-dom";
-import { Menu, X } from "lucide-react";
-import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import { Link, NavLink, Outlet } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  Bell,
+  ClipboardCheck,
+  GraduationCap,
+  LayoutDashboard,
+  LogOut,
+  Megaphone,
+  Menu,
+  Wallet,
+  X,
+} from "lucide-react";
 import { PortalSidebar } from "./PortalSidebar.jsx";
 import { ThemeToggle } from "../ui/ThemeToggle.jsx";
 import { Avatar } from "../ui/Avatar.jsx";
+import { logout } from "../../redux/slices/authSlice.js";
+import api from "../../utils/api.js";
+import { cn } from "../../utils/formatter.js";
+import { roleHome } from "../../utils/roles.js";
 
-// role can be passed in by the route, otherwise it comes from the auth state
-// once login is wired. defaults to admin for the phase 1 shell.
-export function PortalLayout({ role = "admin", basePath = "/admin" }) {
+function LogoutButton({ className }) {
+  const dispatch = useDispatch();
+  return (
+    <button
+      type="button"
+      onClick={() => dispatch(logout())}
+      aria-label="Log out"
+      title="Log out"
+      className={cn(
+        "inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-border text-fg transition-colors hover:bg-surface-2",
+        className
+      )}
+    >
+      <LogOut className="h-4 w-4" />
+    </button>
+  );
+}
+
+// admin, teacher and student: left sidebar + top bar
+function SidebarShell({ user }) {
   const [open, setOpen] = useState(false);
-  const user = useSelector((state) => state.auth.user);
-  const activeRole = user?.role?.toLowerCase() || role;
 
   return (
     <div className="min-h-screen bg-bg">
       <aside className="fixed inset-y-0 left-0 hidden w-64 border-r border-border bg-surface lg:block">
-        <PortalSidebar role={activeRole} basePath={basePath} />
+        <PortalSidebar role={user.role.toLowerCase()} basePath={roleHome(user.role)} />
       </aside>
 
       {open ? (
@@ -29,8 +58,8 @@ export function PortalLayout({ role = "admin", basePath = "/admin" }) {
               </button>
             </div>
             <PortalSidebar
-              role={activeRole}
-              basePath={basePath}
+              role={user.role.toLowerCase()}
+              basePath={roleHome(user.role)}
               onNavigate={() => setOpen(false)}
             />
           </div>
@@ -50,10 +79,11 @@ export function PortalLayout({ role = "admin", basePath = "/admin" }) {
           <div className="hidden lg:block" />
           <div className="flex items-center gap-3">
             <ThemeToggle />
-            <Link to="/" className="text-sm text-muted hover:text-fg">
+            <Link to="/" className="hidden text-sm text-muted hover:text-fg sm:block">
               View website
             </Link>
-            <Avatar name={user?.name || "School User"} size="sm" />
+            <Avatar name={user.name} size="sm" />
+            <LogoutButton />
           </div>
         </header>
 
@@ -63,6 +93,136 @@ export function PortalLayout({ role = "admin", basePath = "/admin" }) {
       </div>
     </div>
   );
+}
+
+// parent: mobile first, card based, a child switcher and a bottom tab bar.
+// attendance, report cards and fees become live tabs once F4/F5/F6 wire them,
+// for now they sit next to the dashboard tab marked "soon" like the sidebar.
+const parentTabs = [
+  { label: "Dashboard", icon: LayoutDashboard, soon: false },
+  { label: "Attendance", icon: ClipboardCheck, soon: true },
+  { label: "Grades", icon: GraduationCap, soon: true },
+  { label: "Fees", icon: Wallet, soon: true },
+  { label: "News", icon: Megaphone, soon: true },
+];
+
+function ParentShell({ user }) {
+  const [children, setChildren] = useState(null);
+  const [selectedId, setSelectedId] = useState(null);
+
+  useEffect(() => {
+    let alive = true;
+    api
+      .get(`/users/${user._id}/children`)
+      .then(({ data }) => {
+        if (!alive) return;
+        setChildren(data.children);
+        if (data.children[0]) setSelectedId(data.children[0]._id);
+      })
+      .catch(() => alive && setChildren([]));
+    return () => {
+      alive = false;
+    };
+  }, [user._id]);
+
+  const selectedChild = children?.find((c) => c._id === selectedId) || null;
+
+  return (
+    <div className="min-h-screen bg-bg pb-20">
+      <header className="sticky top-0 z-30 border-b border-border bg-bg/90 backdrop-blur">
+        <div className="flex h-16 items-center justify-between px-4">
+          <div className="flex items-center gap-2 font-heading font-bold text-fg">
+            <GraduationCap className="h-5 w-5 text-primary" />
+            Parent Portal
+          </div>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <button type="button" aria-label="Notifications" className="rounded-2xl border border-border p-2 text-fg">
+              <Bell className="h-4 w-4" />
+            </button>
+            <Avatar name={user.name} size="sm" />
+            <LogoutButton />
+          </div>
+        </div>
+
+        {children && children.length > 0 ? (
+          <div className="flex gap-2 overflow-x-auto px-4 pb-3">
+            {children.map((c) => (
+              <button
+                key={c._id}
+                type="button"
+                onClick={() => setSelectedId(c._id)}
+                className={cn(
+                  "flex shrink-0 items-center gap-2 rounded-2xl border px-3 py-2 text-sm font-medium transition-colors",
+                  c._id === selectedId
+                    ? "border-primary bg-primary/10 text-primary"
+                    : "border-border bg-surface text-muted hover:text-fg"
+                )}
+              >
+                <Avatar name={c.name} size="sm" />
+                {c.name}
+              </button>
+            ))}
+          </div>
+        ) : null}
+      </header>
+
+      <main className="mx-auto max-w-xl p-4 sm:p-6">
+        {children === null ? null : children.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-border bg-surface p-6 text-center text-sm text-muted">
+            No children are linked to your account yet. Contact the school office to get this set up.
+          </div>
+        ) : (
+          <Outlet context={{ children, selectedChild }} />
+        )}
+      </main>
+
+      <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-surface/95 backdrop-blur">
+        <div className="mx-auto flex max-w-xl items-stretch justify-between px-2">
+          {parentTabs.map((tab) => {
+            const Icon = tab.icon;
+            if (tab.soon) {
+              return (
+                <span
+                  key={tab.label}
+                  title="Available in a later phase"
+                  className="flex flex-1 flex-col items-center gap-1 py-2.5 text-muted opacity-50"
+                >
+                  <Icon className="h-5 w-5" />
+                  <span className="text-[11px] font-medium">{tab.label}</span>
+                </span>
+              );
+            }
+            return (
+              <NavLink
+                key={tab.label}
+                to={roleHome(user.role)}
+                end
+                className={({ isActive }) =>
+                  cn(
+                    "flex flex-1 flex-col items-center gap-1 py-2.5 transition-colors",
+                    isActive ? "text-primary" : "text-muted hover:text-fg"
+                  )
+                }
+              >
+                <Icon className="h-5 w-5" />
+                <span className="text-[11px] font-medium">{tab.label}</span>
+              </NavLink>
+            );
+          })}
+        </div>
+      </nav>
+    </div>
+  );
+}
+
+// picks the right shell for the signed in user's role. RoleRoute guarantees
+// a user is present by the time this renders.
+export function PortalLayout() {
+  const user = useSelector((state) => state.auth.user);
+  if (!user) return null;
+
+  return user.role === "Parent" ? <ParentShell user={user} /> : <SidebarShell user={user} />;
 }
 
 export default PortalLayout;
