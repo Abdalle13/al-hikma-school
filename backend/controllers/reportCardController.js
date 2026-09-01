@@ -257,7 +257,7 @@ export function setPublished(publish) {
       const card = await ReportCard.findByIdAndUpdate(
         req.params.id,
         { published: publish },
-        { new: true }
+        { returnDocument: "after" }
       );
       if (!card) {
         res.status(404);

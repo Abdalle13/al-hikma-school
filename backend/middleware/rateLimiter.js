@@ -18,4 +18,13 @@ export const authLimiter = rateLimit({
   message: { message: "Too many attempts, please try again in a few minutes." },
 });
 
+// public form submissions (admissions application, contact message)
+export const publicFormLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Too many submissions, please try again later." },
+});
+
 export default apiLimiter;
