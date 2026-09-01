@@ -1,4 +1,5 @@
 import "dotenv/config";
+import "colors";
 import mongoose from "mongoose";
 import connectDB from "./config/db.js";
 import User from "./models/userModel.js";
@@ -12,7 +13,7 @@ const destroy = process.argv.includes("-d");
 
 const admin = {
   name: process.env.ADMIN_NAME || "School Admin",
-  email: (process.env.ADMIN_EMAIL || "admin@school.local").toLowerCase(),
+  email: (process.env.ADMIN_EMAIL || "admin@school.com").toLowerCase(),
   password: process.env.ADMIN_PASSWORD || "admin123456",
 };
 
@@ -21,11 +22,13 @@ async function run() {
 
   if (destroy) {
     const result = await User.deleteOne({ email: admin.email, role: "Admin" });
-    console.log(result.deletedCount ? `removed admin ${admin.email}` : "no seeded admin to remove");
+    console.log(
+      result.deletedCount ? `removed admin ${admin.email}`.yellow : "no seeded admin to remove".gray
+    );
   } else {
     const existing = await User.findOne({ email: admin.email });
     if (existing) {
-      console.log(`admin ${admin.email} already exists, nothing to do`);
+      console.log(`admin ${admin.email} already exists, nothing to do`.gray);
     } else {
       await User.create({
         name: admin.name,
@@ -33,9 +36,10 @@ async function run() {
         password: admin.password,
         role: "Admin",
         status: "Active",
+        mustChangePassword: true,
       });
-      console.log(`created admin ${admin.email} with password "${admin.password}"`);
-      console.log("change this password after the first login");
+      console.log(`created admin ${admin.email} with password "${admin.password}"`.green);
+      console.log("change this password after the first login".gray);
     }
   }
 
@@ -44,7 +48,7 @@ async function run() {
 }
 
 run().catch(async (err) => {
-  console.error(err.message);
+  console.error(String(err.message).red);
   await mongoose.connection.close().catch(() => {});
   process.exit(1);
 });

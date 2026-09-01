@@ -13,16 +13,16 @@ export async function protect(req, res, next) {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id).select("-password");
+    const user = await User.findById(decoded.id);
 
     if (!user) {
       res.status(401);
       throw new Error("Not authorised, user not found");
     }
 
-    if (user.status && user.status !== "Active") {
+    if (user.status !== "Active") {
       res.status(403);
-      throw new Error("Your account is not active yet");
+      throw new Error("Your account is inactive, contact the school");
     }
 
     req.user = user;
@@ -33,7 +33,7 @@ export async function protect(req, res, next) {
   }
 }
 
-// allow only the listed roles. use after protect, e.g. router.get("/", protect, allow("Admin"))
+// allow only the listed roles, use after protect
 export function allow(...roles) {
   return (req, res, next) => {
     if (!req.user || !roles.includes(req.user.role)) {
@@ -44,7 +44,6 @@ export function allow(...roles) {
   };
 }
 
-// named shortcuts
 export const admin = allow("Admin");
 export const teacher = allow("Admin", "Teacher");
 export const parent = allow("Admin", "Parent");

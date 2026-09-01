@@ -3,84 +3,41 @@ import User from "../models/userModel.js";
 import generateToken from "../utils/generateToken.js";
 import sendEmail from "../utils/sendEmail.js";
 
-// shape the user object we send back, never the password or reset fields
-function publicUser(user) {
-  return {
-    _id: user._id,
-    name: user.name,
-    email: user.email,
-    role: user.role,
-    phone: user.phone,
-    photo: user.photo,
-    status: user.status,
-    createdAt: user.createdAt,
-  };
-}
-
-// POST /api/auth/register
-// public parent self registration. the account stays Inactive until an admin
-// links a child and activates it in phase b2. staff accounts are made by an admin.
-export async function registerUser(req, res, next) {
-  try {
-    const { name, email, password, phone } = req.body;
-
-    if (!name || !email || !password) {
-      res.status(400);
-      throw new Error("Name, email and password are required");
-    }
-    if (password.length < 6) {
-      res.status(400);
-      throw new Error("Password must be at least 6 characters");
-    }
-
-    const exists = await User.findOne({ email: email.toLowerCase() });
-    if (exists) {
-      res.status(409);
-      throw new Error("An account with this email already exists");
-    }
-
-    const user = await User.create({
-      name,
-      email,
-      password,
-      phone,
-      role: "Parent",
-      status: "Inactive",
-    });
-
-    res.status(201).json({
-      message: "Account created. An admin will link your child and activate the account.",
-      user: publicUser(user),
-    });
-  } catch (err) {
-    next(err);
-  }
-}
+// there is no public registration. the admin creates every account
+// (see userController.js). these handlers cover login and password flows only.
 
 // POST /api/auth/login
-export async function loginUser(req, res, next) {
+// body: { loginId, password }  loginId is an email (staff, parents) or an
+// admission number (students). the form sends one field, we detect which.
+export async function login(req, res, next) {
   try {
-    const { email, password } = req.body;
+    const loginId = (req.body.loginId || req.body.email || req.body.admissionNo || "").trim();
+    const { password } = req.body;
 
-    if (!email || !password) {
+    if (!loginId || !password) {
       res.status(400);
-      throw new Error("Email and password are required");
+      throw new Error("Login and password are required");
     }
 
-    const user = await User.findOne({ email: email.toLowerCase() }).select("+password");
+    const query = loginId.includes("@")
+      ? { email: loginId.toLowerCase() }
+      : { admissionNo: loginId.toUpperCase() };
+
+    const user = await User.findOne(query).select("+password");
     if (!user || !(await user.matchPassword(password))) {
       res.status(401);
-      throw new Error("Invalid email or password");
+      throw new Error("Invalid login or password");
     }
 
     if (user.status !== "Active") {
       res.status(403);
-      throw new Error("Your account is not active yet. Please wait for admin approval.");
+      throw new Error("Your account is inactive, contact the school");
     }
 
     res.json({
       token: generateToken(user._id),
-      user: publicUser(user),
+      user: user.toSafeJSON(),
+      mustChangePassword: user.mustChangePassword,
     });
   } catch (err) {
     next(err);
@@ -90,28 +47,63 @@ export async function loginUser(req, res, next) {
 // GET /api/auth/me
 export async function getMe(req, res, next) {
   try {
-    res.json({ user: publicUser(req.user) });
+    res.json({ user: req.user.toSafeJSON() });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// POST /api/auth/change-password  (protected)
+// body: { currentPassword, newPassword }
+// used for the first-login change and any later change
+export async function changePassword(req, res, next) {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      res.status(400);
+      throw new Error("Current and new password are required");
+    }
+    if (newPassword.length < 6) {
+      res.status(400);
+      throw new Error("The new password must be at least 6 characters");
+    }
+
+    const user = await User.findById(req.user._id).select("+password");
+    if (!(await user.matchPassword(currentPassword))) {
+      res.status(401);
+      throw new Error("Your current password is wrong");
+    }
+
+    user.password = newPassword;
+    user.mustChangePassword = false;
+    await user.save();
+
+    res.json({
+      message: "Password changed",
+      token: generateToken(user._id),
+      user: user.toSafeJSON(),
+    });
   } catch (err) {
     next(err);
   }
 }
 
 // POST /api/auth/forgot-password
+// body: { email }   only works for accounts that have an email
 export async function forgotPassword(req, res, next) {
   try {
-    const { email } = req.body;
+    const email = (req.body.email || "").toLowerCase().trim();
     if (!email) {
       res.status(400);
       throw new Error("Email is required");
     }
 
-    const user = await User.findOne({ email: email.toLowerCase() });
+    const user = await User.findOne({ email });
 
-    // always answer the same way so the endpoint cannot be used to probe emails
+    // always answer the same way so the endpoint cannot probe for emails
     const genericMessage = "If that email is registered, a reset link has been sent.";
-    if (!user) {
-      return res.json({ message: genericMessage });
-    }
+    if (!user) return res.json({ message: genericMessage });
 
     const rawToken = user.createResetToken();
     await user.save({ validateBeforeSave: false });
@@ -140,6 +132,7 @@ export async function forgotPassword(req, res, next) {
 }
 
 // PUT /api/auth/reset-password/:token
+// body: { password }
 export async function resetPassword(req, res, next) {
   try {
     const { password } = req.body;
@@ -160,14 +153,15 @@ export async function resetPassword(req, res, next) {
     }
 
     user.password = password;
+    user.mustChangePassword = false;
     user.resetPasswordToken = undefined;
     user.resetPasswordExpires = undefined;
     await user.save();
 
     res.json({
       message: "Password updated",
-      token: user.status === "Active" ? generateToken(user._id) : undefined,
-      user: publicUser(user),
+      token: generateToken(user._id),
+      user: user.toSafeJSON(),
     });
   } catch (err) {
     next(err);

@@ -1,12 +1,21 @@
 import rateLimit from "express-rate-limit";
 
-// general limiter for the whole api. tighter per route limiters can be added later.
+// general limiter for the whole api
 export const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 300,
   standardHeaders: true,
   legacyHeaders: false,
   message: { message: "Too many requests, please try again later." },
+});
+
+// strict limiter for the endpoints an attacker would brute force
+export const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Too many attempts, please try again in a few minutes." },
 });
 
 export default apiLimiter;

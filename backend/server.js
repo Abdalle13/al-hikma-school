@@ -7,6 +7,7 @@ import connectDB from "./config/db.js";
 import { apiLimiter } from "./middleware/rateLimiter.js";
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 import authRoutes from "./routes/authRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 
 // fail fast on a missing secret rather than signing tokens with undefined
 if (!process.env.JWT_SECRET) {
@@ -43,6 +44,7 @@ app.get("/health", (req, res) => {
 
 // feature routers get mounted here phase by phase
 app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
