@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+/* dark mode driven by a class on <html>, toggled by the theme provider */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+  design tokens. light is the default, dark overrides the same names.
+  feel: trustworthy, calm, organised. green primary, warm stone neutrals.
+*/
+:root {
+  --primary: #15803d;
+  --primary-hover: #166534;
+  --accent: #f59e0b;
+  --bg: #fafaf9;
+  --surface: #ffffff;
+  --surface-2: #f5f5f4;
+  --border: #e7e5e4;
+  --fg: #1c1917;
+  --muted: #78716c;
+  --success: #16a34a;
+  --warning: #d97706;
+  --danger: #dc2626;
+}
+
+.dark {
+  --primary: #4ade80;
+  --primary-hover: #22c55e;
+  --accent: #fbbf24;
+  --bg: #1c1917;
+  --surface: #292524;
+  --surface-2: #332e2b;
+  --border: #44403c;
+  --fg: #fafaf9;
+  --muted: #a8a29e;
+  --success: #4ade80;
+  --warning: #fbbf24;
+  --danger: #f87171;
+}
+
+/* expose the tokens as tailwind utilities: bg-bg, text-fg, border-border, bg-primary, etc */
+@theme inline {
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-accent: var(--accent);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-heading: "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --radius-2xl: 1rem;
+}
+
+@layer base {
+  html {
+    color-scheme: light dark;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+  }
+
+  /* grades, money and ids line up in tables */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+}
