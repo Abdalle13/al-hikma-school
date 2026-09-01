@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 
@@ -21,15 +22,22 @@ const userSchema = new mongoose.Schema(
 );
 
 // hash the password whenever it is set
-userSchema.pre("save", async function hashPassword(next) {
-  if (!this.isModified("password")) return next();
+userSchema.pre("save", async function hashPassword() {
+  if (!this.isModified("password")) return;
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
-  next();
 });
 
 userSchema.methods.matchPassword = function matchPassword(entered) {
   return bcrypt.compare(entered, this.password);
+};
+
+// makes a raw reset token to email, stores only the hash and a 30 minute expiry
+userSchema.methods.createResetToken = function createResetToken() {
+  const rawToken = crypto.randomBytes(32).toString("hex");
+  this.resetPasswordToken = crypto.createHash("sha256").update(rawToken).digest("hex");
+  this.resetPasswordExpires = Date.now() + 30 * 60 * 1000;
+  return rawToken;
 };
 
 const User = mongoose.models.User || mongoose.model("User", userSchema);
