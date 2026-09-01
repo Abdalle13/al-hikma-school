@@ -5,8 +5,10 @@
   "type": "module",
   "main": "server.js",
   "scripts": {
-    "dev": "nodemon server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "data:import": "node seeder.js",
+    "data:destroy": "node seeder.js -d"
   },
   "author": "Abdalle Hussein",
   "license": "MIT",
@@ -22,8 +24,5 @@
     "mongoose": "^9.0.1",
     "multer": "^2.0.2",
     "nodemailer": "^9.1.0"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.10"
   }
 }

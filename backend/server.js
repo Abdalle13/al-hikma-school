@@ -1,21 +1,59 @@
-import app from "./app.js";
-import env from "./src/config/env.js";
-import connectDB from "./src/config/db.js";
+import "dotenv/config";
+import express from "express";
+import helmet from "helmet";
+import cors from "cors";
 
-// local development entry point. on vercel this file is not used,
-// api/index.js is the serverless handler instead.
-async function start() {
-  try {
-    await connectDB();
-    console.log("connected to mongodb");
-  } catch (err) {
-    console.error("could not connect to mongodb:", err.message);
-    // keep the server up so routes still respond with a clear error
-  }
+import connectDB from "./config/db.js";
+import { apiLimiter } from "./middleware/rateLimiter.js";
+import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
+import authRoutes from "./routes/authRoutes.js";
 
-  app.listen(env.port, () => {
-    console.log(`api running on http://localhost:${env.port} (${env.nodeEnv})`);
-  });
+// fail fast on a missing secret rather than signing tokens with undefined
+if (!process.env.JWT_SECRET) {
+  throw new Error("JWT_SECRET is not set. Copy backend/.env.example to backend/.env and fill it in.");
 }
 
-start();
+const app = express();
+
+app.use(helmet());
+
+// cors allow list: the configured frontend plus local dev
+const allowedOrigins = [
+  process.env.FRONTEND_URL || "http://localhost:5173",
+  "http://localhost:5173",
+];
+app.use(
+  cors({
+    origin(origin, cb) {
+      if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+      return cb(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+  })
+);
+
+app.use(express.json({ limit: "1mb" }));
+app.use(express.urlencoded({ extended: true }));
+
+app.use("/api", apiLimiter);
+
+app.get("/health", (req, res) => {
+  res.json({ status: "ok", env: process.env.NODE_ENV || "development", time: new Date().toISOString() });
+});
+
+// feature routers get mounted here phase by phase
+app.use("/api/auth", authRoutes);
+
+app.use(notFound);
+app.use(errorHandler);
+
+// connect to mongodb. on serverless the connection is cached and reused.
+connectDB().catch((err) => console.error("mongodb connection failed:", err.message));
+
+// only listen locally. on vercel the platform invokes the exported app.
+if (process.env.NODE_ENV !== "production" && !process.env.VERCEL) {
+  const port = process.env.PORT || 5000;
+  app.listen(port, () => console.log(`api running on http://localhost:${port}`));
+}
+
+export default app;
