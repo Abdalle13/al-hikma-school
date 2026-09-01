@@ -101,7 +101,7 @@ function SidebarShell({ user }) {
 const parentTabs = [
   { label: "Dashboard", icon: LayoutDashboard, to: "/parent" },
   { label: "Attendance", icon: ClipboardCheck, to: "/parent/attendance" },
-  { label: "Grades", icon: GraduationCap },
+  { label: "Grades", icon: GraduationCap, to: "/parent/grades" },
   { label: "Fees", icon: Wallet },
   { label: "News", icon: Megaphone },
 ];
