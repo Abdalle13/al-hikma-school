@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { GraduationCap, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Button } from "../ui/Button.jsx";
+import { Brand } from "../ui/Brand.jsx";
 import { ThemeToggle } from "../ui/ThemeToggle.jsx";
 import { cn } from "../../utils/formatter.js";
 
@@ -16,28 +17,34 @@ const nav = [
 
 export function PublicHeader() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const linkClass = ({ isActive }) =>
+    cn(
+      "rounded-xl px-3 py-2 text-sm font-medium transition-colors",
+      isActive ? "text-primary" : "text-muted hover:text-fg"
+    );
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-bg/90 backdrop-blur">
+    <header
+      className={cn(
+        "sticky top-0 z-40 border-b transition-colors",
+        scrolled ? "border-border bg-bg/80 backdrop-blur" : "border-transparent bg-bg"
+      )}
+    >
       <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-4">
-        <Link to="/" className="flex items-center gap-2 font-heading text-lg font-bold text-fg">
-          <GraduationCap className="h-6 w-6 text-primary" />
-          School Name
-        </Link>
+        <Brand />
 
         <nav className="hidden items-center gap-1 md:flex">
           {nav.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              end={item.end}
-              className={({ isActive }) =>
-                cn(
-                  "rounded-2xl px-3 py-2 text-sm font-medium transition-colors",
-                  isActive ? "text-primary" : "text-muted hover:text-fg"
-                )
-              }
-            >
+            <NavLink key={item.to} to={item.to} end={item.end} className={linkClass}>
               {item.label}
             </NavLink>
           ))}
@@ -52,9 +59,10 @@ export function PublicHeader() {
 
         <button
           type="button"
-          className="rounded-2xl border border-border p-2 text-fg md:hidden"
+          className="rounded-xl border border-border p-2 text-fg transition-colors hover:bg-surface-2 md:hidden"
           onClick={() => setOpen((v) => !v)}
-          aria-label="Toggle menu"
+          aria-label={open ? "Close menu" : "Open menu"}
+          aria-expanded={open}
         >
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
@@ -71,8 +79,8 @@ export function PublicHeader() {
                 onClick={() => setOpen(false)}
                 className={({ isActive }) =>
                   cn(
-                    "rounded-2xl px-3 py-2 text-sm font-medium",
-                    isActive ? "bg-surface-2 text-primary" : "text-muted"
+                    "rounded-xl px-3 py-2 text-sm font-medium transition-colors",
+                    isActive ? "bg-surface-2 text-primary" : "text-muted hover:text-fg"
                   )
                 }
               >

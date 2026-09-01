@@ -13,11 +13,12 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// on an expired or missing session, clear it and send the user to login
+// if a real session expires, clear it and send the user to login.
+// a 401 with no token is just a public page hitting a guarded route, ignore it.
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    if (error.response?.status === 401 && localStorage.getItem("token")) {
       localStorage.removeItem("token");
       if (!window.location.pathname.startsWith("/login")) {
         window.location.assign("/login");
@@ -26,5 +27,10 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+// pulls the useful message out of an axios error
+export function apiError(err, fallback = "Something went wrong") {
+  return err?.response?.data?.message || err?.message || fallback;
+}
 
 export default api;

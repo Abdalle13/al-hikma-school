@@ -1,15 +1,19 @@
+import { useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
+import { useDispatch } from "react-redux";
 
 import { ScrollToTop } from "./components/routing/ScrollToTop.jsx";
 import { PublicLayout } from "./components/layout/PublicLayout.jsx";
 import { PortalLayout } from "./components/layout/PortalLayout.jsx";
+import { fetchPublicSettings } from "./redux/slices/settingsSlice.js";
 
 import HomePage from "./pages/HomePage.jsx";
 import AboutPage from "./pages/AboutPage.jsx";
 import AcademicsPage from "./pages/AcademicsPage.jsx";
 import AdmissionsPage from "./pages/AdmissionsPage.jsx";
 import NewsPage from "./pages/NewsPage.jsx";
+import NewsArticlePage from "./pages/NewsArticlePage.jsx";
 import ContactPage from "./pages/ContactPage.jsx";
 
 import LoginPage from "./pages/LoginPage.jsx";
@@ -24,6 +28,12 @@ import StudentDashboard from "./pages/StudentDashboard.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
 
 export default function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchPublicSettings());
+  }, [dispatch]);
+
   return (
     <BrowserRouter>
       <ScrollToTop />
@@ -47,6 +57,7 @@ export default function App() {
           <Route path="/academics" element={<AcademicsPage />} />
           <Route path="/admissions" element={<AdmissionsPage />} />
           <Route path="/news" element={<NewsPage />} />
+          <Route path="/news/:id" element={<NewsArticlePage />} />
           <Route path="/contact" element={<ContactPage />} />
         </Route>
 
