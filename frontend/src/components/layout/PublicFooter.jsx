@@ -31,7 +31,7 @@ export function PublicFooter() {
           <ul className="mt-2 space-y-1 text-sm text-muted">
             <li><Link to="/login" className="hover:text-fg">Parent login</Link></li>
             <li><Link to="/login" className="hover:text-fg">Staff login</Link></li>
-            <li><Link to="/register" className="hover:text-fg">Create a parent account</Link></li>
+            <li><Link to="/login" className="hover:text-fg">Student login</Link></li>
           </ul>
         </div>
 

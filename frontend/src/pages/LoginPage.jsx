@@ -22,15 +22,21 @@ export default function LoginPage() {
           <p className="mt-1 text-sm text-muted">Placeholder screen. Auth is wired up in frontend phase 2.</p>
 
           <form className="mt-5 flex flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
-            <Input label="Email" type="email" placeholder="you@example.com" disabled />
+            <Input
+              label="Email or admission number"
+              placeholder="teacher@school.com or ADM-0001"
+              disabled
+            />
             <Input label="Password" type="password" placeholder="Your password" disabled />
             <Button type="submit" disabled>Log in</Button>
           </form>
 
-          <div className="mt-5 space-y-1 text-sm text-muted">
-            <p>New parent? <Link to="/register" className="text-primary">Create an account</Link></p>
-            <p><Link to="/forgot-password" className="text-primary">Forgot your password?</Link></p>
-          </div>
+          <p className="mt-5 text-sm text-muted">
+            <Link to="/forgot-password" className="text-primary">Forgot your password?</Link>
+          </p>
+          <p className="mt-2 text-xs text-muted">
+            Accounts are created by the school. There is no public sign up.
+          </p>
         </Card>
       </main>
     </div>

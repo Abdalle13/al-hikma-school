@@ -13,9 +13,9 @@ import NewsPage from "./pages/NewsPage.jsx";
 import ContactPage from "./pages/ContactPage.jsx";
 
 import LoginPage from "./pages/LoginPage.jsx";
-import RegisterPage from "./pages/RegisterPage.jsx";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage.jsx";
 import ResetPasswordPage from "./pages/ResetPasswordPage.jsx";
+import ChangePasswordPage from "./pages/ChangePasswordPage.jsx";
 
 import AdminDashboard from "./pages/AdminDashboard.jsx";
 import TeacherDashboard from "./pages/TeacherDashboard.jsx";
@@ -51,10 +51,10 @@ export default function App() {
         </Route>
 
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+        <Route path="/change-password" element={<ChangePasswordPage />} />
 
         {/* portal shells. ProtectedRoute and RoleRoute wrap these in frontend phase f2 */}
         <Route path="/admin" element={<PortalLayout role="admin" basePath="/admin" />}>

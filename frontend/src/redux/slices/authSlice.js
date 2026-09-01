@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-// minimal auth state for phase 1. login and register thunks are added in
-// frontend phase f2, wired to the backend auth endpoints.
+// minimal auth state for phase 1. the login thunk is added in frontend phase f2,
+// wired to the backend auth endpoints. there is no registration.
 const initialState = {
   user: null,
   token: localStorage.getItem("token") || null,
