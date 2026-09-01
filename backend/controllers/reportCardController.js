@@ -11,7 +11,7 @@ const isValidId = (id) => mongoose.Types.ObjectId.isValid(id);
 
 // builds (or rebuilds) the report cards for every enrolled student in a class
 // for one term. keeps any existing published flag and teacher remark.
-async function computeForClassTerm(schoolClassId, termId) {
+export async function computeForClassTerm(schoolClassId, termId) {
   const students = await User.find({
     role: "Student",
     schoolClass: schoolClassId,

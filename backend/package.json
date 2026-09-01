@@ -8,7 +8,9 @@
     "start": "node server.js",
     "dev": "node --watch server.js",
     "data:import": "node seeder.js",
-    "data:destroy": "node seeder.js -d"
+    "data:destroy": "node seeder.js -d",
+    "demo": "node scripts/demo.js",
+    "demo:destroy": "node scripts/demo.js -d"
   },
   "author": "Abdalle Hussein",
   "license": "MIT",
