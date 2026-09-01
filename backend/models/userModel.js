@@ -49,6 +49,17 @@ const userSchema = new mongoose.Schema(
 
     status: { type: String, enum: ["Active", "Inactive"], default: "Active" },
 
+    // student enrolment fields, unused for other roles
+    gender: { type: String, enum: ["Male", "Female"] },
+    dob: { type: Date },
+    schoolClass: { type: mongoose.Schema.Types.ObjectId, ref: "SchoolClass" },
+    enrolledAt: { type: Date },
+    enrollmentStatus: {
+      type: String,
+      enum: ["Enrolled", "Graduated", "Withdrawn"],
+      default: undefined,
+    },
+
     // set true by the admin on create, cleared after the user changes it once
     mustChangePassword: { type: Boolean, default: true },
 
@@ -94,6 +105,11 @@ userSchema.methods.toSafeJSON = function toSafeJSON() {
     status: this.status,
     mustChangePassword: this.mustChangePassword,
     guardians: this.guardians,
+    gender: this.gender,
+    dob: this.dob,
+    schoolClass: this.schoolClass,
+    enrolledAt: this.enrolledAt,
+    enrollmentStatus: this.enrollmentStatus,
     createdAt: this.createdAt,
     updatedAt: this.updatedAt,
   };

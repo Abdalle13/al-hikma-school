@@ -8,6 +8,9 @@ import { apiLimiter } from "./middleware/rateLimiter.js";
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import studentRoutes from "./routes/studentRoutes.js";
+import classRoutes from "./routes/classRoutes.js";
+import subjectRoutes from "./routes/subjectRoutes.js";
 
 // fail fast on a missing secret rather than signing tokens with undefined
 if (!process.env.JWT_SECRET) {
@@ -45,6 +48,9 @@ app.get("/health", (req, res) => {
 // feature routers get mounted here phase by phase
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/students", studentRoutes);
+app.use("/api/classes", classRoutes);
+app.use("/api/subjects", subjectRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
