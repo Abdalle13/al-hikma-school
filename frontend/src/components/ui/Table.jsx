@@ -1,4 +1,4 @@
-import { cn } from "../../lib/cn.js";
+import { cn } from "../../utils/formatter.js";
 
 // table shell. pass headers as an array of strings, rows as your own <Table.Row> children.
 export function Table({ headers = [], children, className }) {

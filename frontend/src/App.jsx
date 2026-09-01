@@ -1,58 +1,76 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 
+import { ScrollToTop } from "./components/routing/ScrollToTop.jsx";
 import { PublicLayout } from "./components/layout/PublicLayout.jsx";
 import { PortalLayout } from "./components/layout/PortalLayout.jsx";
-import { portalNav } from "./components/layout/portalNav.js";
 
-import { Home } from "./pages/public/Home.jsx";
-import { About } from "./pages/public/About.jsx";
-import { Academics } from "./pages/public/Academics.jsx";
-import { Admissions } from "./pages/public/Admissions.jsx";
-import { News } from "./pages/public/News.jsx";
-import { Contact } from "./pages/public/Contact.jsx";
+import HomePage from "./pages/HomePage.jsx";
+import AboutPage from "./pages/AboutPage.jsx";
+import AcademicsPage from "./pages/AcademicsPage.jsx";
+import AdmissionsPage from "./pages/AdmissionsPage.jsx";
+import NewsPage from "./pages/NewsPage.jsx";
+import ContactPage from "./pages/ContactPage.jsx";
 
-import { Login } from "./pages/auth/Login.jsx";
-import { Register } from "./pages/auth/Register.jsx";
-import { ForgotPassword } from "./pages/auth/ForgotPassword.jsx";
-import { ResetPassword } from "./pages/auth/ResetPassword.jsx";
+import LoginPage from "./pages/LoginPage.jsx";
+import RegisterPage from "./pages/RegisterPage.jsx";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage.jsx";
+import ResetPasswordPage from "./pages/ResetPasswordPage.jsx";
 
-import { Dashboard } from "./pages/portal/Dashboard.jsx";
-import { PortalPlaceholder } from "./pages/portal/PortalPlaceholder.jsx";
-import { NotFound } from "./pages/NotFound.jsx";
-
-// portal modules other than the dashboard, rendered as placeholders in phase 1
-const portalModules = portalNav.filter((item) => item.to !== "/portal");
+import AdminDashboard from "./pages/AdminDashboard.jsx";
+import TeacherDashboard from "./pages/TeacherDashboard.jsx";
+import ParentDashboard from "./pages/ParentDashboard.jsx";
+import StudentDashboard from "./pages/StudentDashboard.jsx";
+import NotFoundPage from "./pages/NotFoundPage.jsx";
 
 export default function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          style: {
+            background: "var(--surface)",
+            color: "var(--fg)",
+            border: "1px solid var(--border)",
+            borderRadius: "1rem",
+            fontSize: "0.875rem",
+          },
+        }}
+      />
+
       <Routes>
-        <Route path="/" element={<PublicLayout />}>
-          <Route index element={<Home />} />
-          <Route path="about" element={<About />} />
-          <Route path="academics" element={<Academics />} />
-          <Route path="admissions" element={<Admissions />} />
-          <Route path="news" element={<News />} />
-          <Route path="contact" element={<Contact />} />
+        <Route element={<PublicLayout />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/academics" element={<AcademicsPage />} />
+          <Route path="/admissions" element={<AdmissionsPage />} />
+          <Route path="/news" element={<NewsPage />} />
+          <Route path="/contact" element={<ContactPage />} />
         </Route>
 
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
 
-        <Route path="/portal" element={<PortalLayout />}>
-          <Route index element={<Dashboard />} />
-          {portalModules.map((item) => (
-            <Route
-              key={item.to}
-              path={item.to.replace("/portal/", "")}
-              element={<PortalPlaceholder title={item.label} icon={item.icon} />}
-            />
-          ))}
+        {/* portal shells. ProtectedRoute and RoleRoute wrap these in frontend phase f2 */}
+        <Route path="/admin" element={<PortalLayout role="admin" basePath="/admin" />}>
+          <Route index element={<AdminDashboard />} />
+        </Route>
+        <Route path="/teacher" element={<PortalLayout role="teacher" basePath="/teacher" />}>
+          <Route index element={<TeacherDashboard />} />
+        </Route>
+        <Route path="/parent" element={<PortalLayout role="parent" basePath="/parent" />}>
+          <Route index element={<ParentDashboard />} />
+        </Route>
+        <Route path="/student" element={<PortalLayout role="student" basePath="/student" />}>
+          <Route index element={<StudentDashboard />} />
         </Route>
 
-        <Route path="*" element={<NotFound />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
   );

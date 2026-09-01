@@ -1,4 +1,4 @@
-import { cn } from "../../lib/cn.js";
+import { cn } from "../../utils/formatter.js";
 
 // small metric tile for dashboards and the public stats band
 export function StatCard({ label, value, icon: Icon, hint, className }) {

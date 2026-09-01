@@ -3,7 +3,7 @@ import { Link, NavLink } from "react-router-dom";
 import { GraduationCap, Menu, X } from "lucide-react";
 import { Button } from "../ui/Button.jsx";
 import { ThemeToggle } from "../ui/ThemeToggle.jsx";
-import { cn } from "../../lib/cn.js";
+import { cn } from "../../utils/formatter.js";
 
 const nav = [
   { to: "/", label: "Home", end: true },

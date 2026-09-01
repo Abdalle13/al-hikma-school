@@ -1,4 +1,4 @@
-import { cn } from "../../lib/cn.js";
+import { cn } from "../../utils/formatter.js";
 
 export function Card({ className, ...props }) {
   return (

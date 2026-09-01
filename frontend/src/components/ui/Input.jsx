@@ -1,5 +1,5 @@
 import { forwardRef, useId } from "react";
-import { cn } from "../../lib/cn.js";
+import { cn } from "../../utils/formatter.js";
 
 const fieldBase =
   "w-full rounded-2xl border border-border bg-surface px-3 py-2 text-sm text-fg placeholder:text-muted " +

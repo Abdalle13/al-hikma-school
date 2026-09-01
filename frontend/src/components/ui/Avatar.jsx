@@ -1,4 +1,4 @@
-import { cn } from "../../lib/cn.js";
+import { cn } from "../../utils/formatter.js";
 
 function initials(name = "") {
   const parts = name.trim().split(/\s+/).filter(Boolean);

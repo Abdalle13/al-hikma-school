@@ -1,4 +1,4 @@
-import { cn } from "../../lib/cn.js";
+import { cn } from "../../utils/formatter.js";
 
 const variants = {
   primary: "bg-primary text-white hover:bg-primary-hover",

@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
-import { cn } from "../../lib/cn.js";
+import { cn } from "../../utils/formatter.js";
 
 export function Modal({ open, onClose, title, children, footer, className }) {
   useEffect(() => {

@@ -1,4 +1,4 @@
-import { cn } from "../../lib/cn.js";
+import { cn } from "../../utils/formatter.js";
 
 // controlled tabs. tabs = [{ value, label }]
 export function Tabs({ tabs = [], value, onChange, className }) {

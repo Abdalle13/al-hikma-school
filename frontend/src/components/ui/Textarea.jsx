@@ -1,5 +1,5 @@
 import { forwardRef, useId } from "react";
-import { cn } from "../../lib/cn.js";
+import { cn } from "../../utils/formatter.js";
 import { Field, fieldBase } from "./Input.jsx";
 
 export const Textarea = forwardRef(function Textarea(

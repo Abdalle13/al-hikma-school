@@ -1,6 +1,6 @@
 import { forwardRef, useId } from "react";
 import { ChevronDown } from "lucide-react";
-import { cn } from "../../lib/cn.js";
+import { cn } from "../../utils/formatter.js";
 import { Field, fieldBase } from "./Input.jsx";
 
 export const Select = forwardRef(function Select(

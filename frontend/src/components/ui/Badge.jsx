@@ -1,4 +1,4 @@
-import { cn } from "../../lib/cn.js";
+import { cn } from "../../utils/formatter.js";
 
 // status pills only. keep brand green (primary) for actions, not status.
 const tones = {
