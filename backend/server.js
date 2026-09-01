@@ -11,6 +11,9 @@ import userRoutes from "./routes/userRoutes.js";
 import studentRoutes from "./routes/studentRoutes.js";
 import classRoutes from "./routes/classRoutes.js";
 import subjectRoutes from "./routes/subjectRoutes.js";
+import staffRoutes from "./routes/staffRoutes.js";
+import assignmentRoutes from "./routes/assignmentRoutes.js";
+import termRoutes from "./routes/termRoutes.js";
 
 // fail fast on a missing secret rather than signing tokens with undefined
 if (!process.env.JWT_SECRET) {
@@ -51,6 +54,9 @@ app.use("/api/users", userRoutes);
 app.use("/api/students", studentRoutes);
 app.use("/api/classes", classRoutes);
 app.use("/api/subjects", subjectRoutes);
+app.use("/api/staff", staffRoutes);
+app.use("/api/assignments", assignmentRoutes);
+app.use("/api/terms", termRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
