@@ -22,6 +22,7 @@ import reportCardRoutes from "./routes/reportCardRoutes.js";
 import feeStructureRoutes from "./routes/feeStructureRoutes.js";
 import invoiceRoutes from "./routes/invoiceRoutes.js";
 import timetableRoutes from "./routes/timetableRoutes.js";
+import announcementRoutes from "./routes/announcementRoutes.js";
 
 // fail fast on a missing secret rather than signing tokens with undefined
 if (!process.env.JWT_SECRET) {
@@ -73,6 +74,7 @@ app.use("/api/report-cards", reportCardRoutes);
 app.use("/api/fee-structures", feeStructureRoutes);
 app.use("/api/invoices", invoiceRoutes);
 app.use("/api/timetable", timetableRoutes);
+app.use("/api/announcements", announcementRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
