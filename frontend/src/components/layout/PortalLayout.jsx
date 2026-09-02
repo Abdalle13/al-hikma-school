@@ -16,6 +16,7 @@ import { PortalSidebar } from "./PortalSidebar.jsx";
 import { ThemeToggle } from "../ui/ThemeToggle.jsx";
 import { Avatar } from "../ui/Avatar.jsx";
 import { Spinner } from "../ui/Spinner.jsx";
+import { PageTransition } from "../ui/PageTransition.jsx";
 import { logout } from "../../redux/slices/authSlice.js";
 import api from "../../utils/api.js";
 import { cn } from "../../utils/formatter.js";
@@ -90,7 +91,9 @@ function SidebarShell({ user }) {
 
         <main className="mx-auto max-w-6xl p-4 sm:p-6">
           <Suspense fallback={<div className="grid place-items-center py-24"><Spinner /></div>}>
-            <Outlet />
+            <PageTransition>
+              <Outlet />
+            </PageTransition>
           </Suspense>
         </main>
       </div>
@@ -193,7 +196,9 @@ function ParentShell({ user }) {
           </div>
         ) : (
           <Suspense fallback={<div className="grid place-items-center py-24"><Spinner /></div>}>
-            <Outlet context={{ children, selectedChild }} />
+            <PageTransition>
+              <Outlet context={{ children, selectedChild }} />
+            </PageTransition>
           </Suspense>
         )}
       </main>
