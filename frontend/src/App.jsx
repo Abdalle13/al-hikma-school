@@ -37,9 +37,11 @@ import AdminAttendancePage from "./pages/AdminAttendancePage.jsx";
 import AdminExamsPage from "./pages/AdminExamsPage.jsx";
 import AdminReportCardsPage from "./pages/AdminReportCardsPage.jsx";
 import AdminFeesPage from "./pages/AdminFeesPage.jsx";
+import AdminTimetablePage from "./pages/AdminTimetablePage.jsx";
 import TeacherDashboard from "./pages/TeacherDashboard.jsx";
 import TeacherAttendancePage from "./pages/TeacherAttendancePage.jsx";
 import TeacherExamsPage from "./pages/TeacherExamsPage.jsx";
+import TeacherTimetablePage from "./pages/TeacherTimetablePage.jsx";
 import ParentDashboard from "./pages/ParentDashboard.jsx";
 import ParentAttendancePage from "./pages/ParentAttendancePage.jsx";
 import ParentGradesPage from "./pages/ParentGradesPage.jsx";
@@ -47,6 +49,7 @@ import ParentFeesPage from "./pages/ParentFeesPage.jsx";
 import StudentDashboard from "./pages/StudentDashboard.jsx";
 import StudentAttendancePage from "./pages/StudentAttendancePage.jsx";
 import StudentGradesPage from "./pages/StudentGradesPage.jsx";
+import StudentTimetablePage from "./pages/StudentTimetablePage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
 
 function FullPageSpinner() {
@@ -120,6 +123,7 @@ export default function App() {
               <Route path="exams" element={<AdminExamsPage />} />
               <Route path="report-cards" element={<AdminReportCardsPage />} />
               <Route path="fees" element={<AdminFeesPage />} />
+              <Route path="timetable" element={<AdminTimetablePage />} />
             </Route>
           </Route>
           <Route element={<RoleRoute allow={["Teacher"]} />}>
@@ -127,6 +131,7 @@ export default function App() {
               <Route index element={<TeacherDashboard />} />
               <Route path="attendance" element={<TeacherAttendancePage />} />
               <Route path="exams" element={<TeacherExamsPage />} />
+              <Route path="timetable" element={<TeacherTimetablePage />} />
             </Route>
           </Route>
           <Route element={<RoleRoute allow={["Parent"]} />}>
@@ -142,6 +147,7 @@ export default function App() {
               <Route index element={<StudentDashboard />} />
               <Route path="attendance" element={<StudentAttendancePage />} />
               <Route path="grades" element={<StudentGradesPage />} />
+              <Route path="timetable" element={<StudentTimetablePage />} />
             </Route>
           </Route>
         </Route>
