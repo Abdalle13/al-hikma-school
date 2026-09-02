@@ -3,15 +3,23 @@ import { Facebook, Instagram, Mail, MapPin, MessageCircle, Phone } from "lucide-
 import { useSelector } from "react-redux";
 import { Brand } from "../ui/Brand.jsx";
 
+// only treat a configured social value as a real destination when it is a full
+// url. anything else (a placeholder, a handle, empty) just points back home
+// until the school sets the real link in settings.
+const asExternal = (value) =>
+  typeof value === "string" && /^https?:\/\//i.test(value.trim()) ? value.trim() : null;
+
 export function PublicFooter() {
   const { schoolName, address, phone, email, socials } = useSelector((s) => s.settings.data);
   const year = new Date().getFullYear();
 
   const socialLinks = [
-    socials?.facebook && { href: socials.facebook, label: "Facebook", Icon: Facebook },
-    socials?.instagram && { href: socials.instagram, label: "Instagram", Icon: Instagram },
-    socials?.whatsapp && { href: socials.whatsapp, label: "WhatsApp", Icon: MessageCircle },
-  ].filter(Boolean);
+    { key: "facebook", label: "Facebook", Icon: Facebook, always: true },
+    { key: "instagram", label: "Instagram", Icon: Instagram, always: false },
+    { key: "whatsapp", label: "WhatsApp", Icon: MessageCircle, always: true },
+  ]
+    .map((s) => ({ ...s, url: asExternal(socials?.[s.key]) }))
+    .filter((s) => s.always || s.url);
 
   return (
     <footer className="border-t border-border bg-surface">
@@ -24,18 +32,29 @@ export function PublicFooter() {
           </p>
           {socialLinks.length ? (
             <div className="mt-5 flex gap-2">
-              {socialLinks.map(({ href, label, Icon }) => (
-                <a
-                  key={label}
-                  href={href}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label={label}
-                  className="grid h-9 w-9 place-items-center rounded-xl border border-border text-muted transition-colors hover:border-primary/40 hover:text-primary"
-                >
-                  <Icon className="h-4 w-4" />
-                </a>
-              ))}
+              {socialLinks.map(({ url, label, Icon }) =>
+                url ? (
+                  <a
+                    key={label}
+                    href={url}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={label}
+                    className="grid h-9 w-9 place-items-center rounded-xl border border-border text-muted transition-colors hover:border-primary/40 hover:text-primary"
+                  >
+                    <Icon className="h-4 w-4" />
+                  </a>
+                ) : (
+                  <Link
+                    key={label}
+                    to="/"
+                    aria-label={label}
+                    className="grid h-9 w-9 place-items-center rounded-xl border border-border text-muted transition-colors hover:border-primary/40 hover:text-primary"
+                  >
+                    <Icon className="h-4 w-4" />
+                  </Link>
+                )
+              )}
             </div>
           ) : null}
         </div>

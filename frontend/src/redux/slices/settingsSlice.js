@@ -15,7 +15,6 @@ const fallback = {
   currency: "USD",
   mobileMoneyOperators: ["EVC Plus", "Zaad"],
   socials: {
-    facebook: "https://facebook.com/alhikmaschool",
     whatsapp: "https://wa.me/252619157381",
   },
 };
