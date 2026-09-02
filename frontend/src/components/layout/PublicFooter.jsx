@@ -30,23 +30,35 @@ export function PublicFooter() {
   ].filter(Boolean);
 
   return (
-    <footer className="border-t border-border bg-surface">
+    <footer className="bg-surface">
       {/* call to action band */}
-      <div className="mx-auto max-w-[1200px] px-4">
-        <div className="-mt-px flex flex-col items-start justify-between gap-6 rounded-3xl border border-border bg-gradient-to-br from-primary-soft to-surface p-8 shadow-card sm:flex-row sm:items-center sm:p-10">
-          <div>
-            <h3 className="font-heading text-xl font-bold text-fg sm:text-2xl">
-              Bring your child to {schoolName}
-            </h3>
-            <p className="mt-2 max-w-md text-sm text-muted">
-              Start an application online. An admin reviews it and gets back to you with the next steps.
-            </p>
+      <div className="mx-auto max-w-[1200px] px-4 pb-14 pt-4 sm:pb-16">
+        <div className="relative overflow-hidden rounded-3xl bg-primary px-8 py-12 shadow-card sm:px-14 sm:py-14">
+          <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-white/10" />
+          <div className="pointer-events-none absolute -bottom-20 -left-10 h-56 w-56 rounded-full bg-white/10" />
+          <div className="relative flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
+            <div className="max-w-lg">
+              <h3 className="font-heading text-2xl font-bold text-on-primary sm:text-3xl">
+                Bring your child to {schoolName}
+              </h3>
+              <p className="mt-3 text-sm text-on-primary/80 sm:text-base">
+                Start an application online. An admin reviews it and gets back to you with the next steps.
+              </p>
+            </div>
+            <Button
+              as={Link}
+              to="/admissions"
+              size="lg"
+              variant="secondary"
+              className="shrink-0 bg-white text-primary hover:bg-white/90"
+            >
+              Start an application <ArrowRight className="h-4 w-4" />
+            </Button>
           </div>
-          <Button as={Link} to="/admissions" size="lg" className="shrink-0">
-            Start an application <ArrowRight className="h-4 w-4" />
-          </Button>
         </div>
       </div>
+
+      <div className="border-t border-border" />
 
       <div className="mx-auto grid max-w-[1200px] gap-10 px-4 py-14 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
         <div>

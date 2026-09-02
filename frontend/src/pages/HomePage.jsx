@@ -12,7 +12,6 @@ import {
   Library,
   MoonStar,
   Quote,
-  ReceiptText,
   ShieldCheck,
   Sparkles,
   Trees,
@@ -32,7 +31,7 @@ const whyCards = [
   { icon: BookOpen, title: "Strong academics", body: "Primary, secondary, Quran and Islamic studies under one roof, taught to a clear standard." },
   { icon: HeartHandshake, title: "Caring teachers", body: "Small classes and daily contact with parents so no child slips through." },
   { icon: ShieldCheck, title: "Safe, calm campus", body: "An organised environment where the focus stays on learning." },
-  { icon: Sparkles, title: "Modern tools", body: "Attendance, report cards and fees are all handled online for families." },
+  { icon: Sparkles, title: "Everything online", body: "Attendance, report cards and fees are all handled online for families." },
 ];
 
 const programmes = [
@@ -103,7 +102,7 @@ function NewsStrip() {
           <Card as={Link} to={`/news/${n._id}`} hover className="flex h-full flex-col">
             <p className="text-xs font-semibold uppercase tracking-wide text-primary">{formatDate(n.createdAt)}</p>
             <h3 className="mt-2 font-heading text-base font-bold text-fg">{n.title}</h3>
-            <p className="mt-1.5 line-clamp-3 text-sm leading-relaxed text-muted">{n.body}</p>
+            <p className="mt-1.5 line-clamp-3 flex-1 text-sm leading-relaxed text-muted">{n.body}</p>
             <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary">
               Read more <ArrowRight className="h-4 w-4" />
             </span>
@@ -114,43 +113,43 @@ function NewsStrip() {
   );
 }
 
-function HeroVisual() {
-  const chips = [
-    { icon: CalendarCheck, title: "Attendance marked", note: "Grade 4A, today", tone: "text-success" },
-    { icon: ReceiptText, title: "Term fee paid", note: "Installment 2 of 3", tone: "text-primary" },
-    { icon: GraduationCap, title: "Report card ready", note: "Midterm, published", tone: "text-accent" },
-  ];
+// a bento of rounded panels that stands in for photos and reads as school life
+function HeroMosaic() {
+  const tile = "relative overflow-hidden rounded-3xl border border-border p-5 shadow-card";
   return (
-    <div className="relative mx-auto w-full max-w-md lg:mx-0">
-      <div className="pointer-events-none absolute -inset-6 -z-10 rounded-full bg-primary/20 blur-3xl" />
-      <div className="rounded-3xl border border-border bg-surface p-5 shadow-card-hover">
-        <div className="flex items-center gap-3 border-b border-border pb-4">
-          <span className="grid h-10 w-10 place-items-center rounded-xl bg-primary text-on-primary">
-            <GraduationCap className="h-5 w-5" />
-          </span>
-          <div>
-            <p className="font-heading text-sm font-bold text-fg">Family portal</p>
-            <p className="text-xs text-muted">One place for every child</p>
-          </div>
-        </div>
-        <div className="mt-4 space-y-3">
-          {chips.map((c) => (
-            <div key={c.title} className="flex items-center gap-3 rounded-2xl border border-border bg-bg p-3">
-              <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-surface-2 ${c.tone}`}>
-                <c.icon className="h-4 w-4" />
-              </span>
-              <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-fg">{c.title}</p>
-                <p className="truncate text-xs text-muted">{c.note}</p>
-              </div>
-              <CheckCircle2 className="ml-auto h-4 w-4 shrink-0 text-success" />
-            </div>
-          ))}
+    <div className="grid grid-cols-2 gap-4 sm:gap-5">
+      <div
+        className={`${tile} row-span-2 flex flex-col justify-between bg-gradient-to-br from-primary to-primary-hover text-on-primary`}
+      >
+        <MoonStar className="h-6 w-6 opacity-90" />
+        <div>
+          <p className="font-heading text-lg font-bold">Quran and Islamic studies</p>
+          <p className="mt-1 text-sm text-on-primary/80">Hifz and tajweed, every day.</p>
         </div>
       </div>
-      <div className="absolute -bottom-5 -left-5 hidden rounded-2xl border border-border bg-surface px-4 py-3 shadow-card sm:block">
-        <p className="text-xs text-muted">Pass rate</p>
-        <p className="font-heading text-xl font-bold text-fg tabular-nums">95%</p>
+
+      <div className={`${tile} bg-surface`}>
+        <BookOpen className="h-6 w-6 text-primary" />
+        <p className="mt-6 font-heading text-base font-bold text-fg">Primary and secondary</p>
+        <p className="mt-1 text-sm text-muted">Grades 1 to Form 4.</p>
+      </div>
+
+      <div className={`${tile} bg-surface`}>
+        <Users className="h-6 w-6 text-primary" />
+        <p className="mt-6 font-heading text-base font-bold text-fg">Small classes</p>
+        <p className="mt-1 text-sm text-muted">Every child known by name.</p>
+      </div>
+
+      <div className={`${tile} col-span-2 bg-secondary-soft`}>
+        <div className="flex items-center gap-4">
+          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-surface text-primary shadow-sm">
+            <Sparkles className="h-5 w-5" />
+          </span>
+          <div>
+            <p className="font-heading text-base font-bold text-fg">Attendance, grades and fees online</p>
+            <p className="mt-0.5 text-sm text-muted">Families follow every child from their phone.</p>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -163,50 +162,54 @@ export default function HomePage() {
   return (
     <div>
       {/* hero */}
-      <section className="relative overflow-hidden border-b border-border">
+      <section className="relative overflow-hidden">
         <div className="pointer-events-none absolute inset-0 -z-10">
-          <div className="absolute -left-24 -top-24 h-72 w-72 rounded-full bg-primary/15 blur-3xl" />
-          <div className="absolute right-0 top-1/3 h-72 w-72 rounded-full bg-accent/10 blur-3xl" />
-          <div className="absolute inset-0 bg-gradient-to-b from-primary-soft/60 via-bg to-bg" />
+          <div className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-primary/12 blur-3xl" />
+          <div className="absolute -right-24 top-1/4 h-80 w-80 rounded-full bg-accent/10 blur-3xl" />
+          <div className="absolute inset-0 bg-gradient-to-b from-primary-soft/50 via-bg to-bg" />
         </div>
-        <div className="mx-auto grid max-w-[1200px] items-center gap-14 px-4 py-16 sm:py-24 lg:grid-cols-[1.05fr_0.95fr]">
-          <FadeIn>
-            <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 text-xs font-semibold text-primary shadow-sm">
-              <Sparkles className="h-3.5 w-3.5" />
-              Welcome to {schoolName}
-            </span>
-            <h1 className="mt-5 text-4xl font-bold leading-[1.08] text-fg sm:text-5xl md:text-[56px]">
-              A calm, organised school for Somali families
-            </h1>
-            <p className="mt-5 max-w-xl text-base leading-relaxed text-muted sm:text-lg">
-              {tagline ||
-                "Primary, secondary and Quran education, with attendance, report cards and fees your family can follow online."}
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button as={Link} to="/admissions" size="lg">
-                Apply now <ArrowRight className="h-4 w-4" />
-              </Button>
-              <Button as={Link} to="/login" size="lg" variant="outline">
-                Portal login
-              </Button>
-            </div>
-            <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted">
-              {["Primary and secondary", "Quran and Islamic studies", "Online fees and reports"].map((t) => (
-                <span key={t} className="inline-flex items-center gap-1.5">
-                  <CheckCircle2 className="h-4 w-4 text-primary" />
-                  {t}
-                </span>
-              ))}
-            </div>
-          </FadeIn>
-          <FadeIn delay={0.1}>
-            <HeroVisual />
-          </FadeIn>
+        <div className="mx-auto max-w-[1200px] px-4">
+          <div className="grid items-center gap-14 py-16 sm:py-24 lg:grid-cols-[1.05fr_0.95fr]">
+            <FadeIn>
+              <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 text-xs font-semibold text-primary shadow-sm">
+                <GraduationCap className="h-3.5 w-3.5" />
+                Enrolling now for the new term
+              </span>
+              <h1 className="mt-5 text-[40px] font-bold leading-[1.05] text-fg sm:text-[52px] md:text-[60px]">
+                A calm, organised school for Somali families
+              </h1>
+              <p className="mt-6 max-w-xl text-[17px] leading-relaxed text-muted">
+                {tagline ||
+                  "Primary, secondary and Quran education at " +
+                    (schoolName || "our school") +
+                    ", with attendance, report cards and fees your family can follow online."}
+              </p>
+              <div className="mt-9 flex flex-wrap gap-3">
+                <Button as={Link} to="/admissions" size="xl">
+                  Apply now <ArrowRight className="h-4 w-4" />
+                </Button>
+                <Button as={Link} to="/login" size="xl" variant="outline">
+                  Portal login
+                </Button>
+              </div>
+              <dl className="mt-12 grid max-w-md grid-cols-3 gap-6 border-t border-border pt-8">
+                {stats.slice(0, 3).map((s) => (
+                  <div key={s.label}>
+                    <dt className="font-heading text-2xl font-bold text-fg tabular-nums">{s.value}</dt>
+                    <dd className="mt-1 text-xs leading-snug text-muted">{s.label}</dd>
+                  </div>
+                ))}
+              </dl>
+            </FadeIn>
+            <FadeIn delay={0.1}>
+              <HeroMosaic />
+            </FadeIn>
+          </div>
         </div>
       </section>
 
       {/* why choose us */}
-      <Section>
+      <Section tone="surface">
         <FadeIn>
           <SectionHeading eyebrow="Why families choose us" title="Everything a growing school should be" />
         </FadeIn>
@@ -215,12 +218,12 @@ export default function HomePage() {
             const Icon = c.icon;
             return (
               <FadeIn key={c.title} delay={i * 0.05}>
-                <Card hover className="h-full">
-                  <span className="grid h-11 w-11 place-items-center rounded-xl bg-primary/10 text-primary ring-1 ring-inset ring-primary/15">
+                <Card hover className="h-full bg-bg">
+                  <span className="grid h-12 w-12 place-items-center rounded-2xl bg-primary/10 text-primary ring-1 ring-inset ring-primary/15">
                     <Icon className="h-5 w-5" />
                   </span>
-                  <h3 className="mt-4 font-heading text-base font-bold text-fg">{c.title}</h3>
-                  <p className="mt-1.5 text-sm leading-relaxed text-muted">{c.body}</p>
+                  <h3 className="mt-5 font-heading text-base font-bold text-fg">{c.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted">{c.body}</p>
                 </Card>
               </FadeIn>
             );
@@ -229,7 +232,7 @@ export default function HomePage() {
       </Section>
 
       {/* academics preview */}
-      <Section tone="surface">
+      <Section>
         <div className="grid gap-12 lg:grid-cols-[1fr_1.6fr] lg:items-center">
           <FadeIn>
             <SectionHeading
@@ -237,19 +240,19 @@ export default function HomePage() {
               title="Three programmes, one timetable"
               lead="Every student follows a full academic day. The Quran programme runs alongside it, not instead of it."
             />
-            <Button as={Link} to="/academics" variant="outline" className="mt-6">
+            <Button as={Link} to="/academics" variant="outline" className="mt-7">
               Explore academics <ArrowRight className="h-4 w-4" />
             </Button>
           </FadeIn>
           <div className="grid gap-5 sm:grid-cols-3">
             {programmes.map((p, i) => (
               <FadeIn key={p.title} delay={i * 0.05}>
-                <Card hover className="h-full bg-bg">
-                  <span className="grid h-9 w-9 place-items-center rounded-lg bg-primary/10 text-primary">
+                <Card hover className="h-full">
+                  <span className="grid h-10 w-10 place-items-center rounded-xl bg-primary/10 text-primary">
                     <BookOpen className="h-4 w-4" />
                   </span>
-                  <h3 className="mt-3 font-heading text-base font-bold text-fg">{p.title}</h3>
-                  <p className="mt-1.5 text-sm leading-relaxed text-muted">{p.body}</p>
+                  <h3 className="mt-4 font-heading text-base font-bold text-fg">{p.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted">{p.body}</p>
                 </Card>
               </FadeIn>
             ))}
@@ -258,12 +261,12 @@ export default function HomePage() {
       </Section>
 
       {/* stats band */}
-      <Section>
+      <Section tone="surface">
         <FadeIn>
-          <div className="grid divide-y divide-border overflow-hidden rounded-3xl border border-border bg-surface shadow-card sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-4 lg:divide-x">
+          <div className="grid divide-y divide-border overflow-hidden rounded-3xl border border-border bg-bg shadow-card sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-4 lg:divide-x">
             {stats.map((s) => (
               <div key={s.label} className="flex items-center gap-4 p-7">
-                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+                <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-primary/10 text-primary">
                   <s.icon className="h-5 w-5" />
                 </span>
                 <div>
@@ -277,7 +280,7 @@ export default function HomePage() {
       </Section>
 
       {/* latest news */}
-      <Section tone="surface">
+      <Section>
         <FadeIn>
           <div className="flex flex-wrap items-end justify-between gap-4">
             <SectionHeading eyebrow="News and events" title="What is happening at school" />
@@ -292,7 +295,7 @@ export default function HomePage() {
       </Section>
 
       {/* campus life */}
-      <Section>
+      <Section tone="surface">
         <FadeIn>
           <SectionHeading eyebrow="Campus life" title="Room to learn, pray and play" />
         </FadeIn>
@@ -301,8 +304,8 @@ export default function HomePage() {
             const Icon = c.icon;
             return (
               <FadeIn key={c.label} delay={i * 0.04}>
-                <div className="group flex aspect-square flex-col items-center justify-center gap-3 rounded-3xl border border-border bg-gradient-to-br from-primary/10 via-surface to-accent/10 p-4 text-center transition-transform duration-200 hover:-translate-y-0.5">
-                  <span className="grid h-12 w-12 place-items-center rounded-2xl bg-surface text-primary shadow-sm">
+                <div className="flex aspect-[4/3] flex-col items-center justify-center gap-3 rounded-3xl border border-border bg-bg p-4 text-center shadow-card transition-transform duration-200 hover:-translate-y-1">
+                  <span className="grid h-12 w-12 place-items-center rounded-2xl bg-primary/10 text-primary">
                     <Icon className="h-6 w-6" />
                   </span>
                   <span className="text-sm font-semibold text-fg">{c.label}</span>
@@ -314,7 +317,7 @@ export default function HomePage() {
       </Section>
 
       {/* testimonials, auto scrolling rail */}
-      <Section tone="surface" innerClassName="max-w-none px-0">
+      <Section innerClassName="max-w-none px-0">
         <div className="mx-auto max-w-[1200px] px-4">
           <FadeIn>
             <SectionHeading eyebrow="From our parents" title="Families that trust us" align="center" />
@@ -325,11 +328,11 @@ export default function HomePage() {
             {loop.map((t, i) => (
               <figure
                 key={i}
-                className="flex w-[320px] shrink-0 flex-col rounded-2xl border border-border bg-bg p-6 shadow-card"
+                className="flex w-[340px] shrink-0 flex-col rounded-3xl border border-border bg-surface p-6 shadow-card"
               >
-                <Quote className="h-6 w-6 text-primary/40" />
+                <Quote className="h-7 w-7 text-primary/30" />
                 <blockquote className="mt-3 flex-1 text-sm leading-relaxed text-fg">{t.quote}</blockquote>
-                <figcaption className="mt-5 flex items-center gap-3">
+                <figcaption className="mt-6 flex items-center gap-3 border-t border-border pt-4">
                   <Avatar name={t.name} size="sm" className="bg-primary/10 text-primary" />
                   <div>
                     <p className="text-sm font-semibold text-fg">{t.name}</p>
