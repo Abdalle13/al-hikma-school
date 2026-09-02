@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, BookOpen, FlaskConical, Library, MoonStar, Trees } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "../components/ui/Button.jsx";
 import { Card } from "../components/ui/Card.jsx";
 import { Badge } from "../components/ui/Badge.jsx";
@@ -7,22 +7,18 @@ import { Section } from "../components/ui/Section.jsx";
 import { SectionHeading } from "../components/ui/SectionHeading.jsx";
 import { PageHero } from "../components/ui/PageHero.jsx";
 import { FadeIn } from "../components/ui/FadeIn.jsx";
+import { siteImages } from "../utils/siteImages.js";
 
 const programmes = [
   {
     title: "Primary",
     grades: "Grades 1 to 8",
-    body: "Literacy, numeracy, Somali, English, science and social studies, taught in small classes with daily attendance.",
+    body: "Literacy, numeracy, Somali, English, science and social studies, taught in small classes with daily attendance. Quran and Islamic studies run in the same week.",
   },
   {
     title: "Secondary",
     grades: "Forms 1 to 4",
-    body: "Exam focused teaching across the core subjects, with regular quizzes, a midterm and a final each term.",
-  },
-  {
-    title: "Quran and Islamic Studies",
-    grades: "All grades",
-    body: "Hifz, tajweed and Islamic studies scheduled alongside the academic timetable, not as a replacement for it.",
+    body: "Exam focused teaching across the core subjects, with regular quizzes, a midterm and a final each term, and Islamic studies kept on the timetable.",
   },
 ];
 
@@ -45,14 +41,6 @@ const subjects = [
   "Quran", "Islamic Studies", "Arabic", "ICT", "Physical Education",
 ];
 
-const facilities = [
-  { icon: FlaskConical, label: "Science labs" },
-  { icon: Library, label: "Library" },
-  { icon: MoonStar, label: "Masjid" },
-  { icon: Trees, label: "Playground" },
-  { icon: BookOpen, label: "Reading rooms" },
-];
-
 export default function AcademicsPage() {
   return (
     <div>
@@ -63,19 +51,31 @@ export default function AcademicsPage() {
       />
 
       <Section tone="surface">
-        <FadeIn>
-          <SectionHeading eyebrow="Programmes" title="What we teach" />
-        </FadeIn>
-        <div className="mt-12 grid gap-5 md:grid-cols-3">
-          {programmes.map((p, i) => (
-            <FadeIn key={p.title} delay={i * 0.05}>
-              <Card hover className="h-full bg-bg">
-                <Badge tone="info">{p.grades}</Badge>
-                <h3 className="mt-3 font-heading text-lg font-bold text-fg">{p.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted">{p.body}</p>
-              </Card>
-            </FadeIn>
-          ))}
+        <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
+          <FadeIn>
+            <SectionHeading eyebrow="Programmes" title="What we teach" />
+            <div className="mt-8 grid gap-5 sm:grid-cols-2">
+              {programmes.map((p, i) => (
+                <FadeIn key={p.title} delay={i * 0.05}>
+                  <Card hover className="h-full bg-bg">
+                    <Badge tone="info">{p.grades}</Badge>
+                    <h3 className="mt-3 font-heading text-lg font-bold text-fg">{p.title}</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-muted">{p.body}</p>
+                  </Card>
+                </FadeIn>
+              ))}
+            </div>
+          </FadeIn>
+          <FadeIn delay={0.1}>
+            <div className="overflow-hidden rounded-3xl border border-border shadow-card">
+              <img
+                src={siteImages.teacherBoard}
+                alt="A teacher working through a lesson at the board"
+                loading="lazy"
+                className="aspect-[4/3] w-full object-cover"
+              />
+            </div>
+          </FadeIn>
         </div>
       </Section>
 
@@ -124,7 +124,7 @@ export default function AcademicsPage() {
         <FadeIn>
           <SectionHeading eyebrow="The school year" title="Three terms" />
         </FadeIn>
-        <div className="mt-12 grid gap-5 sm:grid-cols-3">
+        <div className="mt-10 grid gap-5 sm:grid-cols-3">
           {terms.map((t, i) => (
             <FadeIn key={t.name} delay={i * 0.05}>
               <Card hover className="bg-bg text-center">
@@ -152,40 +152,29 @@ export default function AcademicsPage() {
         </div>
       </Section>
 
-      <Section tone="muted">
+      <Section tone="surface">
         <FadeIn>
-          <SectionHeading eyebrow="On campus" title="Facilities" />
-        </FadeIn>
-        <div className="mt-12 grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-5">
-          {facilities.map((f, i) => {
-            const Icon = f.icon;
-            return (
-              <FadeIn key={f.label} delay={i * 0.04}>
-                <div className="flex flex-col items-center gap-3 rounded-2xl border border-border bg-surface p-6 text-center shadow-card transition-transform duration-200 hover:-translate-y-0.5">
-                  <span className="grid h-11 w-11 place-items-center rounded-xl bg-primary/10 text-primary">
-                    <Icon className="h-5 w-5" />
-                  </span>
-                  <span className="text-sm font-semibold text-fg">{f.label}</span>
-                </div>
-              </FadeIn>
-            );
-          })}
-        </div>
-      </Section>
-
-      <Section>
-        <FadeIn>
-          <div className="overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-primary-soft to-surface p-8 text-center shadow-card sm:p-12">
-            <h3 className="font-heading text-xl font-bold text-fg sm:text-2xl">
-              Want to see the timetable and results up close?
-            </h3>
-            <p className="mx-auto mt-2 max-w-xl text-sm text-muted">
-              Parents and students get a login to view attendance, report cards and the weekly
-              timetable.
-            </p>
-            <Button as={Link} to="/admissions" size="lg" className="mt-6">
-              Apply for a place <ArrowRight className="h-4 w-4" />
-            </Button>
+          <div className="grid overflow-hidden rounded-3xl border border-border bg-bg shadow-card md:grid-cols-2">
+            <div className="flex flex-col justify-center p-8 sm:p-12">
+              <h3 className="font-heading text-xl font-bold text-fg sm:text-2xl">
+                See the timetable and results up close
+              </h3>
+              <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted">
+                Parents and students get a login to view attendance, report cards and the weekly
+                timetable.
+              </p>
+              <Button as={Link} to="/admissions" size="lg" className="mt-6 self-start">
+                Apply for a place <ArrowRight className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="relative min-h-[220px] md:min-h-full">
+              <img
+                src={siteImages.library}
+                alt="Bookshelves in the school library"
+                loading="lazy"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            </div>
           </div>
         </FadeIn>
       </Section>

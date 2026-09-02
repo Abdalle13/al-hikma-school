@@ -10,9 +10,9 @@ export function PageHero({ eyebrow, title, lead, children }) {
         <div className="absolute -right-16 top-1/2 h-64 w-64 rounded-full bg-accent/10 blur-3xl" />
         <div className="absolute inset-0 bg-gradient-to-b from-primary-soft/40 via-bg to-bg" />
       </div>
-      <div className="mx-auto max-w-[1200px] px-4 py-16 sm:py-20">
+      <div className="mx-auto max-w-[1200px] px-4 py-11 sm:py-14">
         <FadeIn>
-          <SectionHeading eyebrow={eyebrow} title={title} lead={lead} className="max-w-3xl" />
+          <SectionHeading eyebrow={eyebrow} title={title} lead={lead} className="max-w-2xl" />
           {children}
         </FadeIn>
       </div>

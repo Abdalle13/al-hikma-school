@@ -5,6 +5,7 @@ import { Section } from "../components/ui/Section.jsx";
 import { SectionHeading } from "../components/ui/SectionHeading.jsx";
 import { PageHero } from "../components/ui/PageHero.jsx";
 import { FadeIn } from "../components/ui/FadeIn.jsx";
+import { siteImages } from "../utils/siteImages.js";
 
 const values = [
   { icon: ShieldCheck, title: "Discipline", body: "Clear routines and high expectations, held kindly." },
@@ -16,7 +17,7 @@ const values = [
 const history = [
   { year: "2013", text: "Opened with two classrooms and 40 pupils." },
   { year: "2017", text: "Added the secondary programme and the first science lab." },
-  { year: "2021", text: "Moved to the current campus with a masjid and library." },
+  { year: "2021", text: "Moved into a larger building with more classrooms and a library." },
   { year: "2024", text: "Brought attendance, report cards and fees fully online." },
 ];
 
@@ -32,31 +33,43 @@ export default function AboutPage() {
       />
 
       <Section tone="surface">
-        <div className="grid gap-5 md:grid-cols-2">
+        <div className="grid gap-8 lg:grid-cols-2 lg:items-stretch">
           <FadeIn>
-            <Card hover className="h-full">
-              <span className="grid h-11 w-11 place-items-center rounded-xl bg-primary/10 text-primary ring-1 ring-inset ring-primary/15">
-                <Target className="h-5 w-5" />
-              </span>
-              <h3 className="mt-4 font-heading text-lg font-bold text-fg">Our mission</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted">
-                To give Somali children a strong academic and Islamic education in a calm, organised
-                environment, and to keep parents close to their child's progress.
-              </p>
-            </Card>
+            <div className="h-full overflow-hidden rounded-3xl border border-border shadow-card">
+              <img
+                src={siteImages.studyGroup}
+                alt="Students working together at school"
+                loading="lazy"
+                className="h-full min-h-[280px] w-full object-cover"
+              />
+            </div>
           </FadeIn>
-          <FadeIn delay={0.05}>
-            <Card hover className="h-full">
-              <span className="grid h-11 w-11 place-items-center rounded-xl bg-accent/10 text-accent ring-1 ring-inset ring-accent/15">
-                <Eye className="h-5 w-5" />
-              </span>
-              <h3 className="mt-4 font-heading text-lg font-bold text-fg">Our vision</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted">
-                A school families rely on for years, where good habits, curiosity and faith are built
-                early and carried for life.
-              </p>
-            </Card>
-          </FadeIn>
+          <div className="grid gap-5">
+            <FadeIn delay={0.05}>
+              <Card hover className="h-full">
+                <span className="grid h-11 w-11 place-items-center rounded-xl bg-primary/10 text-primary ring-1 ring-inset ring-primary/15">
+                  <Target className="h-5 w-5" />
+                </span>
+                <h3 className="mt-4 font-heading text-lg font-bold text-fg">Our mission</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted">
+                  To give Somali children a strong academic and Islamic education in a calm, organised
+                  environment, and to keep parents close to their child's progress.
+                </p>
+              </Card>
+            </FadeIn>
+            <FadeIn delay={0.1}>
+              <Card hover className="h-full">
+                <span className="grid h-11 w-11 place-items-center rounded-xl bg-accent/10 text-accent ring-1 ring-inset ring-accent/15">
+                  <Eye className="h-5 w-5" />
+                </span>
+                <h3 className="mt-4 font-heading text-lg font-bold text-fg">Our vision</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted">
+                  A school families rely on for years, where good habits, curiosity and faith are built
+                  early and carried for life.
+                </p>
+              </Card>
+            </FadeIn>
+          </div>
         </div>
       </Section>
 
@@ -64,7 +77,7 @@ export default function AboutPage() {
         <FadeIn>
           <SectionHeading eyebrow="What we stand for" title="Core values" />
         </FadeIn>
-        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {values.map((v, i) => {
             const Icon = v.icon;
             return (
@@ -108,7 +121,7 @@ export default function AboutPage() {
         <FadeIn>
           <SectionHeading eyebrow="Our history" title="How we got here" />
         </FadeIn>
-        <ol className="mt-12 space-y-0 border-l border-border">
+        <ol className="mt-10 space-y-0 border-l border-border">
           {history.map((h, i) => (
             <FadeIn key={h.year} delay={i * 0.05}>
               <li className="relative pb-8 pl-8 last:pb-0">

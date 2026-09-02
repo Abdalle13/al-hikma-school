@@ -10,7 +10,7 @@ const tones = {
 
 export function Section({ tone = "base", className, innerClassName, children, id }) {
   return (
-    <section id={id} className={cn("px-4 py-16 sm:py-20", tones[tone], className)}>
+    <section id={id} className={cn("px-4 py-12 sm:py-16", tones[tone], className)}>
       <div className={cn("mx-auto max-w-[1200px]", innerClassName)}>{children}</div>
     </section>
   );

@@ -216,7 +216,7 @@ export default function AdmissionsPage() {
         <FadeIn>
           <SectionHeading eyebrow="The process" title="What happens next" />
         </FadeIn>
-        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {steps.map((s, i) => {
             const Icon = s.icon;
             return (

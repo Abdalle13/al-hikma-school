@@ -4,16 +4,20 @@ import api from "../../utils/api.js";
 // the public school settings: name, tagline, contacts, socials. used by the
 // header, the footer and the public pages. fetched once when the app loads.
 const fallback = {
-  schoolName: "School Name",
-  tagline: "",
+  schoolName: "Al Nuur Academy",
+  tagline:
+    "Primary and secondary education for Somali families, with attendance and results you can follow online.",
   about: "",
-  address: "",
-  phone: "",
-  email: "",
+  address: "KM4, Mogadishu, Somalia",
+  phone: "+252 61 915 7381",
+  email: "info@alnuur.example",
   logo: "",
   currency: "USD",
-  mobileMoneyOperators: [],
-  socials: {},
+  mobileMoneyOperators: ["EVC Plus", "Zaad"],
+  socials: {
+    facebook: "https://facebook.com/alnuur",
+    whatsapp: "https://wa.me/252619157381",
+  },
 };
 
 export const fetchPublicSettings = createAsyncThunk("settings/fetchPublic", async () => {
