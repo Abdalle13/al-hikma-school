@@ -7,6 +7,7 @@ const applicationSchema = new mongoose.Schema(
     gender: { type: String, enum: ["Male", "Female"] },
     gradeApplyingFor: { type: String, trim: true },
     parentName: { type: String, required: true, trim: true },
+    relationship: { type: String, trim: true },
     parentPhone: { type: String, required: true, trim: true },
     parentEmail: { type: String, trim: true, lowercase: true },
     message: { type: String, trim: true },

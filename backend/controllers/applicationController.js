@@ -19,6 +19,7 @@ export async function submitApplication(req, res, next) {
       gender: req.body.gender,
       gradeApplyingFor: req.body.gradeApplyingFor,
       parentName,
+      relationship: req.body.relationship,
       parentPhone,
       parentEmail: req.body.parentEmail,
       message: req.body.message,

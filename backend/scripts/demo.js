@@ -303,6 +303,11 @@ async function seedDemo() {
         phone: "+252 61 915 7381",
         email: "info@alnuur.example",
         currency: "USD",
+        socials: {
+          facebook: "https://facebook.com/alnuur",
+          instagram: "",
+          whatsapp: "https://wa.me/252619157381",
+        },
       },
     },
     { upsert: true }
