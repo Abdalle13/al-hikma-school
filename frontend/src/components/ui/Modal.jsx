@@ -19,7 +19,7 @@ export function Modal({ open, onClose, title, children, footer, className }) {
   return createPortal(
     <AnimatePresence>
       {open ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4">
           <motion.div
             className="absolute inset-0 bg-black/40"
             initial={{ opacity: 0 }}
@@ -32,15 +32,15 @@ export function Modal({ open, onClose, title, children, footer, className }) {
             aria-modal="true"
             aria-label={title}
             className={cn(
-              "relative z-10 w-full max-w-lg rounded-2xl border border-border bg-surface p-5",
+              "relative z-10 flex max-h-[92vh] w-full max-w-lg flex-col rounded-t-2xl border border-border bg-surface sm:rounded-2xl",
               className
             )}
-            initial={{ opacity: 0, y: 8, scale: 0.98 }}
+            initial={{ opacity: 0, y: 12, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 8, scale: 0.98 }}
+            exit={{ opacity: 0, y: 12, scale: 0.98 }}
             transition={{ duration: 0.15 }}
           >
-            <div className="mb-4 flex items-start justify-between gap-4">
+            <div className="flex items-start justify-between gap-4 border-b border-border p-5 pb-4">
               {title ? <h2 className="text-lg font-bold text-fg">{title}</h2> : <span />}
               <button
                 type="button"
@@ -51,8 +51,10 @@ export function Modal({ open, onClose, title, children, footer, className }) {
                 <X className="h-4 w-4" />
               </button>
             </div>
-            <div className="text-sm text-fg">{children}</div>
-            {footer ? <div className="mt-5 flex justify-end gap-2">{footer}</div> : null}
+            <div className="flex-1 overflow-y-auto p-5 text-sm text-fg">{children}</div>
+            {footer ? (
+              <div className="flex justify-end gap-2 border-t border-border p-5 pt-4">{footer}</div>
+            ) : null}
           </motion.div>
         </div>
       ) : null}

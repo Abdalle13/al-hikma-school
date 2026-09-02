@@ -77,7 +77,7 @@ function ReviewModal({ application, classes, onClose, onSaved }) {
             <p className="mb-3 text-sm font-medium text-fg">
               Enrol {application.childName} now (optional, can be done later from Students)
             </p>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <Input label="Admission number" value={admissionNo} onChange={(e) => setAdmissionNo(e.target.value)} placeholder="ADM-0001" />
               <Input label="Password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 6 characters" />
             </div>

@@ -3,38 +3,75 @@
 A web app for Somali private schools and madrasas that currently run on paper.
 It has two parts:
 
-1. A **public school website** anyone can visit (Home, About, Academics, Admissions, News, Contact).
-2. A **portal** behind login, with a dashboard per role: Admin, Teacher, Parent, Student.
+1. A **public school website** anyone can visit: Home, About, Academics, Admissions
+   (with an application form), News and Events, Contact.
+2. A **portal** behind a login, with a dashboard per role: Admin, Teacher, Parent,
+   Student.
 
 Built by Abdalle Hussein as a portfolio project. MERN stack, deployed on Vercel
-as two projects (frontend and a serverless backend).
+as two projects (the React frontend and a serverless Express backend).
 
 ## Accounts and login
 
 There is no public sign up. The admin creates every account (teachers, parents,
-students) and sets the password. On first login the user is asked to change it
-once. Teachers and parents log in with their email, students log in with their
-admission number. Forgot and reset password by email still work for accounts
-that have an email.
+students) and sets the password directly. On first login the user is asked to
+change it once. Teachers and parents log in with their **email**, students log in
+with their **admission number**, and one login form accepts either. Forgot and
+reset password by email work for accounts that have an email; a student's
+password is reset by an admin.
 
-## Modules
+## What each role can do
 
-Students and enrolment, classes and sections, subjects, staff and teaching
-assignments, the three-term year, daily attendance, exams and computed report
-cards, term fees with installment plans ("qaybo"), weekly timetable,
-announcements and notifications, admission applications from the public site,
-a contact form, school settings, and reporting endpoints.
+**Admin**
+- Full CRUD on users, students (with enrolment, class, guardians), classes,
+  subjects, staff, terms and the school settings.
+- Review admission applications and turn an accepted one into a student.
+- Take or edit attendance for any class, browse the register, delete records.
+- Create exams, enter marks, generate report cards, add remarks, publish them.
+- Set fee structures per class and term, generate invoices, add installment
+  plans, record cash payments, view balances.
+- Build the weekly timetable per class.
+- Post announcements to everyone, a class or a role, and read the message log.
+- A reports dashboard (enrolment, attendance, exam performance, fee collection)
+  with a PDF export.
+
+**Teacher**
+- Mark the daily register for their classes.
+- Create exams and enter marks for the subjects they are assigned to teach.
+- See their own weekly timetable across every class.
+- Post an announcement to a class they teach.
+
+**Parent** (mobile first, with a child switcher)
+- See each child's attendance summary and history, published report cards (with
+  PDF download), fee invoices and installment schedule.
+- Pay fees through the simulated mobile money gateway and download a receipt.
+- Read school announcements and the messages the school has sent.
+
+**Student** (light view)
+- Own timetable, published report cards and attendance.
+
+## Grading
+
+Per subject: `percentage = score / maxMarks * 100`, then a letter: 90+ A, 80+ B,
+70+ C, 60+ D, below 60 F. The term result is the average across subjects, an
+overall grade, a division (First 60+, Second 45 to 59, Third below 45), a class
+position and a teacher remark. Parents and students see a report card only after
+the admin publishes it.
 
 ## Tech stack
 
 | Layer | Tools |
 | :--- | :--- |
-| Frontend | React 19, Vite, Redux Toolkit, React Router 7, Tailwind CSS v4, Framer Motion, Recharts, lucide-react, react-hot-toast |
+| Frontend | React 19, Vite, Redux Toolkit, React Router 7, Tailwind CSS v4, Framer Motion, Recharts, lucide-react, react-hot-toast, axios |
 | Backend | Node.js, Express 5, Mongoose 9, jsonwebtoken, bcryptjs, helmet, cors, express-rate-limit, multer, imagekit, nodemailer, colors |
-| PDF | jspdf + jspdf-autotable (report cards and fee receipts) |
+| PDF | jspdf + jspdf-autotable, loaded lazily (report cards, fee receipts, the reports export) |
 | Database | MongoDB Atlas |
 | Images | ImageKit.io |
-| Deployment | Vercel |
+| Deployment | Vercel (two projects) |
+
+The portal is code split away from the public bundle: every portal screen loads
+on demand, and the chart and PDF libraries only load when a screen actually
+needs them.
 
 ## Repo layout
 
@@ -49,26 +86,50 @@ Backend:
 
 ```
 cd backend
-cp .env.example .env    # then fill in the values
+cp .env.example .env      # fill in MONGODB_URI, JWT_SECRET, and the rest
 npm install
-npm run data:import     # create the first admin from the ADMIN_ vars in .env
-npm run dev             # http://localhost:5000
-```
-
-Optional demo data (Somali names, classes, a term, attendance, marks, invoices):
-
-```
-npm run demo            # additive, safe to run more than once
-npm run demo:destroy    # remove only the demo data
+npm run data:import       # create the first admin from the ADMIN_ vars in .env
+npm run dev               # http://localhost:5000
 ```
 
 Frontend:
 
 ```
 cd frontend
+cp .env.example .env      # VITE_API_URL, default http://localhost:5000/api
 npm install
-npm run dev             # http://localhost:5173
+npm run dev               # http://localhost:5173
 ```
+
+Optional demo data (Somali student and parent names, classes, a term, teaching
+assignments, a timetable, attendance, marks, report cards, fee structures with
+invoices and payments, announcements):
+
+```
+cd backend
+npm run demo              # additive, safe to run more than once
+npm run demo:destroy      # remove only the demo data
+```
+
+Demo logins after `npm run demo`:
+
+| Role | Login | Password |
+| :--- | :--- | :--- |
+| Admin | `admin@school.com` | `admin123456` |
+| Teacher | `teacher1@demo.school` | `teacher123` |
+| Parent | `parent1@demo.school` | `parent123` |
+| Student | `D-001` | `student123` |
+
+## Deployment (Vercel)
+
+Two separate Vercel projects, one per folder.
+
+- **backend**: root `backend/`. `vercel.json` builds `server.js` and routes
+  everything to it. Set the env vars from `.env.example` in the project settings.
+  `server.js` calls `listen()` only off Vercel.
+- **frontend**: root `frontend/`. A static Vite build. Set `VITE_API_URL` to the
+  backend project's URL plus `/api`, and add that URL to `FRONTEND_URL` on the
+  backend for CORS.
 
 ## API surface
 
@@ -76,11 +137,8 @@ Mounted under `/api`: `auth`, `users`, `students`, `classes`, `subjects`,
 `staff`, `assignments`, `terms`, `attendance`, `notifications`, `exams`,
 `marks`, `report-cards`, `fee-structures`, `invoices`, `timetable`,
 `announcements`, `applications`, `contact`, `settings`, `reports`. The website
-reads `GET /api/settings`, `GET /api/announcements/public` and posts to
+reads `GET /api/settings` and `GET /api/announcements/public` and posts to
 `/api/applications` and `/api/contact` without a token.
-
-Report card and fee receipt PDFs are generated server side with jspdf, loaded
-lazily inside those handlers.
 
 ## Simulated parts
 
@@ -94,4 +152,5 @@ accounts or a paid gateway:
   message log, and optionally emailed. Nothing is really sent to a phone.
 
 Everything else (enrolment, attendance, grading, invoicing, installment logic,
-timetable, applications, role access) is real application logic against MongoDB.
+the timetable, applications, role access) is real application logic against
+MongoDB.

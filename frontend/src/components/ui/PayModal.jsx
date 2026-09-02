@@ -57,7 +57,7 @@ export function PayModal({ invoice, onClose, onPaid }) {
       </div>
 
       <form className="flex flex-col gap-4" onSubmit={submit} noValidate>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Select label="Method" value={method} onChange={(e) => setMethod(e.target.value)}>
             <option value="evc">EVC Plus</option>
             <option value="zaad">Zaad</option>

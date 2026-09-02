@@ -51,13 +51,13 @@ function ExamForm({ classOptions, terms, onCancel, onSaved }) {
   return (
     <form className="flex flex-col gap-4" onSubmit={onSubmit} noValidate>
       <Input label="Title" value={form.title} onChange={set("title")} placeholder="Term 1 Maths Quiz" />
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Select label="Type" value={form.type} onChange={set("type")}>
           {TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
         </Select>
         <Input label="Max marks" type="number" min="1" value={form.maxMarks} onChange={set("maxMarks")} />
       </div>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Select label="Class" value={form.schoolClass} onChange={(e) => setForm((f) => ({ ...f, schoolClass: e.target.value, subject: "" }))}>
           {classOptions.map((c) => <option key={c._id} value={c._id}>{c.name} {c.section}</option>)}
         </Select>
@@ -66,7 +66,7 @@ function ExamForm({ classOptions, terms, onCancel, onSaved }) {
           {subjects.map((s) => <option key={s._id} value={s._id}>{s.name}</option>)}
         </Select>
       </div>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Select label="Term" value={form.term} onChange={set("term")}>
           {terms.map((t) => <option key={t._id} value={t._id}>{t.name} ({t.academicYear})</option>)}
         </Select>
@@ -105,7 +105,7 @@ function EditExamForm({ exam, onCancel, onSaved }) {
   return (
     <form className="flex flex-col gap-4" onSubmit={onSubmit} noValidate>
       <Input label="Title" value={form.title} onChange={set("title")} />
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Select label="Type" value={form.type} onChange={set("type")}>
           {TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
         </Select>

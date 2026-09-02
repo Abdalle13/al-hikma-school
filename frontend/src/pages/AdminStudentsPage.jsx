@@ -186,11 +186,11 @@ function StudentForm({ initial, classes, onCancel, onSaved }) {
   return (
     <div className="space-y-6">
       <form className="flex flex-col gap-4" onSubmit={onSubmit} noValidate>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Input label="Full name" value={form.name} onChange={set("name")} />
           <Input label="Admission number" value={form.admissionNo} onChange={set("admissionNo")} placeholder="ADM-0001" />
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Input label="Date of birth" type="date" value={form.dob} onChange={set("dob")} />
           <Select label="Gender" value={form.gender} onChange={set("gender")}>
             <option value="">Not set</option>
@@ -198,7 +198,7 @@ function StudentForm({ initial, classes, onCancel, onSaved }) {
             <option value="Female">Female</option>
           </Select>
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Input label="Phone" value={form.phone} onChange={set("phone")} placeholder="+252 ..." />
           <Select label="Class" value={form.schoolClass} onChange={set("schoolClass")}>
             <option value="">Not assigned</option>
