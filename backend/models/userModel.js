@@ -1,4 +1,3 @@
-import crypto from "crypto";
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 
@@ -66,9 +65,6 @@ const userSchema = new mongoose.Schema(
     // only meaningful for a student. the parent's children are found by querying
     // students where guardians.user matches the parent id. never stored twice.
     guardians: { type: [guardianSchema], default: undefined },
-
-    resetPasswordToken: { type: String, select: false },
-    resetPasswordExpires: { type: Date, select: false },
   },
   { timestamps: true }
 );
@@ -84,15 +80,7 @@ userSchema.methods.matchPassword = function matchPassword(entered) {
   return bcrypt.compare(entered, this.password);
 };
 
-// raw token goes in the email, only the hash and a 30 minute expiry are stored
-userSchema.methods.createResetToken = function createResetToken() {
-  const rawToken = crypto.randomBytes(32).toString("hex");
-  this.resetPasswordToken = crypto.createHash("sha256").update(rawToken).digest("hex");
-  this.resetPasswordExpires = Date.now() + 30 * 60 * 1000;
-  return rawToken;
-};
-
-// never leak the password or the reset fields
+// never leak the password
 userSchema.methods.toSafeJSON = function toSafeJSON() {
   return {
     _id: this._id,

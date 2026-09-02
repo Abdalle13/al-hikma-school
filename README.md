@@ -16,9 +16,9 @@ as two projects (the React frontend and a serverless Express backend).
 There is no public sign up. The admin creates every account (teachers, parents,
 students) and sets the password directly. On first login the user is asked to
 change it once. Teachers and parents log in with their **email**, students log in
-with their **admission number**, and one login form accepts either. Forgot and
-reset password by email work for accounts that have an email; a student's
-password is reset by an admin.
+with their **admission number**, and one login form accepts either. There is no
+self service password reset: if someone forgets their password the admin resets
+it from that user's edit form.
 
 ## What each role can do
 
