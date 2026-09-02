@@ -13,9 +13,16 @@ async function connectDB() {
 
   if (!cached.promise) {
     mongoose.set("strictQuery", true);
-    cached.promise = mongoose.connect(process.env.MONGODB_URI, {
-      serverSelectionTimeoutMS: 10000,
-    });
+    cached.promise = mongoose
+      .connect(process.env.MONGODB_URI, {
+        serverSelectionTimeoutMS: 30000, // atlas can be slow to answer on a cold start
+        family: 4, // force ipv4, some windows setups hang on ipv6 dns
+      })
+      .catch((err) => {
+        // let the next call retry instead of reusing a rejected promise
+        cached.promise = null;
+        throw err;
+      });
   }
 
   cached.conn = await cached.promise;
