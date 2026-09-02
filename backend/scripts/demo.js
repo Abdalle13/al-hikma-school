@@ -297,14 +297,14 @@ async function seedDemo() {
     {
       $setOnInsert: {
         key: "school",
-        schoolName: "Al Nuur Academy",
-        tagline: "Primary, secondary, Quran and Islamic studies",
+        schoolName: "Al Hikma School",
+        tagline: "Primary and secondary education for Somali families",
         address: "KM4, Mogadishu, Somalia",
         phone: "+252 61 915 7381",
-        email: "info@alnuur.example",
+        email: "info@alhikmaschool.so",
         currency: "USD",
         socials: {
-          facebook: "https://facebook.com/alnuur",
+          facebook: "https://facebook.com/alhikmaschool",
           instagram: "",
           whatsapp: "https://wa.me/252619157381",
         },
