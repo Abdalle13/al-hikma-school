@@ -66,11 +66,11 @@ function ClassForm({ initial, teachers, subjects, onCancel, onSaved }) {
   return (
     <form className="flex flex-col gap-4" onSubmit={onSubmit} noValidate>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <Input label="Name" value={form.name} onChange={set("name")} placeholder="Grade 4" />
-        <Input label="Section" value={form.section} onChange={set("section")} placeholder="A" />
+        <Input label="Name" value={form.name} onChange={set("name")} placeholder="Enter the class name, for example Grade 4" />
+        <Input label="Section" value={form.section} onChange={set("section")} placeholder="Enter the section, for example A" />
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <Input label="Academic year" value={form.academicYear} onChange={set("academicYear")} placeholder="2025/2026" />
+        <Input label="Academic year" value={form.academicYear} onChange={set("academicYear")} placeholder="Enter the academic year, for example 2025/2026" />
         <Input label="Capacity" type="number" min="1" value={form.capacity} onChange={set("capacity")} />
       </div>
       <Select label="Class teacher" value={form.classTeacher} onChange={set("classTeacher")}>

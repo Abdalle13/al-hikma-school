@@ -51,7 +51,7 @@ function DetailModal({ card, onClose, onChanged }) {
     <Modal open onClose={onClose} title={card.student?.name} className="max-w-2xl">
       <ReportCardDetail card={{ ...card, published }} />
       <div className="mt-5">
-        <Textarea label="Teacher remark" rows={2} value={remark} onChange={(e) => setRemark(e.target.value)} />
+        <Textarea label="Teacher remark" rows={2} value={remark} onChange={(e) => setRemark(e.target.value)} placeholder="Enter a remark for this student (optional)" />
         <div className="mt-3 flex justify-end gap-2">
           <Button variant="outline" onClick={togglePublish} disabled={busy}>
             {published ? "Unpublish" : "Publish"}

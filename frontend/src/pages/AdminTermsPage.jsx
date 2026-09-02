@@ -56,8 +56,8 @@ function TermForm({ initial, onCancel, onSaved }) {
 
   return (
     <form className="flex flex-col gap-4" onSubmit={onSubmit} noValidate>
-      <Input label="Name" value={form.name} onChange={set("name")} placeholder="Term 1" />
-      <Input label="Academic year" value={form.academicYear} onChange={set("academicYear")} placeholder="2025/2026" />
+      <Input label="Name" value={form.name} onChange={set("name")} placeholder="Enter the term name, for example Term 1" />
+      <Input label="Academic year" value={form.academicYear} onChange={set("academicYear")} placeholder="Enter the academic year, for example 2025/2026" />
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Input label="Start date" type="date" value={form.startDate} onChange={set("startDate")} />
         <Input label="End date" type="date" value={form.endDate} onChange={set("endDate")} />

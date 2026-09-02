@@ -63,7 +63,7 @@ export default function LoginPage() {
             ) : null}
             <Input
               label="Email or admission number"
-              placeholder="teacher@school.com or ADM-0001"
+              placeholder="Enter your email or admission number"
               value={loginId}
               onChange={(e) => setLoginId(e.target.value)}
               autoComplete="username"
@@ -71,7 +71,7 @@ export default function LoginPage() {
             <Input
               label="Password"
               type="password"
-              placeholder="Your password"
+              placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="current-password"

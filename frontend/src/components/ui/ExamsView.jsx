@@ -50,7 +50,7 @@ function ExamForm({ classOptions, terms, onCancel, onSaved }) {
 
   return (
     <form className="flex flex-col gap-4" onSubmit={onSubmit} noValidate>
-      <Input label="Title" value={form.title} onChange={set("title")} placeholder="Term 1 Maths Quiz" />
+      <Input label="Title" value={form.title} onChange={set("title")} placeholder="Enter the exam title" />
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Select label="Type" value={form.type} onChange={set("type")}>
           {TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
@@ -104,7 +104,7 @@ function EditExamForm({ exam, onCancel, onSaved }) {
 
   return (
     <form className="flex flex-col gap-4" onSubmit={onSubmit} noValidate>
-      <Input label="Title" value={form.title} onChange={set("title")} />
+      <Input label="Title" value={form.title} onChange={set("title")} placeholder="Enter the exam title" />
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Select label="Type" value={form.type} onChange={set("type")}>
           {TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
@@ -197,7 +197,7 @@ function MarksModal({ exam, onClose, onSaved }) {
                 value={marks[s._id]?.remark ?? ""}
                 onChange={(e) => setMarks((p) => ({ ...p, [s._id]: { ...p[s._id], remark: e.target.value } }))}
                 className="w-40 rounded-xl border border-border bg-surface px-2 py-1 text-sm text-fg focus:outline-none focus:ring-2 focus:ring-primary"
-                placeholder="remark"
+                placeholder="Optional remark"
               />
             </li>
           ))}

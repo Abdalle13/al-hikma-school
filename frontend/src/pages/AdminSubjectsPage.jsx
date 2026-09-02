@@ -47,10 +47,10 @@ function SubjectForm({ initial, onCancel, onSaved }) {
 
   return (
     <form className="flex flex-col gap-4" onSubmit={onSubmit} noValidate>
-      <Input label="Name" value={form.name} onChange={set("name")} placeholder="Mathematics" />
-      <Input label="Code" value={form.code} onChange={set("code")} placeholder="MATH" />
-      <Input label="Grade level" value={form.gradeLevel} onChange={set("gradeLevel")} placeholder="Primary" />
-      <Textarea label="Description" rows={3} value={form.description} onChange={set("description")} />
+      <Input label="Name" value={form.name} onChange={set("name")} placeholder="Enter the subject name" />
+      <Input label="Code" value={form.code} onChange={set("code")} placeholder="Enter a short code, for example MATH" />
+      <Input label="Grade level" value={form.gradeLevel} onChange={set("gradeLevel")} placeholder="Enter the grade level" />
+      <Textarea label="Description" rows={3} value={form.description} onChange={set("description")} placeholder="Enter a short description (optional)" />
       <div className="flex justify-end gap-2">
         <Button type="button" variant="outline" onClick={onCancel} disabled={saving}>
           Cancel

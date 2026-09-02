@@ -113,21 +113,21 @@ function ApplicationForm() {
   return (
     <Card>
       <form className="grid gap-4 sm:grid-cols-2" onSubmit={onSubmit} noValidate>
-        <Input label="Child's full name" value={form.childName} onChange={set("childName")} error={errors.childName} />
+        <Input label="Child's full name" placeholder="Enter your child's full name" value={form.childName} onChange={set("childName")} error={errors.childName} />
         <Input label="Date of birth" type="date" value={form.dob} onChange={set("dob")} />
         <Select label="Gender" value={form.gender} onChange={set("gender")}>
           <option value="">Prefer not to say</option>
           <option value="Male">Male</option>
           <option value="Female">Female</option>
         </Select>
-        <Input label="Grade applying for" placeholder="e.g. Grade 4" value={form.gradeApplyingFor} onChange={set("gradeApplyingFor")} />
+        <Input label="Grade applying for" placeholder="Enter the grade, for example Grade 4" value={form.gradeApplyingFor} onChange={set("gradeApplyingFor")} />
 
-        <Input label="Parent or guardian name" value={form.parentName} onChange={set("parentName")} error={errors.parentName} />
-        <Input label="Phone" placeholder="+252 ..." value={form.parentPhone} onChange={set("parentPhone")} error={errors.parentPhone} />
+        <Input label="Parent or guardian name" placeholder="Enter the parent or guardian name" value={form.parentName} onChange={set("parentName")} error={errors.parentName} />
+        <Input label="Phone" placeholder="Enter your phone number" value={form.parentPhone} onChange={set("parentPhone")} error={errors.parentPhone} />
         <Input
           label="Email"
           type="email"
-          placeholder="you@example.com"
+          placeholder="Enter your email address"
           value={form.parentEmail}
           onChange={set("parentEmail")}
           error={errors.parentEmail}

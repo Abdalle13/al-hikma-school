@@ -97,7 +97,7 @@ function FeeStructuresPanel() {
               <input
                 value={l.label}
                 onChange={(e) => setLines((p) => p.map((x, j) => (j === i ? { ...x, label: e.target.value } : x)))}
-                placeholder="e.g. Tuition"
+                placeholder="Enter a name, for example Tuition"
                 className="flex-1 rounded-xl border border-border bg-surface px-3 py-2 text-sm text-fg focus:outline-none focus:ring-2 focus:ring-primary"
               />
               <input

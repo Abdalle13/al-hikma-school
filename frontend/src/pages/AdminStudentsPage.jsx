@@ -187,8 +187,8 @@ function StudentForm({ initial, classes, onCancel, onSaved }) {
     <div className="space-y-6">
       <form className="flex flex-col gap-4" onSubmit={onSubmit} noValidate>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Input label="Full name" value={form.name} onChange={set("name")} />
-          <Input label="Admission number" value={form.admissionNo} onChange={set("admissionNo")} placeholder="ADM-0001" />
+          <Input label="Full name" value={form.name} onChange={set("name")} placeholder="Enter the student's full name" />
+          <Input label="Admission number" value={form.admissionNo} onChange={set("admissionNo")} placeholder="Enter the admission number" />
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Input label="Date of birth" type="date" value={form.dob} onChange={set("dob")} />
@@ -199,7 +199,7 @@ function StudentForm({ initial, classes, onCancel, onSaved }) {
           </Select>
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Input label="Phone" value={form.phone} onChange={set("phone")} placeholder="+252 ..." />
+          <Input label="Phone" value={form.phone} onChange={set("phone")} placeholder="Enter the phone number" />
           <Select label="Class" value={form.schoolClass} onChange={set("schoolClass")}>
             <option value="">Not assigned</option>
             {classes.map((c) => (
@@ -218,7 +218,7 @@ function StudentForm({ initial, classes, onCancel, onSaved }) {
           label={isEdit ? "Reset password (optional)" : "Password"}
           value={form.password}
           onChange={set("password")}
-          placeholder={isEdit ? "Leave blank to keep it" : "At least 6 characters, a 6 digit number works"}
+          placeholder={isEdit ? "Leave blank to keep the current one" : "Enter a password, at least 6 characters"}
         />
         <div className="flex justify-end gap-2">
           <Button type="button" variant="outline" onClick={onCancel} disabled={saving}>

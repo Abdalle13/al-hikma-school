@@ -66,11 +66,11 @@ function ContactForm() {
     <Card>
       <form className="grid gap-4" onSubmit={onSubmit} noValidate>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Input label="Your name" value={form.name} onChange={set("name")} error={errors.name} />
-          <Input label="Email" type="email" value={form.email} onChange={set("email")} error={errors.email} />
+          <Input label="Your name" placeholder="Enter your name" value={form.name} onChange={set("name")} error={errors.name} />
+          <Input label="Email" type="email" placeholder="Enter your email address" value={form.email} onChange={set("email")} error={errors.email} />
         </div>
-        <Input label="Subject" value={form.subject} onChange={set("subject")} />
-        <Textarea label="Message" rows={5} value={form.message} onChange={set("message")} error={errors.message} />
+        <Input label="Subject" placeholder="Enter a subject" value={form.subject} onChange={set("subject")} />
+        <Textarea label="Message" rows={5} placeholder="Enter your message" value={form.message} onChange={set("message")} error={errors.message} />
         <div>
           <Button type="submit" disabled={submitting} className="w-full sm:w-auto">
             {submitting ? "Sending..." : "Send message"}

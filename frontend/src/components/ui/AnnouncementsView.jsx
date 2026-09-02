@@ -71,8 +71,8 @@ function ComposeModal({ initial, canPostAll, classOptions, onClose, onSaved }) {
   return (
     <Modal open onClose={onClose} title={isEdit ? "Edit announcement" : "New announcement"}>
       <form className="flex flex-col gap-4" onSubmit={submit} noValidate>
-        <Input label="Title" value={form.title} onChange={set("title")} />
-        <Textarea label="Message" rows={4} value={form.body} onChange={set("body")} />
+        <Input label="Title" value={form.title} onChange={set("title")} placeholder="Enter a title" />
+        <Textarea label="Message" rows={4} value={form.body} onChange={set("body")} placeholder="Enter your message" />
 
         {!isEdit ? (
           <>

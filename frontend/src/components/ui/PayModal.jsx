@@ -64,8 +64,8 @@ export function PayModal({ invoice, onClose, onPaid }) {
           </Select>
           <Input label="Amount" type="number" min="0" step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} />
         </div>
-        <Input label="Mobile number" placeholder="+252 61 ..." value={phone} onChange={(e) => setPhone(e.target.value)} />
-        <Input label="PIN" type="password" placeholder="Demo PIN is 1234" value={pin} onChange={(e) => setPin(e.target.value)} />
+        <Input label="Mobile number" placeholder="Enter your mobile number" value={phone} onChange={(e) => setPhone(e.target.value)} />
+        <Input label="PIN" type="password" placeholder="Enter the demo PIN 1234" value={pin} onChange={(e) => setPin(e.target.value)} />
 
         <p className="flex items-start gap-2 rounded-xl bg-surface-2 p-3 text-xs text-muted">
           <Smartphone className="mt-0.5 h-4 w-4 shrink-0" />

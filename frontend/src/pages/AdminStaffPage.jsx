@@ -39,14 +39,14 @@ function TeacherForm({ onCancel, onSaved }) {
 
   return (
     <form className="flex flex-col gap-4" onSubmit={onSubmit} noValidate>
-      <Input label="Full name" value={form.name} onChange={set("name")} />
-      <Input label="Email" type="email" value={form.email} onChange={set("email")} placeholder="teacher@school.com" />
-      <Input label="Phone" value={form.phone} onChange={set("phone")} placeholder="+252 ..." />
+      <Input label="Full name" value={form.name} onChange={set("name")} placeholder="Enter the teacher's full name" />
+      <Input label="Email" type="email" value={form.email} onChange={set("email")} placeholder="Enter the teacher's email" />
+      <Input label="Phone" value={form.phone} onChange={set("phone")} placeholder="Enter the phone number" />
       <Input
         label="Password"
         value={form.password}
         onChange={set("password")}
-        placeholder="At least 6 characters, a 6 digit number works"
+        placeholder="Enter a password, at least 6 characters"
         hint="Give this to the teacher directly. They will be asked to change it on first login."
       />
       <div className="flex justify-end gap-2">
@@ -89,7 +89,7 @@ function ResetPasswordForm({ teacher, onCancel, onSaved }) {
         label="New password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        placeholder="At least 6 characters, a 6 digit number works"
+        placeholder="Enter a password, at least 6 characters"
         hint="The teacher will be asked to change it on their next login."
       />
       <div className="flex justify-end gap-2">

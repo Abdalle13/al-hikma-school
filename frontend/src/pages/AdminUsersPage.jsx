@@ -63,14 +63,14 @@ function UserForm({ initial, onCancel, onSaved }) {
           <option value="Admin">Admin</option>
         </Select>
       ) : null}
-      <Input label="Full name" value={form.name} onChange={set("name")} />
-      <Input label="Email" type="email" value={form.email} onChange={set("email")} placeholder="you@example.com" />
-      <Input label="Phone" value={form.phone} onChange={set("phone")} placeholder="+252 ..." />
+      <Input label="Full name" value={form.name} onChange={set("name")} placeholder="Enter the full name" />
+      <Input label="Email" type="email" value={form.email} onChange={set("email")} placeholder="Enter the email address" />
+      <Input label="Phone" value={form.phone} onChange={set("phone")} placeholder="Enter the phone number" />
       <Input
         label={isEdit ? "Reset password (optional)" : "Password"}
         value={form.password}
         onChange={set("password")}
-        placeholder={isEdit ? "Leave blank to keep it" : "At least 6 characters, a 6 digit number works"}
+        placeholder={isEdit ? "Leave blank to keep the current one" : "Enter a password, at least 6 characters"}
       />
       <div className="flex justify-end gap-2">
         <Button type="button" variant="outline" onClick={onCancel} disabled={saving}>

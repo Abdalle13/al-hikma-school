@@ -70,7 +70,7 @@ function ReviewModal({ application, classes, onClose, onSaved }) {
           <option value="Accepted">Accepted</option>
           <option value="Rejected">Rejected</option>
         </Select>
-        <Textarea label="Review note" rows={3} value={reviewNote} onChange={(e) => setReviewNote(e.target.value)} />
+        <Textarea label="Review note" rows={3} value={reviewNote} onChange={(e) => setReviewNote(e.target.value)} placeholder="Enter a note about this decision (optional)" />
 
         {canCreateStudent ? (
           <div className="rounded-2xl border border-dashed border-border p-4">
@@ -78,8 +78,8 @@ function ReviewModal({ application, classes, onClose, onSaved }) {
               Enrol {application.childName} now (optional, can be done later from Students)
             </p>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <Input label="Admission number" value={admissionNo} onChange={(e) => setAdmissionNo(e.target.value)} placeholder="ADM-0001" />
-              <Input label="Password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 6 characters" />
+              <Input label="Admission number" value={admissionNo} onChange={(e) => setAdmissionNo(e.target.value)} placeholder="Enter the admission number" />
+              <Input label="Password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter a password, at least 6 characters" />
             </div>
             <Select label="Class" value={schoolClass} onChange={(e) => setSchoolClass(e.target.value)} className="mt-3">
               <option value="">Not assigned yet</option>

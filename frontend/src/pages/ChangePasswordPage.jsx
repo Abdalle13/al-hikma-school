@@ -76,7 +76,7 @@ export default function ChangePasswordPage() {
             <Input
               label="Current password"
               type="password"
-              placeholder="The password the school gave you"
+              placeholder="Enter your current password"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
               autoComplete="current-password"
@@ -84,7 +84,7 @@ export default function ChangePasswordPage() {
             <Input
               label="New password"
               type="password"
-              placeholder="At least 6 characters"
+              placeholder="Enter a new password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               autoComplete="new-password"
@@ -92,7 +92,7 @@ export default function ChangePasswordPage() {
             <Input
               label="Confirm new password"
               type="password"
-              placeholder="Repeat it"
+              placeholder="Enter the new password again"
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
               autoComplete="new-password"

@@ -172,7 +172,7 @@ export function AttendanceMarker({ classes }) {
             rows={2}
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            placeholder="e.g. school trip, half day"
+            placeholder="Enter a note, for example school trip or half day"
           />
 
           <div className="flex justify-end">
