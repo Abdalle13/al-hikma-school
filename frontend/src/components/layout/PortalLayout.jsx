@@ -102,7 +102,7 @@ const parentTabs = [
   { label: "Dashboard", icon: LayoutDashboard, to: "/parent" },
   { label: "Attendance", icon: ClipboardCheck, to: "/parent/attendance" },
   { label: "Grades", icon: GraduationCap, to: "/parent/grades" },
-  { label: "Fees", icon: Wallet },
+  { label: "Fees", icon: Wallet, to: "/parent/fees" },
   { label: "News", icon: Megaphone },
 ];
 

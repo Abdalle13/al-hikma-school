@@ -36,12 +36,14 @@ import AdminApplicationsPage from "./pages/AdminApplicationsPage.jsx";
 import AdminAttendancePage from "./pages/AdminAttendancePage.jsx";
 import AdminExamsPage from "./pages/AdminExamsPage.jsx";
 import AdminReportCardsPage from "./pages/AdminReportCardsPage.jsx";
+import AdminFeesPage from "./pages/AdminFeesPage.jsx";
 import TeacherDashboard from "./pages/TeacherDashboard.jsx";
 import TeacherAttendancePage from "./pages/TeacherAttendancePage.jsx";
 import TeacherExamsPage from "./pages/TeacherExamsPage.jsx";
 import ParentDashboard from "./pages/ParentDashboard.jsx";
 import ParentAttendancePage from "./pages/ParentAttendancePage.jsx";
 import ParentGradesPage from "./pages/ParentGradesPage.jsx";
+import ParentFeesPage from "./pages/ParentFeesPage.jsx";
 import StudentDashboard from "./pages/StudentDashboard.jsx";
 import StudentAttendancePage from "./pages/StudentAttendancePage.jsx";
 import StudentGradesPage from "./pages/StudentGradesPage.jsx";
@@ -117,6 +119,7 @@ export default function App() {
               <Route path="attendance" element={<AdminAttendancePage />} />
               <Route path="exams" element={<AdminExamsPage />} />
               <Route path="report-cards" element={<AdminReportCardsPage />} />
+              <Route path="fees" element={<AdminFeesPage />} />
             </Route>
           </Route>
           <Route element={<RoleRoute allow={["Teacher"]} />}>
@@ -131,6 +134,7 @@ export default function App() {
               <Route index element={<ParentDashboard />} />
               <Route path="attendance" element={<ParentAttendancePage />} />
               <Route path="grades" element={<ParentGradesPage />} />
+              <Route path="fees" element={<ParentFeesPage />} />
             </Route>
           </Route>
           <Route element={<RoleRoute allow={["Student"]} />}>
