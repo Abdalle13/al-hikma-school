@@ -27,7 +27,7 @@ import { StatCard } from "../components/ui/StatCard.jsx";
 import { Skeleton } from "../components/ui/Skeleton.jsx";
 import { useChartColors } from "../components/ui/useChartColors.js";
 import api from "../utils/api.js";
-import { formatCurrency, formatDate } from "../utils/formatter.js";
+import { formatCurrency } from "../utils/formatter.js";
 
 const quickLinks = [
   { to: "/admin/students", label: "Students", icon: Users },
@@ -101,24 +101,27 @@ export default function AdminDashboard() {
   return (
     <div>
       {/* greeting */}
-      <div className="mb-7 flex flex-wrap items-end justify-between gap-4 border-b border-border pb-5">
+      <div className="mb-7 flex flex-wrap items-center justify-between gap-4 border-b border-border pb-5">
         <div>
-          <h1 className="font-heading text-xl font-bold text-fg sm:text-[26px]">
+          <h1 className="font-heading text-2xl font-bold text-fg sm:text-[28px]">
             {greeting()}, {who}
           </h1>
-          <p className="mt-1.5 text-sm text-muted">
-            {formatDate(new Date())}
-            {overview.activeTerm
-              ? ` · Active term: ${overview.activeTerm.name} (${overview.activeTerm.academicYear})`
-              : ""}
-          </p>
+          <p className="mt-1 text-sm text-muted">Here is your school at a glance.</p>
         </div>
-        <Link
-          to="/admin/reports"
-          className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:gap-2"
-        >
-          Full reports <ArrowRight className="h-4 w-4 transition-all" />
-        </Link>
+        <div className="flex flex-wrap items-center gap-3">
+          {overview.activeTerm ? (
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1 text-xs font-semibold text-fg shadow-sm">
+              <span className="h-1.5 w-1.5 rounded-full bg-success" />
+              {overview.activeTerm.name}
+            </span>
+          ) : null}
+          <Link
+            to="/admin/reports"
+            className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:gap-2"
+          >
+            Full reports <ArrowRight className="h-4 w-4 transition-all" />
+          </Link>
+        </div>
       </div>
 
       {data === null ? (
