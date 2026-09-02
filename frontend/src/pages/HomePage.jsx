@@ -374,7 +374,7 @@ export default function HomePage() {
                   to="/contact"
                   size="lg"
                   variant="outline"
-                  className="border-white/40 text-on-primary hover:bg-white/10"
+                  className="border border-white/50 bg-transparent text-white hover:bg-white/10"
                 >
                   Contact the school
                 </Button>

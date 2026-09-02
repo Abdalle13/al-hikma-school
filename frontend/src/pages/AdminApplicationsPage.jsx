@@ -55,7 +55,7 @@ function ReviewModal({ application, classes, onClose, onSaved }) {
         <div><p className="text-xs text-muted">Parent</p><p className="text-fg">{application.parentName}</p></div>
         <div><p className="text-xs text-muted">Phone</p><p className="text-fg">{application.parentPhone}</p></div>
         <div><p className="text-xs text-muted">Email</p><p className="text-fg">{application.parentEmail || "-"}</p></div>
-        <div><p className="text-xs text-muted">Grade applying for</p><p className="text-fg">{application.gradeApplyingFor || "-"}</p></div>
+        <div><p className="text-xs text-muted">Relationship</p><p className="text-fg">{application.relationship || "-"}</p></div>
         <div><p className="text-xs text-muted">Gender</p><p className="text-fg">{application.gender || "-"}</p></div>
         <div><p className="text-xs text-muted">Date of birth</p><p className="text-fg">{application.dob ? formatDate(application.dob) : "-"}</p></div>
         {application.message ? (
@@ -176,7 +176,7 @@ export default function AdminApplicationsPage() {
           description="Applications submitted on the admissions page will show up here."
         />
       ) : (
-        <Table headers={["Child", "Parent", "Grade", "Submitted", "Status", ""]}>
+        <Table headers={["Child", "Parent", "Relationship", "Submitted", "Status", ""]}>
           {applications.map((a) => (
             <Table.Row
               key={a._id}
@@ -185,7 +185,7 @@ export default function AdminApplicationsPage() {
             >
               <Table.Cell className="font-medium">{a.childName}</Table.Cell>
               <Table.Cell className="text-muted">{a.parentName}<div className="text-xs">{a.parentPhone}</div></Table.Cell>
-              <Table.Cell className="text-muted">{a.gradeApplyingFor || "-"}</Table.Cell>
+              <Table.Cell className="text-muted">{a.relationship || "-"}</Table.Cell>
               <Table.Cell className="text-muted">{formatDate(a.createdAt)}</Table.Cell>
               <Table.Cell><Badge tone={statusTone[a.status]}>{a.status}</Badge></Table.Cell>
               <Table.Cell>

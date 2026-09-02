@@ -39,14 +39,17 @@ const faqs = [
   { q: "Can fees be paid in installments?", a: "Yes. A term's fee can be split into 2 to 4 payments, paid by mobile money or cash at the office." },
   { q: "When can my child start?", a: "Enrolment happens at the start of a term. We keep a short waiting list when a class is full." },
   { q: "Is there a fee to apply?", a: "No. Applying is free. Fees only apply once a child is enrolled." },
+  { q: "Which class will my child be placed in?", a: "New students sit a short placement test. The result decides the class, so you do not choose a grade on the form." },
+  { q: "Do you teach Quran and academics together?", a: "Yes. Every student follows the full academic timetable, with Quran and Islamic studies built into the same week." },
+  { q: "How will the school contact me?", a: "Using the phone number on your application, so please enter one you check often. Add an email if you have one." },
 ];
 
 const empty = {
   childName: "",
   dob: "",
   gender: "",
-  gradeApplyingFor: "",
   parentName: "",
+  relationship: "",
   parentPhone: "",
   parentEmail: "",
   message: "",
@@ -80,6 +83,7 @@ function ApplicationForm() {
       const payload = { ...form };
       if (!payload.dob) delete payload.dob;
       if (!payload.gender) delete payload.gender;
+      if (!payload.relationship) delete payload.relationship;
       await api.post("/applications", payload);
       setDone(true);
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -118,17 +122,23 @@ function ApplicationForm() {
   return (
     <Card className="p-6 sm:p-8">
       <form className="grid gap-4 sm:grid-cols-2" onSubmit={onSubmit} noValidate>
-        <Input label="Child's full name" placeholder="Enter your child's full name" value={form.childName} onChange={set("childName")} error={errors.childName} />
+        <Input label="Child's full name" placeholder="Enter your child's full name" value={form.childName} onChange={set("childName")} error={errors.childName} className="sm:col-span-2" />
         <Input label="Date of birth" type="date" value={form.dob} onChange={set("dob")} />
         <Select label="Gender" value={form.gender} onChange={set("gender")}>
           <option value="">Prefer not to say</option>
           <option value="Male">Male</option>
           <option value="Female">Female</option>
         </Select>
-        <Input label="Grade applying for" placeholder="For example Grade 4" value={form.gradeApplyingFor} onChange={set("gradeApplyingFor")} />
 
         <Input label="Parent or guardian name" placeholder="Enter the parent or guardian name" value={form.parentName} onChange={set("parentName")} error={errors.parentName} />
-        <Input label="Phone" placeholder="Enter your phone number" value={form.parentPhone} onChange={set("parentPhone")} error={errors.parentPhone} />
+        <Select label="You are the child's" value={form.relationship} onChange={set("relationship")}>
+          <option value="">Select one</option>
+          <option value="Father">Father</option>
+          <option value="Mother">Mother</option>
+          <option value="Guardian">Guardian</option>
+          <option value="Other">Other</option>
+        </Select>
+        <Input label="Phone" placeholder="Enter your phone number" value={form.parentPhone} onChange={set("parentPhone")} error={errors.parentPhone} className="sm:col-span-2" />
         <Input
           label="Email (optional)"
           type="email"
