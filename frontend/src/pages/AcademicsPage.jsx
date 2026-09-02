@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { BookOpen, FlaskConical, Library, MoonStar, Trees } from "lucide-react";
+import { ArrowRight, BookOpen, FlaskConical, Library, MoonStar, Trees } from "lucide-react";
 import { Button } from "../components/ui/Button.jsx";
 import { Card } from "../components/ui/Card.jsx";
 import { Badge } from "../components/ui/Badge.jsx";
@@ -69,12 +69,12 @@ export default function AcademicsPage() {
         <FadeIn>
           <SectionHeading eyebrow="Programmes" title="What we teach" />
         </FadeIn>
-        <div className="mt-10 grid gap-4 md:grid-cols-3">
+        <div className="mt-12 grid gap-5 md:grid-cols-3">
           {programmes.map((p, i) => (
             <FadeIn key={p.title} delay={i * 0.05}>
-              <Card className="h-full bg-bg">
+              <Card hover className="h-full bg-bg">
                 <Badge tone="info">{p.grades}</Badge>
-                <h3 className="mt-3 text-lg font-semibold text-fg">{p.title}</h3>
+                <h3 className="mt-3 font-heading text-lg font-bold text-fg">{p.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-muted">{p.body}</p>
               </Card>
             </FadeIn>
@@ -83,7 +83,7 @@ export default function AcademicsPage() {
       </Section>
 
       <Section>
-        <div className="grid gap-8 lg:grid-cols-2 lg:items-start">
+        <div className="grid gap-10 lg:grid-cols-2 lg:items-start">
           <FadeIn>
             <SectionHeading
               eyebrow="Grading system"
@@ -95,20 +95,24 @@ export default function AcademicsPage() {
             </p>
           </FadeIn>
           <FadeIn delay={0.05}>
-            <div className="overflow-hidden rounded-2xl border border-border">
+            <div className="overflow-hidden rounded-2xl border border-border shadow-card">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-surface-2 text-left text-muted">
-                    <th className="px-4 py-3 font-medium">Percentage</th>
-                    <th className="px-4 py-3 font-medium">Grade</th>
-                    <th className="px-4 py-3 font-medium">Meaning</th>
+                  <tr className="border-b border-border bg-surface-2 text-left text-xs uppercase tracking-wide text-muted">
+                    <th className="px-4 py-3 font-semibold">Percentage</th>
+                    <th className="px-4 py-3 font-semibold">Grade</th>
+                    <th className="px-4 py-3 font-semibold">Meaning</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border">
+                <tbody className="divide-y divide-border bg-surface">
                   {grading.map((row) => (
-                    <tr key={row[1]} className="bg-surface">
+                    <tr key={row[1]}>
                       <td className="px-4 py-3 text-fg tabular-nums">{row[0]}</td>
-                      <td className="px-4 py-3 font-semibold text-fg">{row[1]}</td>
+                      <td className="px-4 py-3">
+                        <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-primary/10 text-xs font-bold text-primary">
+                          {row[1]}
+                        </span>
+                      </td>
                       <td className="px-4 py-3 text-muted">{row[2]}</td>
                     </tr>
                   ))}
@@ -123,11 +127,11 @@ export default function AcademicsPage() {
         <FadeIn>
           <SectionHeading eyebrow="The school year" title="Three terms" />
         </FadeIn>
-        <div className="mt-10 grid gap-4 sm:grid-cols-3">
+        <div className="mt-12 grid gap-5 sm:grid-cols-3">
           {terms.map((t, i) => (
             <FadeIn key={t.name} delay={i * 0.05}>
-              <Card className="bg-bg text-center">
-                <p className="text-base font-bold text-fg">{t.name}</p>
+              <Card hover className="bg-bg text-center">
+                <p className="font-heading text-base font-bold text-fg">{t.name}</p>
                 <p className="mt-1 text-sm text-muted">{t.when}</p>
               </Card>
             </FadeIn>
@@ -139,11 +143,11 @@ export default function AcademicsPage() {
         <FadeIn>
           <SectionHeading eyebrow="Curriculum" title="Subjects offered" />
         </FadeIn>
-        <div className="mt-8 flex flex-wrap gap-2">
+        <div className="mt-8 flex flex-wrap gap-2.5">
           {subjects.map((s) => (
             <span
               key={s}
-              className="rounded-xl border border-border bg-surface px-3 py-1.5 text-sm text-fg"
+              className="rounded-xl border border-border bg-surface px-3.5 py-2 text-sm font-medium text-fg shadow-sm"
             >
               {s}
             </span>
@@ -155,14 +159,16 @@ export default function AcademicsPage() {
         <FadeIn>
           <SectionHeading eyebrow="On campus" title="Facilities" />
         </FadeIn>
-        <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+        <div className="mt-12 grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-5">
           {facilities.map((f, i) => {
             const Icon = f.icon;
             return (
               <FadeIn key={f.label} delay={i * 0.04}>
-                <div className="flex flex-col items-center gap-3 rounded-2xl border border-border bg-surface p-6 text-center">
-                  <Icon className="h-6 w-6 text-primary" />
-                  <span className="text-sm font-medium text-fg">{f.label}</span>
+                <div className="flex flex-col items-center gap-3 rounded-2xl border border-border bg-surface p-6 text-center shadow-card transition-transform duration-200 hover:-translate-y-0.5">
+                  <span className="grid h-11 w-11 place-items-center rounded-xl bg-primary/10 text-primary">
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <span className="text-sm font-semibold text-fg">{f.label}</span>
                 </div>
               </FadeIn>
             );
@@ -172,14 +178,16 @@ export default function AcademicsPage() {
 
       <Section>
         <FadeIn>
-          <div className="rounded-2xl border border-border bg-surface p-8 text-center">
-            <h3 className="text-lg font-semibold text-fg">Want to see the timetable and results up close?</h3>
+          <div className="overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-primary-soft to-surface p-8 text-center shadow-card sm:p-12">
+            <h3 className="font-heading text-xl font-bold text-fg sm:text-2xl">
+              Want to see the timetable and results up close?
+            </h3>
             <p className="mx-auto mt-2 max-w-xl text-sm text-muted">
               Parents and students get a login to view attendance, report cards and the weekly
               timetable.
             </p>
-            <Button as={Link} to="/admissions" className="mt-6">
-              Apply for a place
+            <Button as={Link} to="/admissions" size="lg" className="mt-6">
+              Apply for a place <ArrowRight className="h-4 w-4" />
             </Button>
           </div>
         </FadeIn>

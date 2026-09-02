@@ -47,11 +47,11 @@ function ContactForm() {
 
   if (done) {
     return (
-      <Card className="text-center">
+      <Card className="p-8 text-center">
         <span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-success/15 text-success">
           <CheckCircle2 className="h-6 w-6" />
         </span>
-        <h3 className="mt-4 text-lg font-semibold text-fg">Message sent</h3>
+        <h3 className="mt-4 font-heading text-lg font-bold text-fg">Message sent</h3>
         <p className="mx-auto mt-2 max-w-sm text-sm text-muted">
           Thanks for getting in touch. The school will reply to the email you gave.
         </p>
@@ -63,7 +63,7 @@ function ContactForm() {
   }
 
   return (
-    <Card>
+    <Card className="p-6 sm:p-8">
       <form className="grid gap-4" onSubmit={onSubmit} noValidate>
         <div className="grid gap-4 sm:grid-cols-2">
           <Input label="Your name" placeholder="Enter your name" value={form.name} onChange={set("name")} error={errors.name} />
@@ -103,28 +103,30 @@ export default function ContactPage() {
           />
         </FadeIn>
 
-        <div className="mt-10 grid gap-8 lg:grid-cols-2 lg:items-start">
+        <div className="mt-12 grid gap-8 lg:grid-cols-2 lg:items-start">
           <FadeIn>
             <div className="grid gap-4 sm:grid-cols-2">
               {details.map((d) => {
                 const Icon = d.icon;
                 return (
-                  <div key={d.label} className="rounded-2xl border border-border bg-surface p-5">
-                    <Icon className="h-5 w-5 text-primary" />
-                    <p className="mt-3 text-xs font-medium text-muted">{d.label}</p>
+                  <div key={d.label} className="rounded-2xl border border-border bg-surface p-5 shadow-card">
+                    <span className="grid h-10 w-10 place-items-center rounded-xl bg-primary/10 text-primary">
+                      <Icon className="h-5 w-5" />
+                    </span>
+                    <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-muted">{d.label}</p>
                     {d.href ? (
-                      <a href={d.href} className="mt-1 block text-sm text-fg hover:text-primary">
+                      <a href={d.href} className="mt-1 block text-sm font-medium text-fg hover:text-primary">
                         {d.value}
                       </a>
                     ) : (
-                      <p className="mt-1 text-sm text-fg">{d.value}</p>
+                      <p className="mt-1 text-sm font-medium text-fg">{d.value}</p>
                     )}
                   </div>
                 );
               })}
             </div>
 
-            <div className="mt-4 overflow-hidden rounded-2xl border border-border">
+            <div className="mt-4 overflow-hidden rounded-2xl border border-border shadow-card">
               <iframe
                 title="School location"
                 className="h-64 w-full"

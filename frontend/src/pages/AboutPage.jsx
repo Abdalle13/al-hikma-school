@@ -35,28 +35,28 @@ export default function AboutPage() {
       </Section>
 
       <Section tone="surface">
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-5 md:grid-cols-2">
           <FadeIn>
-            <Card className="h-full">
-              <span className="grid h-10 w-10 place-items-center rounded-xl bg-primary/10 text-primary">
+            <Card hover className="h-full">
+              <span className="grid h-11 w-11 place-items-center rounded-xl bg-primary/10 text-primary ring-1 ring-inset ring-primary/15">
                 <Target className="h-5 w-5" />
               </span>
-              <h3 className="mt-4 text-lg font-semibold text-fg">Our mission</h3>
+              <h3 className="mt-4 font-heading text-lg font-bold text-fg">Our mission</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted">
-                To give Somali children a strong academic and Islamic education in a calm,
-                organised environment, and to keep parents close to their child's progress.
+                To give Somali children a strong academic and Islamic education in a calm, organised
+                environment, and to keep parents close to their child's progress.
               </p>
             </Card>
           </FadeIn>
           <FadeIn delay={0.05}>
-            <Card className="h-full">
-              <span className="grid h-10 w-10 place-items-center rounded-xl bg-accent/10 text-accent">
+            <Card hover className="h-full">
+              <span className="grid h-11 w-11 place-items-center rounded-xl bg-accent/10 text-accent ring-1 ring-inset ring-accent/15">
                 <Eye className="h-5 w-5" />
               </span>
-              <h3 className="mt-4 text-lg font-semibold text-fg">Our vision</h3>
+              <h3 className="mt-4 font-heading text-lg font-bold text-fg">Our vision</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted">
-                A school families rely on for years, where good habits, curiosity and faith are
-                built early and carried for life.
+                A school families rely on for years, where good habits, curiosity and faith are built
+                early and carried for life.
               </p>
             </Card>
           </FadeIn>
@@ -67,15 +67,17 @@ export default function AboutPage() {
         <FadeIn>
           <SectionHeading eyebrow="What we stand for" title="Core values" />
         </FadeIn>
-        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {values.map((v, i) => {
             const Icon = v.icon;
             return (
               <FadeIn key={v.title} delay={i * 0.05}>
-                <Card className="h-full">
-                  <Icon className="h-6 w-6 text-primary" />
-                  <h3 className="mt-3 text-base font-bold text-fg">{v.title}</h3>
-                  <p className="mt-1 text-sm text-muted">{v.body}</p>
+                <Card hover className="h-full">
+                  <span className="grid h-11 w-11 place-items-center rounded-xl bg-primary/10 text-primary ring-1 ring-inset ring-primary/15">
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <h3 className="mt-4 font-heading text-base font-bold text-fg">{v.title}</h3>
+                  <p className="mt-1.5 text-sm leading-relaxed text-muted">{v.body}</p>
                 </Card>
               </FadeIn>
             );
@@ -84,23 +86,23 @@ export default function AboutPage() {
       </Section>
 
       <Section tone="surface">
-        <div className="grid gap-8 lg:grid-cols-[1fr_2fr] lg:items-start">
+        <div className="grid gap-10 lg:grid-cols-[1fr_1.7fr] lg:items-start">
           <FadeIn>
             <SectionHeading eyebrow="From the principal" title="A word to parents" />
           </FadeIn>
           <FadeIn delay={0.05}>
-            <blockquote className="border-l-2 border-primary pl-5 text-sm leading-relaxed text-fg sm:text-base">
-              <p>
-                When a family chooses our school, they are trusting us with the most important
-                years of their child's life. We take that seriously. We keep classes small, we
-                mark attendance every day, and we publish report cards on time. If something is
-                wrong, you will hear it from us first.
-              </p>
-              <footer className="mt-4 text-sm font-semibold text-fg">
+            <figure className="rounded-2xl border border-border bg-bg p-7 shadow-card">
+              <blockquote className="text-[15px] leading-relaxed text-fg sm:text-base">
+                When a family chooses our school, they are trusting us with the most important years of
+                their child's life. We take that seriously. We keep classes small, we mark attendance
+                every day, and we publish report cards on time. If something is wrong, you will hear it
+                from us first.
+              </blockquote>
+              <figcaption className="mt-5 border-t border-border pt-4 text-sm font-semibold text-fg">
                 The Principal
                 <span className="block text-xs font-normal text-muted">{schoolName}</span>
-              </footer>
-            </blockquote>
+              </figcaption>
+            </figure>
           </FadeIn>
         </div>
       </Section>
@@ -109,12 +111,13 @@ export default function AboutPage() {
         <FadeIn>
           <SectionHeading eyebrow="Our history" title="How we got here" />
         </FadeIn>
-        <ol className="mt-10 space-y-6">
+        <ol className="mt-12 space-y-0 border-l border-border">
           {history.map((h, i) => (
             <FadeIn key={h.year} delay={i * 0.05}>
-              <li className="flex gap-5">
-                <span className="w-14 shrink-0 text-sm font-bold text-primary tabular-nums">{h.year}</span>
-                <span className="border-l border-border pl-5 text-sm text-muted">{h.text}</span>
+              <li className="relative pb-8 pl-8 last:pb-0">
+                <span className="absolute -left-[7px] top-1 h-3.5 w-3.5 rounded-full border-2 border-bg bg-primary" />
+                <p className="font-heading text-sm font-bold text-primary tabular-nums">{h.year}</p>
+                <p className="mt-1 text-sm leading-relaxed text-muted">{h.text}</p>
               </li>
             </FadeIn>
           ))}
@@ -123,11 +126,14 @@ export default function AboutPage() {
 
       <Section tone="muted">
         <FadeIn>
-          <Card className="text-center">
-            <h3 className="text-base font-semibold text-fg">Accreditation and registration</h3>
-            <p className="mx-auto mt-2 max-w-xl text-sm text-muted">
-              {schoolName} is a registered private school operating under the local education
-              authority. Registration details are available from the school office on request.
+          <Card className="mx-auto max-w-2xl text-center">
+            <span className="mx-auto grid h-11 w-11 place-items-center rounded-xl bg-primary/10 text-primary">
+              <ShieldCheck className="h-5 w-5" />
+            </span>
+            <h3 className="mt-4 font-heading text-base font-bold text-fg">Accreditation and registration</h3>
+            <p className="mx-auto mt-2 max-w-xl text-sm leading-relaxed text-muted">
+              {schoolName} is a registered private school operating under the local education authority.
+              Registration details are available from the school office on request.
             </p>
           </Card>
         </FadeIn>

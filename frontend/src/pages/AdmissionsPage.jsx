@@ -88,11 +88,11 @@ function ApplicationForm() {
 
   if (done) {
     return (
-      <Card className="text-center">
+      <Card className="p-8 text-center">
         <span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-success/15 text-success">
           <CheckCircle2 className="h-6 w-6" />
         </span>
-        <h3 className="mt-4 text-lg font-semibold text-fg">Application received</h3>
+        <h3 className="mt-4 font-heading text-lg font-bold text-fg">Application received</h3>
         <p className="mx-auto mt-2 max-w-sm text-sm text-muted">
           Thank you. The school will review it and contact you using the details you gave.
         </p>
@@ -111,7 +111,7 @@ function ApplicationForm() {
   }
 
   return (
-    <Card>
+    <Card className="p-6 sm:p-8">
       <form className="grid gap-4 sm:grid-cols-2" onSubmit={onSubmit} noValidate>
         <Input label="Child's full name" placeholder="Enter your child's full name" value={form.childName} onChange={set("childName")} error={errors.childName} />
         <Input label="Date of birth" type="date" value={form.dob} onChange={set("dob")} />
@@ -167,20 +167,20 @@ export default function AdmissionsPage() {
         <FadeIn>
           <SectionHeading eyebrow="The process" title="Four steps" />
         </FadeIn>
-        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {steps.map((s, i) => {
             const Icon = s.icon;
             return (
               <FadeIn key={s.title} delay={i * 0.05}>
-                <Card className="h-full bg-bg">
-                  <span className="grid h-9 w-9 place-items-center rounded-xl bg-primary/10 text-sm font-bold text-primary">
-                    {i + 1}
-                  </span>
-                  <div className="mt-3 flex items-center gap-2">
-                    <Icon className="h-4 w-4 text-primary" />
-                    <h3 className="text-sm font-bold text-fg">{s.title}</h3>
+                <Card hover className="h-full bg-bg">
+                  <div className="flex items-center justify-between">
+                    <span className="grid h-9 w-9 place-items-center rounded-xl bg-primary/10 font-heading text-sm font-bold text-primary">
+                      {i + 1}
+                    </span>
+                    <Icon className="h-4 w-4 text-muted" />
                   </div>
-                  <p className="mt-1 text-sm text-muted">{s.body}</p>
+                  <h3 className="mt-4 font-heading text-sm font-bold text-fg">{s.title}</h3>
+                  <p className="mt-1 text-sm leading-relaxed text-muted">{s.body}</p>
                 </Card>
               </FadeIn>
             );
@@ -194,7 +194,7 @@ export default function AdmissionsPage() {
             <SectionHeading eyebrow="Before you apply" title="What to bring" />
             <ul className="mt-6 space-y-3">
               {requirements.map((r) => (
-                <li key={r} className="flex gap-3 text-sm text-muted">
+                <li key={r} className="flex gap-3 rounded-xl border border-border bg-surface px-4 py-3 text-sm text-fg shadow-sm">
                   <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                   {r}
                 </li>
@@ -203,13 +203,13 @@ export default function AdmissionsPage() {
           </FadeIn>
           <FadeIn delay={0.05}>
             <SectionHeading eyebrow="Fees" title="What a term covers" />
-            <div className="mt-6 overflow-hidden rounded-2xl border border-border">
+            <div className="mt-6 overflow-hidden rounded-2xl border border-border shadow-card">
               <table className="w-full text-sm">
-                <tbody className="divide-y divide-border">
+                <tbody className="divide-y divide-border bg-surface">
                   {feeOverview.map((row) => (
-                    <tr key={row[0]} className="bg-surface">
-                      <td className="px-4 py-3 font-medium text-fg">{row[0]}</td>
-                      <td className="px-4 py-3 text-muted">{row[1]}</td>
+                    <tr key={row[0]}>
+                      <td className="px-4 py-3.5 font-semibold text-fg">{row[0]}</td>
+                      <td className="px-4 py-3.5 text-right text-muted">{row[1]}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -235,12 +235,12 @@ export default function AdmissionsPage() {
         <FadeIn>
           <SectionHeading eyebrow="Questions" title="Common questions" />
         </FadeIn>
-        <div className="mt-10 space-y-4">
+        <div className="mt-10 grid gap-4 sm:grid-cols-3">
           {faqs.map((f, i) => (
             <FadeIn key={f.q} delay={i * 0.05}>
-              <Card>
-                <h3 className="text-sm font-bold text-fg">{f.q}</h3>
-                <p className="mt-1 text-sm text-muted">{f.a}</p>
+              <Card hover className="h-full">
+                <h3 className="font-heading text-sm font-bold text-fg">{f.q}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted">{f.a}</p>
               </Card>
             </FadeIn>
           ))}
