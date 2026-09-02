@@ -66,6 +66,7 @@ function ApplicationForm() {
   function validate() {
     const next = {};
     if (!form.childName.trim()) next.childName = "Required";
+    if (!form.gender) next.gender = "Select the child's gender";
     if (!form.parentName.trim()) next.parentName = "Required";
     if (!form.parentPhone.trim()) next.parentPhone = "Required";
     if (form.parentEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.parentEmail)) {
@@ -124,8 +125,8 @@ function ApplicationForm() {
       <form className="grid gap-4 sm:grid-cols-2" onSubmit={onSubmit} noValidate>
         <Input label="Child's full name" placeholder="Enter your child's full name" value={form.childName} onChange={set("childName")} error={errors.childName} className="sm:col-span-2" />
         <Input label="Date of birth" type="date" value={form.dob} onChange={set("dob")} />
-        <Select label="Gender" value={form.gender} onChange={set("gender")}>
-          <option value="">Prefer not to say</option>
+        <Select label="Gender" value={form.gender} onChange={set("gender")} error={errors.gender}>
+          <option value="">Select gender</option>
           <option value="Male">Male</option>
           <option value="Female">Female</option>
         </Select>
