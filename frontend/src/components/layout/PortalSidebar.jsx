@@ -34,7 +34,7 @@ const modulesByRole = {
     { label: "Fees", icon: Wallet, to: "/admin/fees" },
     { label: "Timetable", icon: CalendarClock, to: "/admin/timetable" },
     { label: "Announcements", icon: Megaphone, to: "/admin/announcements" },
-    { label: "Reports", icon: BarChart3 },
+    { label: "Reports", icon: BarChart3, to: "/admin/reports" },
   ],
   teacher: [
     { label: "Attendance", icon: ClipboardCheck, to: "/teacher/attendance" },

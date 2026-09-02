@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,6 +12,7 @@ import { Spinner } from "./components/ui/Spinner.jsx";
 import { fetchPublicSettings } from "./redux/slices/settingsSlice.js";
 import { bootstrapAuth } from "./redux/slices/authSlice.js";
 
+// the public site and auth screens load eagerly, they are the first paint
 import HomePage from "./pages/HomePage.jsx";
 import AboutPage from "./pages/AboutPage.jsx";
 import AcademicsPage from "./pages/AcademicsPage.jsx";
@@ -19,42 +20,43 @@ import AdmissionsPage from "./pages/AdmissionsPage.jsx";
 import NewsPage from "./pages/NewsPage.jsx";
 import NewsArticlePage from "./pages/NewsArticlePage.jsx";
 import ContactPage from "./pages/ContactPage.jsx";
-
 import LoginPage from "./pages/LoginPage.jsx";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage.jsx";
 import ResetPasswordPage from "./pages/ResetPasswordPage.jsx";
 import ChangePasswordPage from "./pages/ChangePasswordPage.jsx";
-
-import AdminDashboard from "./pages/AdminDashboard.jsx";
-import AdminUsersPage from "./pages/AdminUsersPage.jsx";
-import AdminStudentsPage from "./pages/AdminStudentsPage.jsx";
-import AdminClassesPage from "./pages/AdminClassesPage.jsx";
-import AdminSubjectsPage from "./pages/AdminSubjectsPage.jsx";
-import AdminStaffPage from "./pages/AdminStaffPage.jsx";
-import AdminTermsPage from "./pages/AdminTermsPage.jsx";
-import AdminApplicationsPage from "./pages/AdminApplicationsPage.jsx";
-import AdminAttendancePage from "./pages/AdminAttendancePage.jsx";
-import AdminExamsPage from "./pages/AdminExamsPage.jsx";
-import AdminReportCardsPage from "./pages/AdminReportCardsPage.jsx";
-import AdminFeesPage from "./pages/AdminFeesPage.jsx";
-import AdminTimetablePage from "./pages/AdminTimetablePage.jsx";
-import AdminAnnouncementsPage from "./pages/AdminAnnouncementsPage.jsx";
-import TeacherDashboard from "./pages/TeacherDashboard.jsx";
-import TeacherAttendancePage from "./pages/TeacherAttendancePage.jsx";
-import TeacherExamsPage from "./pages/TeacherExamsPage.jsx";
-import TeacherTimetablePage from "./pages/TeacherTimetablePage.jsx";
-import TeacherAnnouncementsPage from "./pages/TeacherAnnouncementsPage.jsx";
-import ParentDashboard from "./pages/ParentDashboard.jsx";
-import ParentAttendancePage from "./pages/ParentAttendancePage.jsx";
-import ParentGradesPage from "./pages/ParentGradesPage.jsx";
-import ParentFeesPage from "./pages/ParentFeesPage.jsx";
-import ParentNewsPage from "./pages/ParentNewsPage.jsx";
-import ParentNotificationsPage from "./pages/ParentNotificationsPage.jsx";
-import StudentDashboard from "./pages/StudentDashboard.jsx";
-import StudentAttendancePage from "./pages/StudentAttendancePage.jsx";
-import StudentGradesPage from "./pages/StudentGradesPage.jsx";
-import StudentTimetablePage from "./pages/StudentTimetablePage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
+
+// the portal is behind a login, so it is code split away from the public bundle
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard.jsx"));
+const AdminUsersPage = lazy(() => import("./pages/AdminUsersPage.jsx"));
+const AdminStudentsPage = lazy(() => import("./pages/AdminStudentsPage.jsx"));
+const AdminClassesPage = lazy(() => import("./pages/AdminClassesPage.jsx"));
+const AdminSubjectsPage = lazy(() => import("./pages/AdminSubjectsPage.jsx"));
+const AdminStaffPage = lazy(() => import("./pages/AdminStaffPage.jsx"));
+const AdminTermsPage = lazy(() => import("./pages/AdminTermsPage.jsx"));
+const AdminApplicationsPage = lazy(() => import("./pages/AdminApplicationsPage.jsx"));
+const AdminAttendancePage = lazy(() => import("./pages/AdminAttendancePage.jsx"));
+const AdminExamsPage = lazy(() => import("./pages/AdminExamsPage.jsx"));
+const AdminReportCardsPage = lazy(() => import("./pages/AdminReportCardsPage.jsx"));
+const AdminFeesPage = lazy(() => import("./pages/AdminFeesPage.jsx"));
+const AdminTimetablePage = lazy(() => import("./pages/AdminTimetablePage.jsx"));
+const AdminAnnouncementsPage = lazy(() => import("./pages/AdminAnnouncementsPage.jsx"));
+const AdminReportsPage = lazy(() => import("./pages/AdminReportsPage.jsx"));
+const TeacherDashboard = lazy(() => import("./pages/TeacherDashboard.jsx"));
+const TeacherAttendancePage = lazy(() => import("./pages/TeacherAttendancePage.jsx"));
+const TeacherExamsPage = lazy(() => import("./pages/TeacherExamsPage.jsx"));
+const TeacherTimetablePage = lazy(() => import("./pages/TeacherTimetablePage.jsx"));
+const TeacherAnnouncementsPage = lazy(() => import("./pages/TeacherAnnouncementsPage.jsx"));
+const ParentDashboard = lazy(() => import("./pages/ParentDashboard.jsx"));
+const ParentAttendancePage = lazy(() => import("./pages/ParentAttendancePage.jsx"));
+const ParentGradesPage = lazy(() => import("./pages/ParentGradesPage.jsx"));
+const ParentFeesPage = lazy(() => import("./pages/ParentFeesPage.jsx"));
+const ParentNewsPage = lazy(() => import("./pages/ParentNewsPage.jsx"));
+const ParentNotificationsPage = lazy(() => import("./pages/ParentNotificationsPage.jsx"));
+const StudentDashboard = lazy(() => import("./pages/StudentDashboard.jsx"));
+const StudentAttendancePage = lazy(() => import("./pages/StudentAttendancePage.jsx"));
+const StudentGradesPage = lazy(() => import("./pages/StudentGradesPage.jsx"));
+const StudentTimetablePage = lazy(() => import("./pages/StudentTimetablePage.jsx"));
 
 function FullPageSpinner() {
   return (
@@ -109,7 +111,13 @@ export default function App() {
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
 
-        <Route element={<ProtectedRoute />}>
+        <Route
+          element={
+            <Suspense fallback={<FullPageSpinner />}>
+              <ProtectedRoute />
+            </Suspense>
+          }
+        >
           {/* any signed in role can be sent here after login or on their own */}
           <Route path="/change-password" element={<ChangePasswordPage />} />
 
@@ -129,6 +137,7 @@ export default function App() {
               <Route path="fees" element={<AdminFeesPage />} />
               <Route path="timetable" element={<AdminTimetablePage />} />
               <Route path="announcements" element={<AdminAnnouncementsPage />} />
+              <Route path="reports" element={<AdminReportsPage />} />
             </Route>
           </Route>
           <Route element={<RoleRoute allow={["Teacher"]} />}>

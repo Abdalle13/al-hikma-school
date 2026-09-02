@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -15,6 +15,7 @@ import {
 import { PortalSidebar } from "./PortalSidebar.jsx";
 import { ThemeToggle } from "../ui/ThemeToggle.jsx";
 import { Avatar } from "../ui/Avatar.jsx";
+import { Spinner } from "../ui/Spinner.jsx";
 import { logout } from "../../redux/slices/authSlice.js";
 import api from "../../utils/api.js";
 import { cn } from "../../utils/formatter.js";
@@ -88,7 +89,9 @@ function SidebarShell({ user }) {
         </header>
 
         <main className="mx-auto max-w-6xl p-4 sm:p-6">
-          <Outlet />
+          <Suspense fallback={<div className="grid place-items-center py-24"><Spinner /></div>}>
+            <Outlet />
+          </Suspense>
         </main>
       </div>
     </div>
@@ -189,7 +192,9 @@ function ParentShell({ user }) {
             No children are linked to your account yet. Contact the school office to get this set up.
           </div>
         ) : (
-          <Outlet context={{ children, selectedChild }} />
+          <Suspense fallback={<div className="grid place-items-center py-24"><Spinner /></div>}>
+            <Outlet context={{ children, selectedChild }} />
+          </Suspense>
         )}
       </main>
 
