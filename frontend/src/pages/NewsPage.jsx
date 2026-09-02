@@ -12,13 +12,18 @@ import { formatDate } from "../utils/formatter.js";
 
 export default function NewsPage() {
   const [items, setItems] = useState(null);
+  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     let alive = true;
     api
       .get("/announcements/public")
       .then(({ data }) => alive && setItems(data.announcements))
-      .catch(() => alive && setItems([]));
+      .catch(() => {
+        if (!alive) return;
+        setFailed(true);
+        setItems([]);
+      });
     return () => {
       alive = false;
     };
@@ -41,8 +46,12 @@ export default function NewsPage() {
         ) : items.length === 0 ? (
           <EmptyState
             icon={Newspaper}
-            title="No news yet"
-            description="When the school publishes an announcement it will appear here."
+            title={failed ? "Could not load news" : "No news yet"}
+            description={
+              failed
+                ? "We could not reach the school right now. Please refresh the page in a moment."
+                : "When the school publishes an announcement it will appear here."
+            }
           />
         ) : (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">

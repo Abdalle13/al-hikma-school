@@ -120,21 +120,21 @@ export default function HomePage() {
         <div className="mx-auto max-w-[1200px] px-4">
           <div className="mx-auto max-w-2xl py-20 text-center sm:py-28">
             <FadeIn>
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-semibold text-white shadow-lg backdrop-blur-sm">
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-semibold text-white shadow-sm backdrop-blur-sm">
                 <GraduationCap className="h-3.5 w-3.5" />
                 Enrolling now for the new term
               </span>
-              <h1 className="mt-5 text-[38px] font-bold leading-[1.06] text-white sm:text-[48px] md:text-[54px] [text-shadow:0_2px_20px_rgba(0,0,0,0.6)]">
+              <h1 className="mt-5 text-[38px] font-bold leading-[1.06] text-white sm:text-[48px] md:text-[54px] [text-shadow:0_1px_10px_rgba(0,0,0,0.4)]">
                 A calm, organised school for Somali families
               </h1>
-              <p className="mx-auto mt-6 max-w-xl text-[17px] leading-relaxed text-white/85 [text-shadow:0_1px_12px_rgba(0,0,0,0.5)]">
+              <p className="mx-auto mt-6 max-w-xl text-[17px] leading-relaxed text-white/85 [text-shadow:0_1px_6px_rgba(0,0,0,0.35)]">
                 {tagline ||
                   "Primary and secondary education at " +
                     (schoolName || "our school") +
                     ", with attendance, report cards and fees your family can follow online."}
               </p>
               <div className="mt-9 flex flex-wrap justify-center gap-3">
-                <Button as={Link} to="/admissions" size="xl" className="shadow-xl">
+                <Button as={Link} to="/admissions" size="xl" className="shadow-md">
                   Apply now <ArrowRight className="h-4 w-4" />
                 </Button>
                 <Button
@@ -142,7 +142,7 @@ export default function HomePage() {
                   to="/login"
                   size="xl"
                   variant="outline"
-                  className="border border-white/50 bg-white/10 text-white shadow-xl backdrop-blur-sm hover:bg-white/20"
+                  className="border border-white/50 bg-white/10 text-white shadow-md backdrop-blur-sm hover:bg-white/20"
                 >
                   Portal login
                 </Button>

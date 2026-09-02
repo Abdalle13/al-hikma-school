@@ -44,7 +44,7 @@ export function PublicHeader() {
       )}
     >
       <div className="mx-auto flex h-18 max-w-[1200px] items-center justify-between px-4">
-        <Brand />
+        <Brand onClick={() => setOpen(false)} />
 
         <nav className="hidden items-center gap-1 md:flex">
           {nav.map((item) => (
