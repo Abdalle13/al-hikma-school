@@ -169,8 +169,8 @@ export default function AcademicsPage() {
             </div>
             <div className="relative min-h-[220px] md:min-h-full">
               <img
-                src={siteImages.classroomRows}
-                alt="A classroom at the school"
+                src={siteImages.building}
+                alt="The school building"
                 loading="lazy"
                 className="absolute inset-0 h-full w-full object-cover"
               />

@@ -110,7 +110,7 @@ export default function HomePage() {
       {/* hero with a full background image */}
       <section className="relative isolate overflow-hidden">
         <img
-          src={siteImages.heroBuilding}
+          src={siteImages.buildingModern}
           alt=""
           aria-hidden="true"
           className="absolute inset-0 -z-10 h-full w-full object-cover"

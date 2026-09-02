@@ -70,7 +70,7 @@ export default function AboutPage() {
           <FadeIn>
             <div className="h-full overflow-hidden rounded-3xl border border-border shadow-card">
               <img
-                src={siteImages.classroomRows}
+                src={siteImages.classroom}
                 alt="An empty classroom at the school"
                 loading="lazy"
                 className="h-full min-h-[280px] w-full object-cover"
@@ -163,7 +163,7 @@ export default function AboutPage() {
           <FadeIn delay={0.1}>
             <div className="overflow-hidden rounded-3xl border border-border shadow-card">
               <img
-                src={siteImages.library}
+                src={siteImages.libraryShelves}
                 alt="Inside the school library"
                 loading="lazy"
                 className="aspect-[4/3] w-full object-cover"
