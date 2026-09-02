@@ -130,7 +130,7 @@ export function PortalSidebar({ role = "admin", basePath = "/admin", onNavigate 
         <button
           type="button"
           onClick={() => dispatch(logout())}
-          className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-muted transition-colors hover:bg-danger/10 hover:text-danger"
+          className="flex w-full items-center gap-3 rounded-xl bg-danger/10 px-3 py-2.5 text-sm font-semibold text-danger transition-colors hover:bg-danger/15"
         >
           <LogOut className="h-4 w-4 shrink-0" />
           Log out
