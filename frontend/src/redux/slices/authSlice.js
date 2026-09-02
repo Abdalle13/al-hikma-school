@@ -44,7 +44,7 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    // used after a reset-password call, which also returns a fresh session
+    // used after a password change, which also returns a fresh session
     setCredentials(state, action) {
       const { user, token } = action.payload;
       if (user) state.user = user;

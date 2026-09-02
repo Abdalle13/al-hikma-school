@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Briefcase, Plus, ShieldOff, ShieldCheck } from "lucide-react";
+import { Briefcase, KeyRound, Plus, ShieldOff, ShieldCheck } from "lucide-react";
 import { PageHeader } from "../components/ui/PageHeader.jsx";
 import { Button } from "../components/ui/Button.jsx";
 import { Input } from "../components/ui/Input.jsx";
@@ -61,10 +61,54 @@ function TeacherForm({ onCancel, onSaved }) {
   );
 }
 
+function ResetPasswordForm({ teacher, onCancel, onSaved }) {
+  const [password, setPassword] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  async function onSubmit(e) {
+    e.preventDefault();
+    if (password.length < 6) {
+      toast.error("The new password must be at least 6 characters");
+      return;
+    }
+    setSaving(true);
+    try {
+      await api.put(`/users/${teacher._id}`, { password });
+      toast.success(`Password reset for ${teacher.name}. Share it with them directly.`);
+      onSaved();
+    } catch (err) {
+      toast.error(apiError(err, "Could not reset the password"));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <form className="flex flex-col gap-4" onSubmit={onSubmit} noValidate>
+      <Input
+        label="New password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        placeholder="At least 6 characters, a 6 digit number works"
+        hint="The teacher will be asked to change it on their next login."
+      />
+      <div className="flex justify-end gap-2">
+        <Button type="button" variant="outline" onClick={onCancel} disabled={saving}>
+          Cancel
+        </Button>
+        <Button type="submit" disabled={saving}>
+          {saving ? "Saving..." : "Reset password"}
+        </Button>
+      </div>
+    </form>
+  );
+}
+
 export default function AdminStaffPage() {
   const [staff, setStaff] = useState(null);
   const [search, setSearch] = useState("");
   const [modal, setModal] = useState(false);
+  const [resetFor, setResetFor] = useState(null);
   const [busyId, setBusyId] = useState(null);
 
   async function load() {
@@ -147,7 +191,16 @@ export default function AdminStaffPage() {
                 {t.status === "Active" ? <Badge tone="success">Active</Badge> : <Badge tone="danger">Inactive</Badge>}
               </Table.Cell>
               <Table.Cell>
-                <div className="flex justify-end">
+                <div className="flex justify-end gap-1">
+                  <button
+                    type="button"
+                    onClick={() => setResetFor(t)}
+                    title="Reset password"
+                    aria-label={`Reset password for ${t.name}`}
+                    className="rounded-lg p-2 text-muted transition-colors hover:bg-surface-2 hover:text-fg"
+                  >
+                    <KeyRound className="h-4 w-4" />
+                  </button>
                   <button
                     type="button"
                     onClick={() => toggleStatus(t)}
@@ -166,6 +219,20 @@ export default function AdminStaffPage() {
 
       <Modal open={modal} onClose={() => setModal(false)} title="Add teacher">
         <TeacherForm onCancel={() => setModal(false)} onSaved={() => { setModal(false); load(); }} />
+      </Modal>
+
+      <Modal
+        open={Boolean(resetFor)}
+        onClose={() => setResetFor(null)}
+        title={resetFor ? `Reset password for ${resetFor.name}` : "Reset password"}
+      >
+        {resetFor ? (
+          <ResetPasswordForm
+            teacher={resetFor}
+            onCancel={() => setResetFor(null)}
+            onSaved={() => setResetFor(null)}
+          />
+        ) : null}
       </Modal>
     </div>
   );

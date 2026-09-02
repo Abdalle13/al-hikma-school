@@ -21,8 +21,6 @@ import NewsPage from "./pages/NewsPage.jsx";
 import NewsArticlePage from "./pages/NewsArticlePage.jsx";
 import ContactPage from "./pages/ContactPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
-import ForgotPasswordPage from "./pages/ForgotPasswordPage.jsx";
-import ResetPasswordPage from "./pages/ResetPasswordPage.jsx";
 import ChangePasswordPage from "./pages/ChangePasswordPage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
 
@@ -108,9 +106,6 @@ export default function App() {
         </Route>
 
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-        <Route path="/reset-password" element={<ResetPasswordPage />} />
-        <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
 
         <Route
           element={

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { Input } from "../components/ui/Input.jsx";
@@ -81,11 +81,9 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          <p className="mt-5 text-sm text-muted">
-            <Link to="/forgot-password" className="text-primary">Forgot your password?</Link>
-          </p>
-          <p className="mt-2 text-xs text-muted">
-            Accounts are created by the school. There is no public sign up.
+          <p className="mt-5 text-xs text-muted">
+            Accounts are created by the school. There is no public sign up. If you
+            forgot your password, ask the school office to reset it.
           </p>
         </Card>
       </main>
