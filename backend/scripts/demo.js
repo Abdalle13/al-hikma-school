@@ -267,15 +267,48 @@ async function seedDemo() {
     }
   }
 
-  // announcements
-  if (!(await Announcement.findOne({ title: "Welcome to Term 1" }))) {
-    await Announcement.create({
+  // announcements. the public ones feed the website news list.
+  const adminId = (await User.findOne({ role: "Admin" }))?._id;
+  const publicNews = [
+    {
       title: "Welcome to Term 1",
-      body: "Classes resume on Saturday. We look forward to a great term.",
-      audience: "All",
-      isPublic: true,
-      createdBy: (await User.findOne({ role: "Admin" }))?._id,
-    });
+      body: "Classes resume on Saturday. Registration for new students is open at the school office every morning. We look forward to a great term with your children.",
+    },
+    {
+      title: "Term 1 exams timetable released",
+      body: "The midterm exams run in the last week of October and the final exams in the first week of December. Full subject timetables have been sent home and are on the parent portal.",
+    },
+    {
+      title: "Parent evening this month",
+      body: "Every class teacher will meet parents to go through the first report cards. Slots are booked through the school office. Please come with any questions about your child's progress.",
+    },
+    {
+      title: "Quran competition winners",
+      body: "Congratulations to the students who took part in this term's hifz and tajweed competition. Certificates were handed out at Friday assembly and prizes will follow next week.",
+    },
+    {
+      title: "New books for the library",
+      body: "The library has added Somali and English readers for the primary grades, plus reference books for secondary science and mathematics. Students may borrow one book at a time.",
+    },
+    {
+      title: "Fees and installment plans",
+      body: "A reminder that Term 1 fees can be paid in up to four installments by EVC Plus, Zaad or cash at the office. Log in to your account to see your invoice and pay online.",
+    },
+    {
+      title: "School closed for Eid",
+      body: "The school will be closed for the Eid holiday. Dates will be confirmed with the moon sighting and sent to all parents by message. Lessons resume the following Saturday.",
+    },
+  ];
+  for (const n of publicNews) {
+    if (!(await Announcement.findOne({ title: n.title }))) {
+      await Announcement.create({
+        title: n.title,
+        body: n.body,
+        audience: "All",
+        isPublic: true,
+        createdBy: adminId,
+      });
+    }
   }
   if (!(await Announcement.findOne({ title: "Grade 3 reading week" }))) {
     await Announcement.create({
