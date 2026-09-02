@@ -17,6 +17,7 @@ import Invoice from "../models/invoiceModel.js";
 import Announcement from "../models/announcementModel.js";
 import ReportCard from "../models/reportCardModel.js";
 import Notification from "../models/notificationModel.js";
+import Settings from "../models/settingsModel.js";
 import { computeForClassTerm } from "../controllers/reportCardController.js";
 import { startOfDayUTC } from "../utils/dates.js";
 
@@ -288,6 +289,24 @@ async function seedDemo() {
 
   // let the seeded admin log straight in while demoing
   await User.updateOne({ role: "Admin" }, { $set: { mustChangePassword: false } });
+
+  // public school profile used by the header, footer and public pages.
+  // only fills a fresh document so a real admin edit is never overwritten.
+  await Settings.updateOne(
+    { key: "school" },
+    {
+      $setOnInsert: {
+        key: "school",
+        schoolName: "Al Nuur Academy",
+        tagline: "Primary, secondary, Quran and Islamic studies",
+        address: "KM4, Mogadishu, Somalia",
+        phone: "+252 61 915 7381",
+        email: "info@alnuur.example",
+        currency: "USD",
+      },
+    },
+    { upsert: true }
+  );
 
   console.log(
     `demo data ready: ${teachers.length} teachers, ${parents.length} parents, ${students.length} students, ${classes.length} classes`
