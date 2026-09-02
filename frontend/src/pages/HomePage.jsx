@@ -140,7 +140,7 @@ function HeroMosaic() {
         <p className="mt-1 text-sm text-muted">Every child known by name.</p>
       </div>
 
-      <div className={`${tile} col-span-2 bg-secondary-soft`}>
+      <div className={`${tile} col-span-2 bg-primary-soft`}>
         <div className="flex items-center gap-4">
           <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-surface text-primary shadow-sm">
             <Sparkles className="h-5 w-5" />
@@ -343,6 +343,45 @@ export default function HomePage() {
             ))}
           </div>
         </div>
+      </Section>
+
+      {/* closing call to action */}
+      <Section tone="surface">
+        <FadeIn>
+          <div className="relative mx-auto max-w-3xl overflow-hidden rounded-3xl bg-primary px-6 py-14 text-center shadow-card sm:px-14">
+            <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-white/10" />
+            <div className="pointer-events-none absolute -bottom-20 -left-10 h-56 w-56 rounded-full bg-white/10" />
+            <div className="relative">
+              <h2 className="font-heading text-2xl font-bold text-on-primary sm:text-3xl">
+                Bring your child to {schoolName}
+              </h2>
+              <p className="mx-auto mt-3 max-w-md text-sm text-on-primary/80 sm:text-base">
+                Applications are online and free. The school reviews yours and gets back to you about the
+                next steps.
+              </p>
+              <div className="mt-8 flex flex-wrap justify-center gap-3">
+                <Button
+                  as={Link}
+                  to="/admissions"
+                  size="lg"
+                  variant="secondary"
+                  className="bg-white text-primary hover:bg-white/90"
+                >
+                  Start an application <ArrowRight className="h-4 w-4" />
+                </Button>
+                <Button
+                  as={Link}
+                  to="/contact"
+                  size="lg"
+                  variant="outline"
+                  className="border-white/40 text-on-primary hover:bg-white/10"
+                >
+                  Contact the school
+                </Button>
+              </div>
+            </div>
+          </div>
+        </FadeIn>
       </Section>
     </div>
   );

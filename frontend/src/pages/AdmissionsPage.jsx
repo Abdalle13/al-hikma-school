@@ -1,6 +1,6 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { CheckCircle2, ClipboardList, FileText, MessageSquare } from "lucide-react";
+import { CheckCircle2, ChevronDown, ClipboardList, FileText, MessageSquare } from "lucide-react";
 import { Input } from "../components/ui/Input.jsx";
 import { Select } from "../components/ui/Select.jsx";
 import { Textarea } from "../components/ui/Textarea.jsx";
@@ -10,6 +10,7 @@ import { Section } from "../components/ui/Section.jsx";
 import { SectionHeading } from "../components/ui/SectionHeading.jsx";
 import { PageHero } from "../components/ui/PageHero.jsx";
 import { FadeIn } from "../components/ui/FadeIn.jsx";
+import { cn } from "../utils/formatter.js";
 import api, { apiError } from "../utils/api.js";
 
 const steps = [
@@ -20,10 +21,10 @@ const steps = [
 ];
 
 const requirements = [
-  "The child's birth certificate or passport",
-  "The most recent school report, if the child has attended school before",
-  "Two passport photos",
-  "A parent or guardian ID",
+  "The child's birth certificate",
+  "The most recent school report, if the child has been to school before",
+  "Two recent photos of the child",
+  "A parent or guardian ID card",
 ];
 
 const feeOverview = [
@@ -37,6 +38,7 @@ const faqs = [
   { q: "Is there a public sign up for the portal?", a: "No. The school creates every account after a child is enrolled and gives you the login details." },
   { q: "Can fees be paid in installments?", a: "Yes. A term's fee can be split into 2 to 4 payments, paid by mobile money or cash at the office." },
   { q: "When can my child start?", a: "Enrolment happens at the start of a term. We keep a short waiting list when a class is full." },
+  { q: "Is there a fee to apply?", a: "No. Applying is free. Fees only apply once a child is enrolled." },
 ];
 
 const empty = {
@@ -80,6 +82,7 @@ function ApplicationForm() {
       if (!payload.gender) delete payload.gender;
       await api.post("/applications", payload);
       setDone(true);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
       toast.error(apiError(err, "Could not send the application"));
     } finally {
@@ -89,7 +92,7 @@ function ApplicationForm() {
 
   if (done) {
     return (
-      <Card className="p-8 text-center">
+      <Card className="p-8 text-center sm:p-10">
         <span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-success/15 text-success">
           <CheckCircle2 className="h-6 w-6" />
         </span>
@@ -102,6 +105,7 @@ function ApplicationForm() {
           className="mt-6"
           onClick={() => {
             setForm(empty);
+            setErrors({});
             setDone(false);
           }}
         >
@@ -121,12 +125,12 @@ function ApplicationForm() {
           <option value="Male">Male</option>
           <option value="Female">Female</option>
         </Select>
-        <Input label="Grade applying for" placeholder="Enter the grade, for example Grade 4" value={form.gradeApplyingFor} onChange={set("gradeApplyingFor")} />
+        <Input label="Grade applying for" placeholder="For example Grade 4" value={form.gradeApplyingFor} onChange={set("gradeApplyingFor")} />
 
         <Input label="Parent or guardian name" placeholder="Enter the parent or guardian name" value={form.parentName} onChange={set("parentName")} error={errors.parentName} />
         <Input label="Phone" placeholder="Enter your phone number" value={form.parentPhone} onChange={set("parentPhone")} error={errors.parentPhone} />
         <Input
-          label="Email"
+          label="Email (optional)"
           type="email"
           placeholder="Enter your email address"
           value={form.parentEmail}
@@ -135,19 +139,39 @@ function ApplicationForm() {
           className="sm:col-span-2"
         />
         <Textarea
-          label="Anything else we should know?"
+          label="Anything else we should know? (optional)"
           rows={4}
           value={form.message}
           onChange={set("message")}
           className="sm:col-span-2"
         />
         <div className="sm:col-span-2">
-          <Button type="submit" disabled={submitting} className="w-full sm:w-auto">
+          <Button type="submit" size="lg" disabled={submitting} className="w-full">
             {submitting ? "Sending..." : "Submit application"}
           </Button>
         </div>
       </form>
     </Card>
+  );
+}
+
+function FaqItem({ q, a }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="rounded-2xl border border-border bg-surface shadow-card">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
+        aria-expanded={open}
+      >
+        <span className="font-heading text-sm font-bold text-fg">{q}</span>
+        <ChevronDown
+          className={cn("h-4 w-4 shrink-0 text-muted transition-transform", open && "rotate-180")}
+        />
+      </button>
+      {open ? <p className="px-5 pb-5 text-sm leading-relaxed text-muted">{a}</p> : null}
+    </div>
   );
 }
 
@@ -157,12 +181,30 @@ export default function AdmissionsPage() {
       <PageHero
         eyebrow="Admissions"
         title="Applying is simple"
-        lead="Fill in the form below and the school will take it from there. There is no fee to apply."
+        lead="Fill in the form and the school takes it from there. Applying is free."
       />
 
+      {/* application form, front and centre */}
+      <Section id="apply">
+        <FadeIn>
+          <div className="mx-auto max-w-2xl">
+            <SectionHeading
+              eyebrow="Application form"
+              title="Tell us about your child"
+              align="center"
+              className="mx-auto"
+            />
+            <div className="mt-10">
+              <ApplicationForm />
+            </div>
+          </div>
+        </FadeIn>
+      </Section>
+
+      {/* how it works */}
       <Section tone="surface">
         <FadeIn>
-          <SectionHeading eyebrow="The process" title="Four steps" />
+          <SectionHeading eyebrow="The process" title="What happens next" />
         </FadeIn>
         <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {steps.map((s, i) => {
@@ -185,13 +227,17 @@ export default function AdmissionsPage() {
         </div>
       </Section>
 
+      {/* what to bring + fees */}
       <Section>
-        <div className="grid gap-8 lg:grid-cols-2 lg:items-start">
+        <div className="grid gap-10 lg:grid-cols-2 lg:items-start">
           <FadeIn>
             <SectionHeading eyebrow="Before you apply" title="What to bring" />
             <ul className="mt-6 space-y-3">
               {requirements.map((r) => (
-                <li key={r} className="flex gap-3 rounded-xl border border-border bg-surface px-4 py-3 text-sm text-fg shadow-sm">
+                <li
+                  key={r}
+                  className="flex gap-3 rounded-xl border border-border bg-surface px-4 py-3 text-sm text-fg shadow-sm"
+                >
                   <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                   {r}
                 </li>
@@ -219,26 +265,15 @@ export default function AdmissionsPage() {
         </div>
       </Section>
 
-      <Section tone="surface" id="apply">
+      {/* faq accordion */}
+      <Section tone="surface">
         <FadeIn>
-          <SectionHeading eyebrow="Application form" title="Tell us about your child" />
+          <SectionHeading eyebrow="Questions" title="Common questions" align="center" className="mx-auto" />
         </FadeIn>
-        <div className="mt-10 max-w-3xl">
-          <ApplicationForm />
-        </div>
-      </Section>
-
-      <Section>
-        <FadeIn>
-          <SectionHeading eyebrow="Questions" title="Common questions" />
-        </FadeIn>
-        <div className="mt-10 grid gap-4 sm:grid-cols-3">
+        <div className="mx-auto mt-10 flex max-w-2xl flex-col gap-3">
           {faqs.map((f, i) => (
-            <FadeIn key={f.q} delay={i * 0.05}>
-              <Card hover className="h-full">
-                <h3 className="font-heading text-sm font-bold text-fg">{f.q}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted">{f.a}</p>
-              </Card>
+            <FadeIn key={f.q} delay={i * 0.04}>
+              <FaqItem q={f.q} a={f.a} />
             </FadeIn>
           ))}
         </div>

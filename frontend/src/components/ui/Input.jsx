@@ -1,4 +1,5 @@
-import { forwardRef, useId } from "react";
+import { forwardRef, useId, useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import { cn } from "../../utils/formatter.js";
 
 const fieldBase =
@@ -25,19 +26,47 @@ function Field({ label, hint, error, htmlFor, children }) {
 }
 
 export const Input = forwardRef(function Input(
-  { label, hint, error, className, id, ...props },
+  { label, hint, error, className, id, type = "text", ...props },
   ref
 ) {
   const generatedId = useId();
   const inputId = id || generatedId;
+  const [reveal, setReveal] = useState(false);
+  const isPassword = type === "password";
+  const inputType = isPassword && reveal ? "text" : type;
+
+  const field = (
+    <input
+      ref={ref}
+      id={inputId}
+      type={inputType}
+      className={cn(
+        fieldBase,
+        isPassword && "pr-11",
+        error && "border-danger focus:border-danger focus:ring-danger/30",
+        className
+      )}
+      {...props}
+    />
+  );
+
   return (
     <Field label={label} hint={hint} error={error} htmlFor={inputId}>
-      <input
-        ref={ref}
-        id={inputId}
-        className={cn(fieldBase, error && "border-danger focus:border-danger focus:ring-danger/30", className)}
-        {...props}
-      />
+      {isPassword ? (
+        <div className="relative">
+          {field}
+          <button
+            type="button"
+            onClick={() => setReveal((v) => !v)}
+            aria-label={reveal ? "Hide password" : "Show password"}
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-muted transition-colors hover:text-fg"
+          >
+            {reveal ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          </button>
+        </div>
+      ) : (
+        field
+      )}
     </Field>
   );
 });
