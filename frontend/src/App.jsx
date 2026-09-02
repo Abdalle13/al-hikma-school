@@ -38,14 +38,18 @@ import AdminExamsPage from "./pages/AdminExamsPage.jsx";
 import AdminReportCardsPage from "./pages/AdminReportCardsPage.jsx";
 import AdminFeesPage from "./pages/AdminFeesPage.jsx";
 import AdminTimetablePage from "./pages/AdminTimetablePage.jsx";
+import AdminAnnouncementsPage from "./pages/AdminAnnouncementsPage.jsx";
 import TeacherDashboard from "./pages/TeacherDashboard.jsx";
 import TeacherAttendancePage from "./pages/TeacherAttendancePage.jsx";
 import TeacherExamsPage from "./pages/TeacherExamsPage.jsx";
 import TeacherTimetablePage from "./pages/TeacherTimetablePage.jsx";
+import TeacherAnnouncementsPage from "./pages/TeacherAnnouncementsPage.jsx";
 import ParentDashboard from "./pages/ParentDashboard.jsx";
 import ParentAttendancePage from "./pages/ParentAttendancePage.jsx";
 import ParentGradesPage from "./pages/ParentGradesPage.jsx";
 import ParentFeesPage from "./pages/ParentFeesPage.jsx";
+import ParentNewsPage from "./pages/ParentNewsPage.jsx";
+import ParentNotificationsPage from "./pages/ParentNotificationsPage.jsx";
 import StudentDashboard from "./pages/StudentDashboard.jsx";
 import StudentAttendancePage from "./pages/StudentAttendancePage.jsx";
 import StudentGradesPage from "./pages/StudentGradesPage.jsx";
@@ -124,6 +128,7 @@ export default function App() {
               <Route path="report-cards" element={<AdminReportCardsPage />} />
               <Route path="fees" element={<AdminFeesPage />} />
               <Route path="timetable" element={<AdminTimetablePage />} />
+              <Route path="announcements" element={<AdminAnnouncementsPage />} />
             </Route>
           </Route>
           <Route element={<RoleRoute allow={["Teacher"]} />}>
@@ -132,6 +137,7 @@ export default function App() {
               <Route path="attendance" element={<TeacherAttendancePage />} />
               <Route path="exams" element={<TeacherExamsPage />} />
               <Route path="timetable" element={<TeacherTimetablePage />} />
+              <Route path="announcements" element={<TeacherAnnouncementsPage />} />
             </Route>
           </Route>
           <Route element={<RoleRoute allow={["Parent"]} />}>
@@ -140,6 +146,8 @@ export default function App() {
               <Route path="attendance" element={<ParentAttendancePage />} />
               <Route path="grades" element={<ParentGradesPage />} />
               <Route path="fees" element={<ParentFeesPage />} />
+              <Route path="news" element={<ParentNewsPage />} />
+              <Route path="notifications" element={<ParentNotificationsPage />} />
             </Route>
           </Route>
           <Route element={<RoleRoute allow={["Student"]} />}>

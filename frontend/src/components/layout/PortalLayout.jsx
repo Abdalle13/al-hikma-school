@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, NavLink, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Bell,
@@ -103,12 +103,14 @@ const parentTabs = [
   { label: "Attendance", icon: ClipboardCheck, to: "/parent/attendance" },
   { label: "Grades", icon: GraduationCap, to: "/parent/grades" },
   { label: "Fees", icon: Wallet, to: "/parent/fees" },
-  { label: "News", icon: Megaphone },
+  { label: "News", icon: Megaphone, to: "/parent/news" },
 ];
 
 function ParentShell({ user }) {
   const [children, setChildren] = useState(null);
   const [selectedId, setSelectedId] = useState(null);
+  const [unread, setUnread] = useState(0);
+  const { pathname } = useLocation();
 
   useEffect(() => {
     let alive = true;
@@ -125,6 +127,11 @@ function ParentShell({ user }) {
     };
   }, [user._id]);
 
+  useEffect(() => {
+    // refresh the unread badge on every navigation within the portal
+    api.get("/notifications", { params: { limit: 1 } }).then(({ data }) => setUnread(data.unread)).catch(() => {});
+  }, [pathname]);
+
   const selectedChild = children?.find((c) => c._id === selectedId) || null;
 
   return (
@@ -137,9 +144,18 @@ function ParentShell({ user }) {
           </div>
           <div className="flex items-center gap-2">
             <ThemeToggle />
-            <button type="button" aria-label="Notifications" className="rounded-2xl border border-border p-2 text-fg">
+            <NavLink
+              to="/parent/notifications"
+              aria-label="Messages"
+              className="relative rounded-2xl border border-border p-2 text-fg"
+            >
               <Bell className="h-4 w-4" />
-            </button>
+              {unread > 0 ? (
+                <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-primary px-1 text-[10px] font-bold text-white">
+                  {unread > 9 ? "9+" : unread}
+                </span>
+              ) : null}
+            </NavLink>
             <Avatar name={user.name} size="sm" />
             <LogoutButton />
           </div>

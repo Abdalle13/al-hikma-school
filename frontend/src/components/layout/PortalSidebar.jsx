@@ -33,14 +33,14 @@ const modulesByRole = {
     { label: "Report cards", icon: Award, to: "/admin/report-cards" },
     { label: "Fees", icon: Wallet, to: "/admin/fees" },
     { label: "Timetable", icon: CalendarClock, to: "/admin/timetable" },
-    { label: "Announcements", icon: Megaphone },
+    { label: "Announcements", icon: Megaphone, to: "/admin/announcements" },
     { label: "Reports", icon: BarChart3 },
   ],
   teacher: [
     { label: "Attendance", icon: ClipboardCheck, to: "/teacher/attendance" },
     { label: "Exams and marks", icon: GraduationCap, to: "/teacher/exams" },
     { label: "Timetable", icon: CalendarClock, to: "/teacher/timetable" },
-    { label: "Announcements", icon: Megaphone },
+    { label: "Announcements", icon: Megaphone, to: "/teacher/announcements" },
   ],
   parent: [
     { label: "Attendance", icon: ClipboardCheck },
