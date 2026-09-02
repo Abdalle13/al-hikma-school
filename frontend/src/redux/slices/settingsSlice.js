@@ -4,18 +4,18 @@ import api from "../../utils/api.js";
 // the public school settings: name, tagline, contacts, socials. used by the
 // header, the footer and the public pages. fetched once when the app loads.
 const fallback = {
-  schoolName: "Al Nuur Academy",
+  schoolName: "Al Hikma School",
   tagline:
     "Primary and secondary education for Somali families, with attendance and results you can follow online.",
   about: "",
   address: "KM4, Mogadishu, Somalia",
   phone: "+252 61 915 7381",
-  email: "info@alnuur.example",
+  email: "info@alhikmaschool.so",
   logo: "",
   currency: "USD",
   mobileMoneyOperators: ["EVC Plus", "Zaad"],
   socials: {
-    facebook: "https://facebook.com/alnuur",
+    facebook: "https://facebook.com/alhikmaschool",
     whatsapp: "https://wa.me/252619157381",
   },
 };

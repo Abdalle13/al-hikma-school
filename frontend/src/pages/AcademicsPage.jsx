@@ -69,8 +69,8 @@ export default function AcademicsPage() {
           <FadeIn delay={0.1}>
             <div className="overflow-hidden rounded-3xl border border-border shadow-card">
               <img
-                src={siteImages.teacherBoard}
-                alt="A teacher working through a lesson at the board"
+                src={siteImages.classroom}
+                alt="A classroom set up for the school day"
                 loading="lazy"
                 className="aspect-[4/3] w-full object-cover"
               />

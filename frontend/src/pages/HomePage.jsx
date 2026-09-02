@@ -24,12 +24,6 @@ import api from "../utils/api.js";
 import { formatDate } from "../utils/formatter.js";
 import { siteImages } from "../utils/siteImages.js";
 
-const HERO_IMAGES = {
-  class: siteImages.classroom,
-  writing: siteImages.pupilWriting,
-  study: siteImages.studyGroup,
-};
-
 const whyCards = [
   { icon: BookOpen, title: "Strong academics", body: "Primary, secondary, Quran and Islamic studies under one roof, taught to a clear standard." },
   { icon: HeartHandshake, title: "Caring teachers", body: "Small classes and daily contact with parents so no child slips through." },
@@ -107,96 +101,60 @@ function NewsStrip() {
   );
 }
 
-// a photo collage for the hero that reads as a real school day
-function HeroShowcase() {
-  const frame = "overflow-hidden rounded-3xl border border-border shadow-card";
-  return (
-    <div className="grid grid-cols-2 grid-rows-[auto_auto_auto] gap-4 sm:gap-5">
-      <div className={`${frame} row-span-2`}>
-        <img
-          src={HERO_IMAGES.class}
-          alt="Students at work in a classroom"
-          loading="eager"
-          className="h-full w-full object-cover"
-        />
-      </div>
-      <div className={`${frame} aspect-[5/4]`}>
-        <img
-          src={HERO_IMAGES.writing}
-          alt="A pupil writing at their desk"
-          loading="lazy"
-          className="h-full w-full object-cover"
-        />
-      </div>
-      <div className={`${frame} aspect-[5/4]`}>
-        <img
-          src={HERO_IMAGES.study}
-          alt="Students studying together"
-          loading="lazy"
-          className="h-full w-full object-cover"
-        />
-      </div>
-      <div className="col-span-2 flex items-center gap-4 rounded-3xl bg-gradient-to-br from-primary to-primary-hover p-5 text-on-primary shadow-card">
-        <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white/15">
-          <Sparkles className="h-5 w-5" />
-        </span>
-        <div>
-          <p className="font-heading text-base font-bold">Attendance, grades and fees online</p>
-          <p className="mt-0.5 text-sm text-on-primary/80">Families follow every child from their phone.</p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function HomePage() {
   const { schoolName, tagline } = useSelector((s) => s.settings.data);
   const loop = [...testimonials, ...testimonials];
 
   return (
     <div>
-      {/* hero */}
-      <section className="relative overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 -z-10">
-          <div className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-primary/12 blur-3xl" />
-          <div className="absolute -right-24 top-1/4 h-80 w-80 rounded-full bg-accent/10 blur-3xl" />
-          <div className="absolute inset-0 bg-gradient-to-b from-primary-soft/50 via-bg to-bg" />
-        </div>
+      {/* hero with a full background image */}
+      <section className="relative isolate overflow-hidden">
+        <img
+          src={siteImages.heroBuilding}
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 -z-10 h-full w-full object-cover"
+        />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/90 via-black/70 to-black/45" />
+        <div className="absolute inset-0 -z-10 bg-primary/15 mix-blend-multiply" />
         <div className="mx-auto max-w-[1200px] px-4">
-          <div className="grid items-center gap-12 py-12 sm:py-16 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
+          <div className="max-w-2xl py-20 sm:py-28">
             <FadeIn>
-              <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 text-xs font-semibold text-primary shadow-sm">
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-semibold text-white backdrop-blur-sm">
                 <GraduationCap className="h-3.5 w-3.5" />
                 Enrolling now for the new term
               </span>
-              <h1 className="mt-5 text-[38px] font-bold leading-[1.06] text-fg sm:text-[48px] md:text-[54px]">
-                Strong learning, and a school day you can follow
+              <h1 className="mt-5 text-[38px] font-bold leading-[1.06] text-white sm:text-[48px] md:text-[54px]">
+                A calm, organised school for Somali families
               </h1>
-              <p className="mt-6 max-w-xl text-[17px] leading-relaxed text-muted">
+              <p className="mt-6 max-w-xl text-[17px] leading-relaxed text-white/80">
                 {tagline ||
                   "Primary and secondary education at " +
                     (schoolName || "our school") +
-                    ", with Quran and Islamic studies in the week and attendance, report cards and fees your family can follow online."}
+                    ", with attendance, report cards and fees your family can follow online."}
               </p>
               <div className="mt-9 flex flex-wrap gap-3">
                 <Button as={Link} to="/admissions" size="xl">
                   Apply now <ArrowRight className="h-4 w-4" />
                 </Button>
-                <Button as={Link} to="/login" size="xl" variant="outline">
+                <Button
+                  as={Link}
+                  to="/login"
+                  size="xl"
+                  variant="outline"
+                  className="border border-white/50 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20"
+                >
                   Portal login
                 </Button>
               </div>
-              <dl className="mt-10 grid max-w-md grid-cols-3 gap-6 border-t border-border pt-7">
+              <dl className="mt-10 grid max-w-md grid-cols-3 gap-6 border-t border-white/20 pt-7">
                 {stats.slice(0, 3).map((s) => (
                   <div key={s.label}>
-                    <dt className="font-heading text-2xl font-bold text-fg tabular-nums">{s.value}</dt>
-                    <dd className="mt-1 text-xs leading-snug text-muted">{s.label}</dd>
+                    <dt className="font-heading text-2xl font-bold text-white tabular-nums">{s.value}</dt>
+                    <dd className="mt-1 text-xs leading-snug text-white/70">{s.label}</dd>
                   </div>
                 ))}
               </dl>
-            </FadeIn>
-            <FadeIn delay={0.1}>
-              <HeroShowcase />
             </FadeIn>
           </div>
         </div>
@@ -338,8 +296,8 @@ export default function HomePage() {
             </div>
             <div className="relative min-h-[220px] md:min-h-full">
               <img
-                src={siteImages.lecture}
-                alt="A class in session"
+                src={siteImages.classroom}
+                alt="A classroom at the school"
                 loading="lazy"
                 className="absolute inset-0 h-full w-full object-cover"
               />
