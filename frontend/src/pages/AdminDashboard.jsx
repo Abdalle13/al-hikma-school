@@ -178,7 +178,7 @@ export default function AdminDashboard() {
                     strokeWidth={0}
                   >
                     <Cell fill={c.primary} />
-                    <Cell fill={c.accent} />
+                    <Cell fill={c.secondary} />
                   </Pie>
                   <Tooltip {...tooltip} />
                 </PieChart>
@@ -205,8 +205,8 @@ export default function AdminDashboard() {
                 <CartesianGrid stroke={c.border} vertical={false} />
                 <XAxis dataKey="name" {...axis} />
                 <YAxis allowDecimals={false} {...axis} />
-                <Tooltip cursor={{ fill: `${c.accent}12` }} {...tooltip} />
-                <Bar dataKey="count" fill={c.accent} radius={[6, 6, 0, 0]} maxBarSize={44} />
+                <Tooltip cursor={{ fill: `${c.info}12` }} {...tooltip} />
+                <Bar dataKey="count" fill={c.info} radius={[6, 6, 0, 0]} maxBarSize={44} />
               </BarChart>
             </ChartCard>
           </div>

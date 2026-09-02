@@ -5,12 +5,12 @@ export async function exportReportsPdf({ schoolName, term, overview, enrolment, 
   const autoTable = (await import("jspdf-autotable")).default;
 
   const doc = new jsPDF();
-  const green = [21, 128, 61];
+  const navy = [30, 58, 95];
   let y = 20;
 
   doc.setFontSize(18);
-  doc.setTextColor(...green);
-  doc.text(`${schoolName || "School"} — Reports`, 14, y);
+  doc.setTextColor(...navy);
+  doc.text(`${schoolName || "School"} reports`, 14, y);
   y += 7;
   doc.setFontSize(10);
   doc.setTextColor(90);
@@ -26,7 +26,7 @@ export async function exportReportsPdf({ schoolName, term, overview, enrolment, 
       startY: y,
       head: [head],
       body,
-      headStyles: { fillColor: green },
+      headStyles: { fillColor: navy },
       styles: { fontSize: 9 },
       margin: { left: 14, right: 14 },
       didDrawPage: () => {},

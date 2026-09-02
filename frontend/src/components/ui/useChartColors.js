@@ -20,9 +20,12 @@ function read() {
   if (typeof window === "undefined") return fallback;
   const s = getComputedStyle(document.documentElement);
   const get = (name, def) => s.getPropertyValue(name).trim() || def;
+  const secondary = get("--secondary", fallback.secondary);
   return {
     primary: get("--primary", fallback.primary),
-    accent: get("--accent", fallback.accent),
+    secondary,
+    accent: secondary, // kept so older charts that reference `accent` still work
+    info: get("--info", fallback.info),
     success: get("--success", fallback.success),
     warning: get("--warning", fallback.warning),
     danger: get("--danger", fallback.danger),
@@ -34,14 +37,16 @@ function read() {
 }
 
 const fallback = {
-  primary: "#15803D",
-  accent: "#F59E0B",
+  primary: "#1E3A5F",
+  secondary: "#A0AC4F",
+  accent: "#A0AC4F",
+  info: "#2563EB",
   success: "#16A34A",
-  warning: "#D97706",
+  warning: "#F59E0B",
   danger: "#DC2626",
-  muted: "#78716C",
-  border: "#E7E5E4",
-  fg: "#1C1917",
+  muted: "#64748B",
+  border: "#E2E8F0",
+  fg: "#1F2937",
   surface: "#FFFFFF",
 };
 

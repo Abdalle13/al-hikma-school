@@ -4,47 +4,72 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /*
-  design tokens. light is the default, dark overrides the same names.
-  feel: trustworthy, calm, premium. deep green primary, warm stone neutrals,
-  soft layered shadows on light, surface contrast on dark.
+  design tokens. professional school palette:
+  navy primary (brand, buttons, sidebar), olive-green secondary (accents,
+  active items), cool slate neutrals, clear status colours. light is default.
 */
 :root {
-  --primary: #15803d;
-  --primary-hover: #166534;
-  --primary-soft: #f0fdf4;
+  --primary: #1e3a5f;
+  --primary-hover: #162d49;
+  --primary-soft: #e8f0f7;
   --on-primary: #ffffff;
-  --accent: #f59e0b;
-  --bg: #f8f7f4;
-  --surface: #ffffff;
-  --surface-2: #f2f1ec;
-  --border: #e7e4dd;
-  --fg: #1a1712;
-  --muted: #77726a;
-  --success: #16a34a;
-  --warning: #d97706;
-  --danger: #dc2626;
 
-  --shadow-sm: 0 1px 2px rgb(20 15 8 / 0.05);
-  --shadow-card: 0 1px 2px rgb(20 15 8 / 0.04), 0 10px 30px -12px rgb(20 15 8 / 0.12);
-  --shadow-card-hover: 0 2px 6px rgb(20 15 8 / 0.06), 0 20px 44px -14px rgb(20 15 8 / 0.2);
-  --shadow-header: 0 1px 0 rgb(20 15 8 / 0.06), 0 10px 30px -18px rgb(20 15 8 / 0.22);
+  --secondary: #a0ac4f;
+  --secondary-hover: #89943f;
+  --secondary-soft: #f1f4de;
+
+  --bg: #f7f9fc;
+  --surface: #ffffff;
+  --surface-2: #f1f5f9;
+  --border: #e2e8f0;
+
+  --fg: #1f2937;
+  --muted: #64748b;
+
+  --success: #16a34a;
+  --warning: #f59e0b;
+  --danger: #dc2626;
+  --info: #2563eb;
+
+  /* the left sidebar stays dark navy in both themes */
+  --sidebar: #1e3a5f;
+  --sidebar-hover: #274b78;
+  --sidebar-fg: #c7d5e5;
+  --sidebar-active: #b6c266;
+
+  --shadow-sm: 0 1px 2px rgb(15 23 42 / 0.06);
+  --shadow-card: 0 1px 2px rgb(15 23 42 / 0.04), 0 10px 30px -12px rgb(15 23 42 / 0.12);
+  --shadow-card-hover: 0 2px 6px rgb(15 23 42 / 0.06), 0 20px 44px -14px rgb(15 23 42 / 0.2);
+  --shadow-header: 0 1px 0 rgb(15 23 42 / 0.06), 0 10px 30px -18px rgb(15 23 42 / 0.22);
 }
 
 .dark {
-  --primary: #34d399;
-  --primary-hover: #6ee7b7;
-  --primary-soft: #10241d;
-  --on-primary: #05231a;
-  --accent: #fbbf24;
-  --bg: #14120f;
-  --surface: #201d19;
-  --surface-2: #2a2622;
-  --border: #38332d;
-  --fg: #f6f4f0;
-  --muted: #a8a29a;
+  --primary: #6ea0d4;
+  --primary-hover: #8fb8e0;
+  --primary-soft: #17273a;
+  --on-primary: #0b1b2e;
+
+  --secondary: #bcc972;
+  --secondary-hover: #cdd88c;
+  --secondary-soft: #1e2417;
+
+  --bg: #0f1520;
+  --surface: #1a2230;
+  --surface-2: #232d3d;
+  --border: #33404f;
+
+  --fg: #e8edf3;
+  --muted: #94a3b8;
+
   --success: #4ade80;
   --warning: #fbbf24;
   --danger: #f87171;
+  --info: #60a5fa;
+
+  --sidebar: #131c28;
+  --sidebar-hover: #1f2b3a;
+  --sidebar-fg: #94a3b8;
+  --sidebar-active: #bcc972;
 
   --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
   --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3), 0 12px 32px -16px rgb(0 0 0 / 0.55);
@@ -52,13 +77,16 @@
   --shadow-header: 0 1px 0 rgb(0 0 0 / 0.4), 0 12px 30px -20px rgb(0 0 0 / 0.7);
 }
 
-/* expose the tokens as tailwind utilities: bg-bg, text-fg, border-border, bg-primary */
+/* expose the tokens as tailwind utilities */
 @theme inline {
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
   --color-primary-soft: var(--primary-soft);
   --color-on-primary: var(--on-primary);
-  --color-accent: var(--accent);
+  --color-secondary: var(--secondary);
+  --color-secondary-hover: var(--secondary-hover);
+  --color-secondary-soft: var(--secondary-soft);
+  --color-accent: var(--secondary);
   --color-bg: var(--bg);
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
@@ -68,6 +96,11 @@
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-danger: var(--danger);
+  --color-info: var(--info);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-hover: var(--sidebar-hover);
+  --color-sidebar-fg: var(--sidebar-fg);
+  --color-sidebar-active: var(--sidebar-active);
 
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-heading: "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
@@ -112,7 +145,6 @@
 }
 
 @layer components {
-  /* shared card look, so utilities and components stay in sync */
   .shadow-card {
     box-shadow: var(--shadow-card);
   }

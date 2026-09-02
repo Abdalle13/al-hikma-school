@@ -46,19 +46,19 @@ function SidebarShell({ user }) {
 
   return (
     <div className="min-h-screen bg-bg">
-      <aside className="fixed inset-y-0 left-0 hidden w-64 border-r border-border bg-surface lg:block">
+      <aside className="fixed inset-y-0 left-0 hidden w-64 bg-sidebar lg:block">
         <PortalSidebar role={user.role.toLowerCase()} basePath={roleHome(user.role)} />
       </aside>
 
       {open ? (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setOpen(false)} />
-          <div className="absolute inset-y-0 left-0 w-72 border-r border-border bg-surface shadow-card-hover">
+          <div className="absolute inset-y-0 left-0 w-72 bg-sidebar shadow-card-hover">
             <button
               type="button"
               onClick={() => setOpen(false)}
               aria-label="Close menu"
-              className="absolute right-3 top-4 rounded-lg p-1.5 text-muted hover:bg-surface-2 hover:text-fg"
+              className="absolute right-3 top-4 rounded-lg p-1.5 text-white/60 hover:bg-white/10 hover:text-white"
             >
               <X className="h-5 w-5" />
             </button>
