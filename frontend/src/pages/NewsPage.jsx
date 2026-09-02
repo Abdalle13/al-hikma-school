@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Newspaper } from "lucide-react";
 import { Card } from "../components/ui/Card.jsx";
 import { Section } from "../components/ui/Section.jsx";
-import { SectionHeading } from "../components/ui/SectionHeading.jsx";
+import { PageHero } from "../components/ui/PageHero.jsx";
 import { Skeleton } from "../components/ui/Skeleton.jsx";
 import { EmptyState } from "../components/ui/EmptyState.jsx";
 import { FadeIn } from "../components/ui/FadeIn.jsx";
@@ -25,14 +25,13 @@ export default function NewsPage() {
   }, []);
 
   return (
-    <Section>
-      <SectionHeading
+    <div>
+      <PageHero
         eyebrow="News and events"
         title="From the school"
         lead="Announcements the school has shared publicly."
       />
-
-      <div className="mt-12">
+      <Section>
         {items === null ? (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {[0, 1, 2, 3, 4, 5].map((i) => (
@@ -63,7 +62,7 @@ export default function NewsPage() {
             ))}
           </div>
         )}
-      </div>
-    </Section>
+      </Section>
+    </div>
   );
 }

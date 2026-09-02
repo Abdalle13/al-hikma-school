@@ -7,7 +7,7 @@ import { Textarea } from "../components/ui/Textarea.jsx";
 import { Button } from "../components/ui/Button.jsx";
 import { Card } from "../components/ui/Card.jsx";
 import { Section } from "../components/ui/Section.jsx";
-import { SectionHeading } from "../components/ui/SectionHeading.jsx";
+import { PageHero } from "../components/ui/PageHero.jsx";
 import { FadeIn } from "../components/ui/FadeIn.jsx";
 import api, { apiError } from "../utils/api.js";
 
@@ -94,16 +94,13 @@ export default function ContactPage() {
 
   return (
     <div>
+      <PageHero
+        eyebrow="Contact"
+        title="Get in touch"
+        lead="Questions about admissions, fees or anything else, send a message or call the office."
+      />
       <Section>
-        <FadeIn>
-          <SectionHeading
-            eyebrow="Contact"
-            title="Get in touch"
-            lead="Questions about admissions, fees or anything else, send a message or call the office."
-          />
-        </FadeIn>
-
-        <div className="mt-12 grid gap-8 lg:grid-cols-2 lg:items-start">
+        <div className="grid gap-8 lg:grid-cols-2 lg:items-start">
           <FadeIn>
             <div className="grid gap-4 sm:grid-cols-2">
               {details.map((d) => {

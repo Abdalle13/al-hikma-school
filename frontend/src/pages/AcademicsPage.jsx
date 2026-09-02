@@ -5,6 +5,7 @@ import { Card } from "../components/ui/Card.jsx";
 import { Badge } from "../components/ui/Badge.jsx";
 import { Section } from "../components/ui/Section.jsx";
 import { SectionHeading } from "../components/ui/SectionHeading.jsx";
+import { PageHero } from "../components/ui/PageHero.jsx";
 import { FadeIn } from "../components/ui/FadeIn.jsx";
 
 const programmes = [
@@ -55,15 +56,11 @@ const facilities = [
 export default function AcademicsPage() {
   return (
     <div>
-      <Section>
-        <FadeIn>
-          <SectionHeading
-            eyebrow="Academics"
-            title="A full academic day, every day"
-            lead="Students follow a structured timetable from primary through secondary, with the Quran programme built into the week."
-          />
-        </FadeIn>
-      </Section>
+      <PageHero
+        eyebrow="Academics"
+        title="A full academic day, every day"
+        lead="Students follow a structured timetable from primary through secondary, with the Quran programme built into the week."
+      />
 
       <Section tone="surface">
         <FadeIn>

@@ -3,6 +3,7 @@ import { Compass, Eye, HeartHandshake, ShieldCheck, Sprout, Target } from "lucid
 import { Card } from "../components/ui/Card.jsx";
 import { Section } from "../components/ui/Section.jsx";
 import { SectionHeading } from "../components/ui/SectionHeading.jsx";
+import { PageHero } from "../components/ui/PageHero.jsx";
 import { FadeIn } from "../components/ui/FadeIn.jsx";
 
 const values = [
@@ -24,15 +25,11 @@ export default function AboutPage() {
 
   return (
     <div>
-      <Section>
-        <FadeIn>
-          <SectionHeading
-            eyebrow="About us"
-            title={`The ${schoolName} story`}
-            lead="We started as a small community school and grew by keeping one promise: know every child, and tell their family the truth about how they are doing."
-          />
-        </FadeIn>
-      </Section>
+      <PageHero
+        eyebrow="About us"
+        title={`The ${schoolName} story`}
+        lead="We started as a small community school and grew by keeping one promise: know every child, and tell their family the truth about how they are doing."
+      />
 
       <Section tone="surface">
         <div className="grid gap-5 md:grid-cols-2">

@@ -8,6 +8,7 @@ import { Button } from "../components/ui/Button.jsx";
 import { Card } from "../components/ui/Card.jsx";
 import { Section } from "../components/ui/Section.jsx";
 import { SectionHeading } from "../components/ui/SectionHeading.jsx";
+import { PageHero } from "../components/ui/PageHero.jsx";
 import { FadeIn } from "../components/ui/FadeIn.jsx";
 import api, { apiError } from "../utils/api.js";
 
@@ -153,15 +154,11 @@ function ApplicationForm() {
 export default function AdmissionsPage() {
   return (
     <div>
-      <Section>
-        <FadeIn>
-          <SectionHeading
-            eyebrow="Admissions"
-            title="Applying is simple"
-            lead="Fill in the form below and the school will take it from there. There is no fee to apply."
-          />
-        </FadeIn>
-      </Section>
+      <PageHero
+        eyebrow="Admissions"
+        title="Applying is simple"
+        lead="Fill in the form below and the school will take it from there. There is no fee to apply."
+      />
 
       <Section tone="surface">
         <FadeIn>
