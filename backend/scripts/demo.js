@@ -76,6 +76,7 @@ async function seedDemo() {
           password: "teacher123",
           role: "Teacher",
           status: "Active",
+          mustChangePassword: false,
           phone: `+25261${1000000 + i}`,
         }
       )
@@ -129,6 +130,7 @@ async function seedDemo() {
           password: "parent123",
           role: "Parent",
           status: "Active",
+          mustChangePassword: false,
           phone: `+25262${2000000 + i}`,
         }
       )
@@ -149,6 +151,7 @@ async function seedDemo() {
         password: "student123",
         role: "Student",
         status: "Active",
+        mustChangePassword: false,
         gender: i % 2 === 0 ? "Male" : "Female",
         dob: new Date(2013 + (i % 3), i % 12, (i % 27) + 1),
         schoolClass: cls._id,
@@ -282,6 +285,9 @@ async function seedDemo() {
       createdBy: cls0.classTeacher,
     });
   }
+
+  // let the seeded admin log straight in while demoing
+  await User.updateOne({ role: "Admin" }, { $set: { mustChangePassword: false } });
 
   console.log(
     `demo data ready: ${teachers.length} teachers, ${parents.length} parents, ${students.length} students, ${classes.length} classes`

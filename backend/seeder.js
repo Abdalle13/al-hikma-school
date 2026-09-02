@@ -28,7 +28,15 @@ async function run() {
   } else {
     const existing = await User.findOne({ email: admin.email });
     if (existing) {
-      console.log(`admin ${admin.email} already exists, nothing to do`.gray);
+      // idempotent and predictable: line the account back up with the env
+      // values so the documented login always works.
+      existing.name = admin.name;
+      existing.role = "Admin";
+      existing.status = "Active";
+      existing.password = admin.password;
+      existing.mustChangePassword = true;
+      await existing.save();
+      console.log(`admin ${admin.email} reset to the password in .env`.green);
     } else {
       await User.create({
         name: admin.name,
@@ -39,8 +47,8 @@ async function run() {
         mustChangePassword: true,
       });
       console.log(`created admin ${admin.email} with password "${admin.password}"`.green);
-      console.log("change this password after the first login".gray);
     }
+    console.log("change this password after the first login".gray);
   }
 
   await mongoose.connection.close();
