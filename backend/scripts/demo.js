@@ -337,7 +337,7 @@ async function seedDemo() {
         email: "info@alhikmaschool.so",
         currency: "USD",
         socials: {
-          facebook: "https://facebook.com/alhikmaschool",
+          facebook: "",
           instagram: "",
           whatsapp: "https://wa.me/252619157381",
         },
