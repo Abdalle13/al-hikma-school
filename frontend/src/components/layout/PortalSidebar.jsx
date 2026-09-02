@@ -60,44 +60,36 @@ const modulesByRole = {
 const itemClass = ({ isActive }) =>
   cn(
     "group relative flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors",
-    isActive
-      ? "bg-white/10 text-white"
-      : "text-sidebar-fg hover:bg-white/5 hover:text-white"
+    isActive ? "bg-primary/10 text-primary" : "text-muted hover:bg-surface-2 hover:text-fg"
   );
 
-function ActiveBar({ isActive }) {
-  return (
-    <span
-      aria-hidden="true"
-      className={cn(
-        "absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-full bg-sidebar-active transition-opacity",
-        isActive ? "opacity-100" : "opacity-0"
-      )}
-    />
+const activeBar = (isActive) =>
+  cn(
+    "absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-full bg-primary transition-opacity",
+    isActive ? "opacity-100" : "opacity-0"
   );
-}
 
 export function PortalSidebar({ role = "admin", basePath = "/admin", onNavigate }) {
   const modules = modulesByRole[role] || modulesByRole.admin;
 
   return (
-    <div className="flex h-full flex-col bg-sidebar">
-      <div className="flex h-16 items-center border-b border-white/10 px-5">
-        <Brand to={basePath} onDark />
+    <div className="flex h-full flex-col">
+      <div className="flex h-16 items-center border-b border-border px-5">
+        <Brand to={basePath} />
       </div>
 
       <nav className="flex-1 overflow-y-auto px-3 py-4">
         <NavLink to={basePath} end onClick={onNavigate} className={itemClass}>
           {({ isActive }) => (
             <>
-              <ActiveBar isActive={isActive} />
-              <LayoutDashboard className={cn("h-4 w-4 shrink-0", isActive && "text-sidebar-active")} />
+              <span className={activeBar(isActive)} aria-hidden="true" />
+              <LayoutDashboard className="h-4 w-4 shrink-0" />
               Dashboard
             </>
           )}
         </NavLink>
 
-        <p className="px-3 pb-1.5 pt-5 text-[11px] font-semibold uppercase tracking-[0.12em] text-white/40">
+        <p className="px-3 pb-1.5 pt-5 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted">
           Modules
         </p>
         <ul className="flex flex-col gap-0.5">
@@ -107,14 +99,14 @@ export function PortalSidebar({ role = "admin", basePath = "/admin", onNavigate 
               return (
                 <li
                   key={m.label}
-                  className="flex items-center justify-between gap-3 rounded-xl px-3 py-2 text-sm text-white/35"
+                  className="flex items-center justify-between gap-3 rounded-xl px-3 py-2 text-sm text-muted/70"
                   title="Available in a later phase"
                 >
                   <span className="flex items-center gap-3">
                     <Icon className="h-4 w-4 shrink-0" />
                     {m.label}
                   </span>
-                  <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-medium">soon</span>
+                  <span className="rounded-full bg-surface-2 px-2 py-0.5 text-[10px] font-medium">soon</span>
                 </li>
               );
             }
@@ -122,8 +114,8 @@ export function PortalSidebar({ role = "admin", basePath = "/admin", onNavigate 
               <NavLink key={m.label} to={m.to} onClick={onNavigate} className={itemClass}>
                 {({ isActive }) => (
                   <>
-                    <ActiveBar isActive={isActive} />
-                    <Icon className={cn("h-4 w-4 shrink-0", isActive && "text-sidebar-active")} />
+                    <span className={activeBar(isActive)} aria-hidden="true" />
+                    <Icon className="h-4 w-4 shrink-0" />
                     {m.label}
                   </>
                 )}

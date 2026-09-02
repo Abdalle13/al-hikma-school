@@ -300,11 +300,11 @@ export async function reportCardPdf(req, res, next) {
     const autoTable = (await import("jspdf-autotable")).default;
 
     const doc = new jsPDF();
-    const navy = [30, 58, 95];
+    const green = [21, 128, 61];
 
     doc.setFontSize(18);
-    doc.setTextColor(...navy);
-    doc.text("Report card", 14, 20);
+    doc.setTextColor(...green);
+    doc.text("Report Card", 14, 20);
 
     doc.setFontSize(10);
     doc.setTextColor(40);
@@ -324,7 +324,7 @@ export async function reportCardPdf(req, res, next) {
         `${s.percentage}%`,
         s.grade,
       ]),
-      headStyles: { fillColor: navy },
+      headStyles: { fillColor: green },
       styles: { fontSize: 10 },
     });
 
