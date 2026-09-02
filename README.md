@@ -122,14 +122,40 @@ Demo logins after `npm run demo`:
 
 ## Deployment (Vercel)
 
-Two separate Vercel projects, one per folder.
+Two separate Vercel projects, both from this one repo, each with a different
+**Root Directory**.
 
-- **backend**: root `backend/`. `vercel.json` builds `server.js` and routes
-  everything to it. Set the env vars from `.env.example` in the project settings.
-  `server.js` calls `listen()` only off Vercel.
-- **frontend**: root `frontend/`. A static Vite build. Set `VITE_API_URL` to the
-  backend project's URL plus `/api`, and add that URL to `FRONTEND_URL` on the
-  backend for CORS.
+1. **MongoDB Atlas**: use a cluster that is reachable from Vercel. Under Network
+   Access allow `0.0.0.0/0` (Vercel has no fixed egress IP on the Hobby plan).
+
+2. **Backend project**: import the repo, set Root Directory to `backend`. The
+   `backend/vercel.json` builds `server.js` and sends every request to it;
+   `server.js` calls `listen()` only for local dev. Add these environment
+   variables (values from `backend/.env.example`):
+   `MONGODB_URI`, `JWT_SECRET`, `JWT_EXPIRES_IN`, `IMAGEKIT_URL_ENDPOINT`,
+   `IMAGEKIT_PUBLIC_KEY`, `IMAGEKIT_PRIVATE_KEY`, `EMAIL_HOST`, `EMAIL_PORT`,
+   `EMAIL_USER`, `EMAIL_PASS`, `EMAIL_FROM`, `EVC_DEMO_PIN`. Leave `FRONTEND_URL`
+   for step 4. Deploy, then note the URL, for example
+   `https://your-backend.vercel.app`. Check `…/health` returns `{ "status": "ok" }`.
+
+3. **Frontend project**: import the same repo again, set Root Directory to
+   `frontend`. Vercel detects Vite. Set `VITE_API_URL` to the backend URL plus
+   `/api` (for example `https://your-backend.vercel.app/api`). Deploy, then note
+   the URL, for example `https://your-school.vercel.app`. `frontend/vercel.json`
+   sends unknown paths to `index.html` so deep links survive a refresh.
+
+4. **Close the loop**: back in the backend project, set `FRONTEND_URL` to the
+   frontend URL (no trailing slash) and redeploy. CORS only allows that origin.
+
+5. **First admin**: the app has no public sign up. Run the seeder once against the
+   production database from your machine:
+   `cd backend`, put the production `MONGODB_URI` and the `ADMIN_*` values in
+   `backend/.env`, then `npm run data:import`. Log in with `ADMIN_EMAIL` /
+   `ADMIN_PASSWORD` and change the password.
+
+Notes: the in-memory rate limiter and the 30s Mongo selection timeout are tuned
+for a long-lived server; on serverless they still work but a cold start that also
+has to connect to Atlas can be slow the first time.
 
 ## API surface
 

@@ -35,6 +35,10 @@ if (!process.env.JWT_SECRET) {
 
 const app = express();
 
+// behind Vercel's proxy: trust the first hop so req.ip and the rate limiter
+// read the real client address from X-Forwarded-For. locally this is a no-op.
+app.set("trust proxy", 1);
+
 app.use(helmet());
 
 // cors allow list: the configured frontend plus local dev
