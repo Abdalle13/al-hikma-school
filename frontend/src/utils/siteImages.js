@@ -8,6 +8,7 @@ export const siteImages = {
   building: u("1562774053-701939374585", 1800),
   buildingModern: u("1592066575517-58df903152f2", 1400),
   classroom: u("1580582932707-520aed937b7b", 1300),
+  study: u("1456513080510-7bf3a84b82f8", 1300),
   library: u("1497633762265-9d179a990aa6", 1100),
   libraryShelves: u("1524995997946-a1c2e315a42f", 1300),
 };

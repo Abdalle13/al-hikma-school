@@ -78,8 +78,12 @@
 
 @layer base {
   html {
-    color-scheme: light dark;
+    color-scheme: light;
     scroll-behavior: smooth;
+  }
+
+  html.dark {
+    color-scheme: dark;
   }
 
   body {

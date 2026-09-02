@@ -16,7 +16,9 @@ function getInitialTheme() {
   } catch {
     // localStorage can throw in private mode
   }
-  return window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  // default to the light theme for everyone; the toggle still lets a
+  // visitor switch to dark and that choice is remembered.
+  return "light";
 }
 
 export function ThemeProvider({ children }) {

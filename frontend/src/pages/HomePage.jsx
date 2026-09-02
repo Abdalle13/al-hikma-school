@@ -296,8 +296,8 @@ export default function HomePage() {
             </div>
             <div className="relative min-h-[220px] md:min-h-full">
               <img
-                src={siteImages.building}
-                alt="The school building"
+                src={siteImages.study}
+                alt="Open books and notes on a desk"
                 loading="lazy"
                 className="absolute inset-0 h-full w-full object-cover"
               />
