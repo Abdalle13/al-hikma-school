@@ -2,8 +2,8 @@ import { forwardRef, useId } from "react";
 import { cn } from "../../utils/formatter.js";
 
 const fieldBase =
-  "w-full rounded-2xl border border-border bg-surface px-3 py-2 text-sm text-fg placeholder:text-muted " +
-  "focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent " +
+  "w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-fg shadow-sm placeholder:text-muted/70 " +
+  "transition-colors focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30 " +
   "disabled:cursor-not-allowed disabled:opacity-50";
 
 function Field({ label, hint, error, htmlFor, children }) {
@@ -35,7 +35,7 @@ export const Input = forwardRef(function Input(
       <input
         ref={ref}
         id={inputId}
-        className={cn(fieldBase, error && "border-danger focus:ring-danger", className)}
+        className={cn(fieldBase, error && "border-danger focus:border-danger focus:ring-danger/30", className)}
         {...props}
       />
     </Field>

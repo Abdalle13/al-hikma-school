@@ -31,7 +31,7 @@ function LogoutButton({ className }) {
       aria-label="Log out"
       title="Log out"
       className={cn(
-        "inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-border text-fg transition-colors hover:bg-surface-2",
+        "inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border text-muted transition-colors hover:border-danger/40 hover:text-danger",
         className
       )}
     >
@@ -52,13 +52,16 @@ function SidebarShell({ user }) {
 
       {open ? (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setOpen(false)} />
-          <div className="absolute inset-y-0 left-0 w-64 bg-surface">
-            <div className="flex justify-end p-2">
-              <button type="button" onClick={() => setOpen(false)} aria-label="Close menu">
-                <X className="h-5 w-5 text-muted" />
-              </button>
-            </div>
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setOpen(false)} />
+          <div className="absolute inset-y-0 left-0 w-72 border-r border-border bg-surface shadow-card-hover">
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              aria-label="Close menu"
+              className="absolute right-3 top-4 rounded-lg p-1.5 text-muted hover:bg-surface-2 hover:text-fg"
+            >
+              <X className="h-5 w-5" />
+            </button>
             <PortalSidebar
               role={user.role.toLowerCase()}
               basePath={roleHome(user.role)}
@@ -69,22 +72,31 @@ function SidebarShell({ user }) {
       ) : null}
 
       <div className="lg:pl-64">
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-bg/90 px-4 backdrop-blur">
+        <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-3 border-b border-border bg-bg/85 px-4 backdrop-blur-lg sm:px-6">
           <button
             type="button"
-            className="rounded-2xl border border-border p-2 text-fg lg:hidden"
+            className="rounded-xl border border-border p-2 text-fg lg:hidden"
             onClick={() => setOpen(true)}
             aria-label="Open menu"
           >
             <Menu className="h-5 w-5" />
           </button>
           <div className="hidden lg:block" />
-          <div className="flex items-center gap-3">
-            <ThemeToggle />
-            <Link to="/" className="hidden text-sm text-muted hover:text-fg sm:block">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Link
+              to="/"
+              className="hidden rounded-xl px-3 py-1.5 text-sm text-muted transition-colors hover:bg-surface-2 hover:text-fg sm:block"
+            >
               View website
             </Link>
-            <Avatar name={user.name} size="sm" />
+            <ThemeToggle />
+            <div className="flex items-center gap-2 rounded-xl border border-border bg-surface py-1 pl-1 pr-2.5">
+              <Avatar name={user.name} size="sm" />
+              <div className="hidden leading-tight sm:block">
+                <p className="text-xs font-semibold text-fg">{user.name.split(" ")[0]}</p>
+                <p className="text-[11px] capitalize text-muted">{user.role}</p>
+              </div>
+            </div>
             <LogoutButton />
           </div>
         </header>
@@ -153,7 +165,7 @@ function ParentShell({ user }) {
             <NavLink
               to="/parent/notifications"
               aria-label="Messages"
-              className="relative rounded-2xl border border-border p-2 text-fg"
+              className="relative rounded-xl border border-border p-2 text-muted transition-colors hover:text-fg"
             >
               <Bell className="h-4 w-4" />
               {unread > 0 ? (
@@ -175,7 +187,7 @@ function ParentShell({ user }) {
                 type="button"
                 onClick={() => setSelectedId(c._id)}
                 className={cn(
-                  "flex shrink-0 items-center gap-2 rounded-2xl border px-3 py-2 text-sm font-medium transition-colors",
+                  "flex shrink-0 items-center gap-2 rounded-xl border px-3 py-2 text-sm font-medium transition-colors",
                   c._id === selectedId
                     ? "border-primary bg-primary/10 text-primary"
                     : "border-border bg-surface text-muted hover:text-fg"

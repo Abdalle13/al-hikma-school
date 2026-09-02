@@ -57,11 +57,11 @@ export default function ChangePasswordPage() {
       </header>
 
       <main className="flex flex-1 items-center justify-center px-4 pb-16">
-        <Card className="w-full max-w-md">
-          <h1 className="text-xl font-bold text-fg">
+        <Card className="w-full max-w-md p-7 sm:p-8">
+          <h1 className="font-heading text-xl font-bold text-fg">
             {mustChangePassword ? "Set your own password" : "Change your password"}
           </h1>
-          <p className="mt-1 text-sm text-muted">
+          <p className="mt-1.5 text-sm text-muted">
             {mustChangePassword
               ? `Welcome${user?.name ? `, ${user.name.split(" ")[0]}` : ""}. This is a one-time step before you continue.`
               : "Update the password on your account."}
