@@ -10,7 +10,7 @@ import { Button } from "../components/ui/Button.jsx";
 import { StatCard } from "../components/ui/StatCard.jsx";
 import { Card, CardHeader } from "../components/ui/Card.jsx";
 import { Table } from "../components/ui/Table.jsx";
-import { Spinner } from "../components/ui/Spinner.jsx";
+import { Skeleton } from "../components/ui/Skeleton.jsx";
 import { useChartColors } from "../components/ui/useChartColors.js";
 import api, { apiError } from "../utils/api.js";
 import { formatCurrency } from "../utils/formatter.js";
@@ -36,15 +36,13 @@ export default function AdminReportsPage() {
   const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
-    Promise.all([
-      api.get("/reports/overview"),
-      api.get("/reports/enrolment"),
-      api.get("/reports/attendance"),
-      api.get("/reports/exams"),
-      api.get("/reports/fees"),
-    ])
-      .then(([o, e, a, x, f]) => setData({
-        overview: o.data, enrolment: e.data, attendance: a.data, exams: x.data, fees: f.data,
+    api.get("/reports/dashboard")
+      .then(({ data }) => setData({
+        overview: data.overview || {},
+        enrolment: data.enrolment || {},
+        attendance: data.attendance || {},
+        exams: data.exams || {},
+        fees: data.fees || {},
       }))
       .catch((err) => { toast.error(apiError(err, "Could not load the reports")); setData({}); });
   }, []);
@@ -65,7 +63,23 @@ export default function AdminReportsPage() {
   }
 
   if (data === null) {
-    return <div className="grid place-items-center py-24"><Spinner /></div>;
+    return (
+      <div>
+        <PageHeader
+          title="Reports"
+          description="Enrolment, attendance, exam performance and fee collection at a glance."
+        />
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-24" />)}
+        </div>
+        <div className="mt-6 grid gap-4 lg:grid-cols-2">
+          {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-72" />)}
+        </div>
+        <div className="mt-6 grid gap-4 lg:grid-cols-2">
+          {Array.from({ length: 2 }).map((_, i) => <Skeleton key={i} className="h-56" />)}
+        </div>
+      </div>
+    );
   }
 
   const { overview = {}, enrolment = {}, attendance = {}, exams = {}, fees = {} } = data;

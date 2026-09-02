@@ -57,6 +57,7 @@ const StudentDashboard = lazy(() => import("./pages/StudentDashboard.jsx"));
 const StudentAttendancePage = lazy(() => import("./pages/StudentAttendancePage.jsx"));
 const StudentGradesPage = lazy(() => import("./pages/StudentGradesPage.jsx"));
 const StudentTimetablePage = lazy(() => import("./pages/StudentTimetablePage.jsx"));
+const StudentNewsPage = lazy(() => import("./pages/StudentNewsPage.jsx"));
 
 function FullPageSpinner() {
   return (
@@ -165,6 +166,7 @@ export default function App() {
               <Route path="attendance" element={<StudentAttendancePage />} />
               <Route path="grades" element={<StudentGradesPage />} />
               <Route path="timetable" element={<StudentTimetablePage />} />
+              <Route path="news" element={<StudentNewsPage />} />
             </Route>
           </Route>
         </Route>
