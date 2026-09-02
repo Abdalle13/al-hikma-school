@@ -394,11 +394,11 @@ export async function invoiceReceipt(req, res, next) {
     const { jsPDF } = await import("jspdf");
     const autoTable = (await import("jspdf-autotable")).default;
     const doc = new jsPDF();
-    const green = [21, 128, 61];
+    const navy = [30, 58, 95];
 
     doc.setFontSize(18);
-    doc.setTextColor(...green);
-    doc.text("Payment Receipt", 14, 20);
+    doc.setTextColor(...navy);
+    doc.text("Payment receipt", 14, 20);
 
     doc.setFontSize(10);
     doc.setTextColor(40);
@@ -417,7 +417,7 @@ export async function invoiceReceipt(req, res, next) {
         ["Total paid to date", String(invoice.amountPaid)],
         ["Balance", String(invoice.balance)],
       ],
-      headStyles: { fillColor: green },
+      headStyles: { fillColor: navy },
       styles: { fontSize: 10 },
     });
 
