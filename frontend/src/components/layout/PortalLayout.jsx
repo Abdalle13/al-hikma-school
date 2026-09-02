@@ -1,5 +1,5 @@
 import { Suspense, useEffect, useState } from "react";
-import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Bell,
@@ -83,12 +83,6 @@ function SidebarShell({ user }) {
           </button>
           <div className="hidden lg:block" />
           <div className="flex items-center gap-2 sm:gap-3">
-            <Link
-              to="/"
-              className="hidden rounded-xl px-3 py-1.5 text-sm text-muted transition-colors hover:bg-surface-2 hover:text-fg sm:block"
-            >
-              View website
-            </Link>
             <ThemeToggle />
             <div className="flex items-center gap-2 rounded-xl border border-border bg-surface py-1 pl-1 pr-2.5">
               <Avatar name={user.name} size="sm" />
@@ -97,7 +91,6 @@ function SidebarShell({ user }) {
                 <p className="text-[11px] capitalize text-muted">{user.role}</p>
               </div>
             </div>
-            <LogoutButton />
           </div>
         </header>
 

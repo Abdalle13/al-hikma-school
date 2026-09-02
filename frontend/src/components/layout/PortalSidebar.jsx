@@ -1,4 +1,5 @@
 import { NavLink } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import {
   LayoutDashboard,
   Users,
@@ -14,9 +15,11 @@ import {
   Megaphone,
   FileText,
   BarChart3,
+  LogOut,
 } from "lucide-react";
 import { cn } from "../../utils/formatter.js";
 import { Brand } from "../ui/Brand.jsx";
+import { logout } from "../../redux/slices/authSlice.js";
 
 // which modules each role sees. a "to" means the screen is built and live,
 // no "to" means it is still coming in a later phase (shown as "soon").
@@ -70,6 +73,7 @@ const activeBar = (isActive) =>
   );
 
 export function PortalSidebar({ role = "admin", basePath = "/admin", onNavigate }) {
+  const dispatch = useDispatch();
   const modules = modulesByRole[role] || modulesByRole.admin;
 
   return (
@@ -89,10 +93,7 @@ export function PortalSidebar({ role = "admin", basePath = "/admin", onNavigate 
           )}
         </NavLink>
 
-        <p className="px-3 pb-1.5 pt-5 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted">
-          Modules
-        </p>
-        <ul className="flex flex-col gap-0.5">
+        <ul className="mt-1 flex flex-col gap-0.5">
           {modules.map((m) => {
             const Icon = m.icon;
             if (!m.to) {
@@ -124,6 +125,17 @@ export function PortalSidebar({ role = "admin", basePath = "/admin", onNavigate 
           })}
         </ul>
       </nav>
+
+      <div className="border-t border-border p-3">
+        <button
+          type="button"
+          onClick={() => dispatch(logout())}
+          className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-muted transition-colors hover:bg-danger/10 hover:text-danger"
+        >
+          <LogOut className="h-4 w-4 shrink-0" />
+          Log out
+        </button>
+      </div>
     </div>
   );
 }
