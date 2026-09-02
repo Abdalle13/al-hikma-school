@@ -69,8 +69,8 @@ export default function AcademicsPage() {
           <FadeIn delay={0.1}>
             <div className="overflow-hidden rounded-3xl border border-border shadow-card">
               <img
-                src={siteImages.classroom}
-                alt="A classroom set up for the school day"
+                src={siteImages.library}
+                alt="Books in the school library"
                 loading="lazy"
                 className="aspect-[4/3] w-full object-cover"
               />
@@ -169,8 +169,8 @@ export default function AcademicsPage() {
             </div>
             <div className="relative min-h-[220px] md:min-h-full">
               <img
-                src={siteImages.library}
-                alt="Bookshelves in the school library"
+                src={siteImages.classroom}
+                alt="A classroom at the school"
                 loading="lazy"
                 className="absolute inset-0 h-full w-full object-cover"
               />

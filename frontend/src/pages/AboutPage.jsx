@@ -70,8 +70,8 @@ export default function AboutPage() {
           <FadeIn>
             <div className="h-full overflow-hidden rounded-3xl border border-border shadow-card">
               <img
-                src={siteImages.building}
-                alt="The school building"
+                src={siteImages.classroom}
+                alt="Inside a classroom at the school"
                 loading="lazy"
                 className="h-full min-h-[280px] w-full object-cover"
               />

@@ -58,7 +58,7 @@ function NewsStrip() {
     let alive = true;
     api
       .get("/announcements/public")
-      .then(({ data }) => alive && setItems(data.announcements.slice(0, 3)))
+      .then(({ data }) => alive && setItems(data.announcements.slice(0, 6)))
       .catch(() => alive && setItems([]));
     return () => {
       alive = false;
@@ -67,8 +67,8 @@ function NewsStrip() {
 
   if (items === null) {
     return (
-      <div className="grid gap-5 sm:grid-cols-3">
-        {[0, 1, 2].map((i) => (
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {[0, 1, 2, 3, 4, 5].map((i) => (
           <Skeleton key={i} className="h-44" />
         ))}
       </div>
@@ -84,7 +84,7 @@ function NewsStrip() {
   }
 
   return (
-    <div className="grid gap-5 sm:grid-cols-3">
+    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {items.map((n, i) => (
         <FadeIn key={n._id} delay={i * 0.06}>
           <Card as={Link} to={`/news/${n._id}`} hover className="flex h-full flex-col">
@@ -115,26 +115,26 @@ export default function HomePage() {
           aria-hidden="true"
           className="absolute inset-0 -z-10 h-full w-full object-cover"
         />
-        <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/90 via-black/70 to-black/45" />
-        <div className="absolute inset-0 -z-10 bg-primary/15 mix-blend-multiply" />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/95 via-black/85 to-black/70" />
+        <div className="absolute inset-0 -z-10 bg-primary/20 mix-blend-multiply" />
         <div className="mx-auto max-w-[1200px] px-4">
-          <div className="max-w-2xl py-20 sm:py-28">
+          <div className="mx-auto max-w-2xl py-20 text-center sm:py-28">
             <FadeIn>
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-semibold text-white backdrop-blur-sm">
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-semibold text-white shadow-lg backdrop-blur-sm">
                 <GraduationCap className="h-3.5 w-3.5" />
                 Enrolling now for the new term
               </span>
-              <h1 className="mt-5 text-[38px] font-bold leading-[1.06] text-white sm:text-[48px] md:text-[54px]">
+              <h1 className="mt-5 text-[38px] font-bold leading-[1.06] text-white sm:text-[48px] md:text-[54px] [text-shadow:0_2px_20px_rgba(0,0,0,0.6)]">
                 A calm, organised school for Somali families
               </h1>
-              <p className="mt-6 max-w-xl text-[17px] leading-relaxed text-white/80">
+              <p className="mx-auto mt-6 max-w-xl text-[17px] leading-relaxed text-white/85 [text-shadow:0_1px_12px_rgba(0,0,0,0.5)]">
                 {tagline ||
                   "Primary and secondary education at " +
                     (schoolName || "our school") +
                     ", with attendance, report cards and fees your family can follow online."}
               </p>
-              <div className="mt-9 flex flex-wrap gap-3">
-                <Button as={Link} to="/admissions" size="xl">
+              <div className="mt-9 flex flex-wrap justify-center gap-3">
+                <Button as={Link} to="/admissions" size="xl" className="shadow-xl">
                   Apply now <ArrowRight className="h-4 w-4" />
                 </Button>
                 <Button
@@ -142,16 +142,16 @@ export default function HomePage() {
                   to="/login"
                   size="xl"
                   variant="outline"
-                  className="border border-white/50 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20"
+                  className="border border-white/50 bg-white/10 text-white shadow-xl backdrop-blur-sm hover:bg-white/20"
                 >
                   Portal login
                 </Button>
               </div>
-              <dl className="mt-10 grid max-w-md grid-cols-3 gap-6 border-t border-white/20 pt-7">
+              <dl className="mx-auto mt-10 grid max-w-md grid-cols-3 gap-6 border-t border-white/20 pt-7">
                 {stats.slice(0, 3).map((s) => (
                   <div key={s.label}>
                     <dt className="font-heading text-2xl font-bold text-white tabular-nums">{s.value}</dt>
-                    <dd className="mt-1 text-xs leading-snug text-white/70">{s.label}</dd>
+                    <dd className="mt-1 text-xs leading-snug text-white/75">{s.label}</dd>
                   </div>
                 ))}
               </dl>
