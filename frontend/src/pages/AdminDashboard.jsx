@@ -58,7 +58,7 @@ export default function AdminDashboard() {
             <Link
               key={q.to}
               to={q.to}
-              className="flex items-center gap-3 rounded-2xl border border-border bg-surface p-4 transition-colors hover:border-primary/40"
+              className="flex items-center gap-3 rounded-2xl border border-border bg-surface p-4 shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-card-hover"
             >
               <span className="grid h-10 w-10 place-items-center rounded-xl bg-primary/10 text-primary">
                 <Icon className="h-5 w-5" />
