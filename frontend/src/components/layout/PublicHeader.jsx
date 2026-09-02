@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { Button } from "../ui/Button.jsx";
 import { Brand } from "../ui/Brand.jsx";
@@ -26,26 +27,46 @@ export function PublicHeader() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const linkClass = ({ isActive }) =>
-    cn(
-      "rounded-xl px-3 py-2 text-sm font-medium transition-colors",
-      isActive ? "text-primary" : "text-muted hover:text-fg"
-    );
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
 
   return (
     <header
       className={cn(
-        "sticky top-0 z-40 border-b transition-colors",
-        scrolled ? "border-border bg-bg/80 backdrop-blur" : "border-transparent bg-bg"
+        "sticky top-0 z-50 transition-all duration-300",
+        scrolled
+          ? "border-b border-border bg-bg/85 shadow-header backdrop-blur-lg"
+          : "border-b border-transparent bg-bg"
       )}
     >
-      <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-4">
+      <div className="mx-auto flex h-18 max-w-[1200px] items-center justify-between px-4">
         <Brand />
 
         <nav className="hidden items-center gap-1 md:flex">
           {nav.map((item) => (
-            <NavLink key={item.to} to={item.to} end={item.end} className={linkClass}>
-              {item.label}
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.end}
+              className="group relative px-3.5 py-2 text-sm font-medium"
+            >
+              {({ isActive }) => (
+                <>
+                  <span className={cn("transition-colors", isActive ? "text-fg" : "text-muted group-hover:text-fg")}>
+                    {item.label}
+                  </span>
+                  <span
+                    className={cn(
+                      "absolute inset-x-3.5 -bottom-0.5 h-0.5 origin-left rounded-full bg-primary transition-transform duration-200",
+                      isActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
+                    )}
+                  />
+                </>
+              )}
             </NavLink>
           ))}
         </nav>
@@ -53,7 +74,7 @@ export function PublicHeader() {
         <div className="hidden items-center gap-2 md:flex">
           <ThemeToggle />
           <Button as={Link} to="/login" size="sm">
-            Login
+            Portal login
           </Button>
         </div>
 
@@ -68,34 +89,44 @@ export function PublicHeader() {
         </button>
       </div>
 
-      {open ? (
-        <div className="border-t border-border bg-bg px-4 py-3 md:hidden">
-          <nav className="flex flex-col gap-1">
-            {nav.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.end}
-                onClick={() => setOpen(false)}
-                className={({ isActive }) =>
-                  cn(
-                    "rounded-xl px-3 py-2 text-sm font-medium transition-colors",
-                    isActive ? "bg-surface-2 text-primary" : "text-muted hover:text-fg"
-                  )
-                }
-              >
-                {item.label}
-              </NavLink>
-            ))}
-          </nav>
-          <div className="mt-3 flex items-center gap-2">
-            <ThemeToggle />
-            <Button as={Link} to="/login" size="sm" className="flex-1" onClick={() => setOpen(false)}>
-              Login
-            </Button>
-          </div>
-        </div>
-      ) : null}
+      <AnimatePresence>
+        {open ? (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden border-t border-border bg-bg md:hidden"
+          >
+            <nav className="flex flex-col gap-1 px-4 py-4">
+              {nav.map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  end={item.end}
+                  onClick={() => setOpen(false)}
+                  className={({ isActive }) =>
+                    cn(
+                      "rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
+                      isActive
+                        ? "bg-primary-soft text-primary"
+                        : "text-muted hover:bg-surface-2 hover:text-fg"
+                    )
+                  }
+                >
+                  {item.label}
+                </NavLink>
+              ))}
+              <div className="mt-3 flex items-center gap-2 border-t border-border pt-3">
+                <ThemeToggle />
+                <Button as={Link} to="/login" size="sm" className="flex-1" onClick={() => setOpen(false)}>
+                  Portal login
+                </Button>
+              </div>
+            </nav>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </header>
   );
 }

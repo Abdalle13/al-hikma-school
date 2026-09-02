@@ -5,42 +5,59 @@
 
 /*
   design tokens. light is the default, dark overrides the same names.
-  feel: trustworthy, calm, organised. green primary, warm stone neutrals.
+  feel: trustworthy, calm, premium. deep green primary, warm stone neutrals,
+  soft layered shadows on light, surface contrast on dark.
 */
 :root {
   --primary: #15803d;
   --primary-hover: #166534;
+  --primary-soft: #f0fdf4;
+  --on-primary: #ffffff;
   --accent: #f59e0b;
-  --bg: #fafaf9;
+  --bg: #f8f7f4;
   --surface: #ffffff;
-  --surface-2: #f5f5f4;
-  --border: #e7e5e4;
-  --fg: #1c1917;
-  --muted: #78716c;
+  --surface-2: #f2f1ec;
+  --border: #e7e4dd;
+  --fg: #1a1712;
+  --muted: #77726a;
   --success: #16a34a;
   --warning: #d97706;
   --danger: #dc2626;
+
+  --shadow-sm: 0 1px 2px rgb(20 15 8 / 0.05);
+  --shadow-card: 0 1px 2px rgb(20 15 8 / 0.04), 0 10px 30px -12px rgb(20 15 8 / 0.12);
+  --shadow-card-hover: 0 2px 6px rgb(20 15 8 / 0.06), 0 20px 44px -14px rgb(20 15 8 / 0.2);
+  --shadow-header: 0 1px 0 rgb(20 15 8 / 0.06), 0 10px 30px -18px rgb(20 15 8 / 0.22);
 }
 
 .dark {
-  --primary: #4ade80;
-  --primary-hover: #22c55e;
+  --primary: #34d399;
+  --primary-hover: #6ee7b7;
+  --primary-soft: #10241d;
+  --on-primary: #05231a;
   --accent: #fbbf24;
-  --bg: #1c1917;
-  --surface: #292524;
-  --surface-2: #332e2b;
-  --border: #44403c;
-  --fg: #fafaf9;
-  --muted: #a8a29e;
+  --bg: #14120f;
+  --surface: #201d19;
+  --surface-2: #2a2622;
+  --border: #38332d;
+  --fg: #f6f4f0;
+  --muted: #a8a29a;
   --success: #4ade80;
   --warning: #fbbf24;
   --danger: #f87171;
+
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3), 0 12px 32px -16px rgb(0 0 0 / 0.55);
+  --shadow-card-hover: 0 2px 6px rgb(0 0 0 / 0.4), 0 22px 48px -18px rgb(0 0 0 / 0.65);
+  --shadow-header: 0 1px 0 rgb(0 0 0 / 0.4), 0 12px 30px -20px rgb(0 0 0 / 0.7);
 }
 
-/* expose the tokens as tailwind utilities: bg-bg, text-fg, border-border, bg-primary, etc */
+/* expose the tokens as tailwind utilities: bg-bg, text-fg, border-border, bg-primary */
 @theme inline {
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
+  --color-primary-soft: var(--primary-soft);
+  --color-on-primary: var(--on-primary);
   --color-accent: var(--accent);
   --color-bg: var(--bg);
   --color-surface: var(--surface);
@@ -56,11 +73,13 @@
   --font-heading: "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
 
   --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
 }
 
 @layer base {
   html {
     color-scheme: light dark;
+    scroll-behavior: smooth;
   }
 
   body {
@@ -69,6 +88,7 @@
     color: var(--fg);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
 
   h1,
@@ -79,10 +99,56 @@
   h6 {
     font-family: var(--font-heading);
     font-weight: 700;
+    letter-spacing: -0.02em;
   }
 
-  /* grades, money and ids line up in tables */
+  ::selection {
+    background: color-mix(in oklab, var(--primary) 24%, transparent);
+  }
+
   .tabular-nums {
     font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer components {
+  /* shared card look, so utilities and components stay in sync */
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+  .shadow-card-hover {
+    box-shadow: var(--shadow-card-hover);
+  }
+  .shadow-header {
+    box-shadow: var(--shadow-header);
+  }
+
+  /* seamless marquee for the testimonials rail */
+  .marquee-rail {
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+    mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  }
+  .marquee-track {
+    animation: marquee 48s linear infinite;
+  }
+  .marquee-rail:hover .marquee-track {
+    animation-play-state: paused;
+  }
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+  html {
+    scroll-behavior: auto;
   }
 }
