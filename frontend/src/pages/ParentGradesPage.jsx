@@ -1,4 +1,6 @@
 import { useOutletContext } from "react-router-dom";
+import { PageHeader } from "../components/ui/PageHeader.jsx";
+import { EmptyState } from "../components/ui/EmptyState.jsx";
 import { StudentGradesView } from "../components/ui/StudentGradesView.jsx";
 
 export default function ParentGradesPage() {
@@ -6,9 +8,15 @@ export default function ParentGradesPage() {
 
   return (
     <div>
-      <h1 className="mb-1 text-xl font-bold text-fg">Report cards</h1>
-      <p className="mb-5 text-sm text-muted">{selectedChild ? selectedChild.name : "Select a child"}</p>
-      {selectedChild ? <StudentGradesView studentId={selectedChild._id} /> : null}
+      <PageHeader
+        title="Report cards"
+        description={selectedChild ? `${selectedChild.name}'s published results, term by term.` : "Pick a child at the top."}
+      />
+      {selectedChild ? (
+        <StudentGradesView studentId={selectedChild._id} />
+      ) : (
+        <EmptyState title="No child selected" description="Choose a child at the top of the page." />
+      )}
     </div>
   );
 }

@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Megaphone } from "lucide-react";
+import { PageHeader } from "../components/ui/PageHeader.jsx";
+import { Card } from "../components/ui/Card.jsx";
 import { Spinner } from "../components/ui/Spinner.jsx";
 import { EmptyState } from "../components/ui/EmptyState.jsx";
 import { Badge } from "../components/ui/Badge.jsx";
@@ -15,8 +17,7 @@ export default function ParentNewsPage() {
 
   return (
     <div>
-      <h1 className="mb-1 text-xl font-bold text-fg">Announcements</h1>
-      <p className="mb-5 text-sm text-muted">Messages from the school for your family.</p>
+      <PageHeader title="Announcements" description="Messages from the school for your family." />
 
       {items === null ? (
         <div className="grid place-items-center py-12"><Spinner /></div>
@@ -25,16 +26,16 @@ export default function ParentNewsPage() {
       ) : (
         <div className="space-y-3">
           {items.map((a) => (
-            <div key={a._id} className="rounded-2xl border border-border bg-surface p-4">
-              <div className="flex items-center gap-2">
-                <h3 className="font-semibold text-fg">{a.title}</h3>
+            <Card key={a._id}>
+              <div className="flex flex-wrap items-center gap-2">
+                <h3 className="font-heading text-sm font-bold text-fg">{a.title}</h3>
                 {a.audience === "Class" && a.schoolClass ? (
                   <Badge tone="info">{a.schoolClass.name} {a.schoolClass.section}</Badge>
                 ) : null}
+                <span className="ml-auto text-xs text-muted">{formatDate(a.createdAt)}</span>
               </div>
-              <p className="mt-0.5 text-xs text-muted">{formatDate(a.createdAt)}</p>
-              <p className="mt-2 whitespace-pre-line text-sm text-fg">{a.body}</p>
-            </div>
+              <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-muted">{a.body}</p>
+            </Card>
           ))}
         </div>
       )}

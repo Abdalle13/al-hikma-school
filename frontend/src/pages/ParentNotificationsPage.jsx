@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import { BellOff } from "lucide-react";
 import { Button } from "../components/ui/Button.jsx";
 import { Badge } from "../components/ui/Badge.jsx";
+import { PageHeader } from "../components/ui/PageHeader.jsx";
 import { Spinner } from "../components/ui/Spinner.jsx";
 import { EmptyState } from "../components/ui/EmptyState.jsx";
 import { cn } from "../utils/formatter.js";
@@ -50,13 +51,17 @@ export default function ParentNotificationsPage() {
 
   return (
     <div>
-      <div className="mb-5 flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-bold text-fg">Messages</h1>
-          <p className="text-sm text-muted">{unread ? `${unread} unread` : "All caught up"}</p>
-        </div>
-        {unread ? <Button size="sm" variant="outline" onClick={markAll}>Mark all read</Button> : null}
-      </div>
+      <PageHeader
+        title="Messages"
+        description={unread ? `${unread} unread` : "All caught up"}
+        action={
+          unread ? (
+            <Button size="sm" variant="outline" onClick={markAll}>
+              Mark all read
+            </Button>
+          ) : null
+        }
+      />
 
       {items === null ? (
         <div className="grid place-items-center py-12"><Spinner /></div>

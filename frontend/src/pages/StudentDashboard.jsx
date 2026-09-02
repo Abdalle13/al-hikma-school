@@ -8,6 +8,7 @@ import { Card } from "../components/ui/Card.jsx";
 import { Badge } from "../components/ui/Badge.jsx";
 import { Spinner } from "../components/ui/Spinner.jsx";
 import api from "../utils/api.js";
+import { greeting } from "../utils/greeting.js";
 
 const quick = [
   { to: "/student/timetable", label: "Timetable", icon: CalendarClock },
@@ -46,7 +47,7 @@ export default function StudentDashboard() {
 
   return (
     <div>
-      <PageHeader title={`Welcome, ${me.name.split(" ")[0]}`} description="Your term at a glance." />
+      <PageHeader title={`${greeting()}, ${me.name.split(" ")[0]}`} description="Your term at a glance." />
 
       {data === null ? (
         <div className="grid place-items-center py-16">

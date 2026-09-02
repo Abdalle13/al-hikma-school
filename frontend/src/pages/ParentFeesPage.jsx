@@ -5,6 +5,7 @@ import { Wallet } from "lucide-react";
 import { Card } from "../components/ui/Card.jsx";
 import { Badge } from "../components/ui/Badge.jsx";
 import { Button } from "../components/ui/Button.jsx";
+import { PageHeader } from "../components/ui/PageHeader.jsx";
 import { Spinner } from "../components/ui/Spinner.jsx";
 import { EmptyState } from "../components/ui/EmptyState.jsx";
 import { InvoiceDetail } from "../components/ui/InvoiceDetail.jsx";
@@ -39,10 +40,14 @@ export default function ParentFeesPage() {
 
   return (
     <div>
-      <h1 className="mb-1 text-xl font-bold text-fg">Fees</h1>
-      <p className="mb-5 text-sm text-muted">{selectedChild ? selectedChild.name : "Select a child"}</p>
+      <PageHeader
+        title="Fees"
+        description={selectedChild ? `${selectedChild.name}'s invoices, payments and balance.` : "Pick a child at the top."}
+      />
 
-      {invoices === null ? (
+      {!selectedChild ? (
+        <EmptyState icon={Wallet} title="No child selected" description="Choose a child at the top of the page." />
+      ) : invoices === null ? (
         <div className="grid place-items-center py-12"><Spinner /></div>
       ) : invoices.length === 0 ? (
         <EmptyState icon={Wallet} title="No invoices yet" description="Fee invoices for this child will appear here each term." />

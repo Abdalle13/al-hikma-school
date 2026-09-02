@@ -28,6 +28,7 @@ import { Skeleton } from "../components/ui/Skeleton.jsx";
 import { useChartColors } from "../components/ui/useChartColors.js";
 import api from "../utils/api.js";
 import { formatCurrency } from "../utils/formatter.js";
+import { greeting } from "../utils/greeting.js";
 
 const quickLinks = [
   { to: "/admin/students", label: "Students", icon: Users },
@@ -35,13 +36,6 @@ const quickLinks = [
   { to: "/admin/fees", label: "Fees", icon: Wallet },
   { to: "/admin/applications", label: "Applications", icon: FileText },
 ];
-
-function greeting() {
-  const h = new Date().getHours();
-  if (h < 12) return "Good morning";
-  if (h < 17) return "Good afternoon";
-  return "Good evening";
-}
 
 function ChartCard({ title, description, children }) {
   return (

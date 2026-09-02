@@ -9,6 +9,7 @@ import { Spinner } from "../components/ui/Spinner.jsx";
 import { EmptyState } from "../components/ui/EmptyState.jsx";
 import api from "../utils/api.js";
 import { formatCurrency } from "../utils/formatter.js";
+import { greeting } from "../utils/greeting.js";
 
 const quick = [
   { to: "/parent/attendance", label: "Attendance", icon: ClipboardCheck },
@@ -19,6 +20,7 @@ const quick = [
 export default function ParentDashboard() {
   const { selectedChild } = useOutletContext();
   const currency = useSelector((s) => s.settings.data.currency) || "USD";
+  const parentName = useSelector((s) => s.auth.user?.name?.split(" ")[0] || "there");
   const [data, setData] = useState(null);
 
   useEffect(() => {
@@ -51,12 +53,12 @@ export default function ParentDashboard() {
     <div>
       <div className="mb-7 border-b border-border pb-5">
         <h1 className="font-heading text-xl font-bold text-fg sm:text-[26px]">
-          {selectedChild.name.split(" ")[0]}'s overview
+          {greeting()}, {parentName}
         </h1>
         <p className="mt-1.5 text-sm text-muted">
-          {selectedChild.admissionNo
-            ? `Admission no. ${selectedChild.admissionNo}${selectedChild.schoolClass?.name ? ` · ${selectedChild.schoolClass.name}` : ""}`
-            : "This term at a glance."}
+          Here is how {selectedChild.name.split(" ")[0]} is doing
+          {selectedChild.schoolClass?.name ? ` in ${selectedChild.schoolClass.name}` : ""}
+          {selectedChild.admissionNo ? `, admission no. ${selectedChild.admissionNo}` : ""}.
         </p>
       </div>
 

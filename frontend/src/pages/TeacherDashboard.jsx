@@ -8,6 +8,7 @@ import { Card } from "../components/ui/Card.jsx";
 import { Spinner } from "../components/ui/Spinner.jsx";
 import { EmptyState } from "../components/ui/EmptyState.jsx";
 import api from "../utils/api.js";
+import { greeting } from "../utils/greeting.js";
 
 const quick = [
   { to: "/teacher/attendance", label: "Mark attendance", icon: ClipboardCheck },
@@ -36,7 +37,10 @@ export default function TeacherDashboard() {
 
   return (
     <div>
-      <PageHeader title={`Welcome, ${me.name.split(" ")[0]}`} description="Your classes and tasks for the term." />
+      <PageHeader
+        title={`${greeting()}, ${me.name.split(" ")[0]}`}
+        description="Your classes and tasks for the term."
+      />
 
       {assignments === null ? (
         <div className="grid place-items-center py-16">
