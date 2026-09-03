@@ -37,8 +37,8 @@ export function ReportCardDetail({ card }) {
         </Button>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-border">
-        <table className="w-full text-sm">
+      <div className="overflow-x-auto rounded-2xl border border-border">
+        <table className="w-full min-w-[28rem] text-sm">
           <thead>
             <tr className="bg-surface-2 text-left text-muted">
               <th className="px-4 py-2.5 font-medium">Subject</th>

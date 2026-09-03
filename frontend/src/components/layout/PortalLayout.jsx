@@ -148,7 +148,7 @@ function ParentShell({ user }) {
   return (
     <div className="min-h-screen bg-bg pb-20">
       <header className="sticky top-0 z-30 border-b border-border bg-bg/90 backdrop-blur">
-        <div className="flex h-16 items-center justify-between px-4">
+        <div className="mx-auto flex h-16 max-w-3xl items-center justify-between px-4">
           <div className="flex items-center gap-2 font-heading font-bold text-fg">
             <GraduationCap className="h-5 w-5 text-primary" />
             Parent Portal
@@ -173,7 +173,7 @@ function ParentShell({ user }) {
         </div>
 
         {children && children.length > 0 ? (
-          <div className="flex gap-2 overflow-x-auto px-4 pb-3">
+          <div className="mx-auto flex max-w-3xl gap-2 overflow-x-auto px-4 pb-3">
             {children.map((c) => (
               <button
                 key={c._id}
@@ -194,7 +194,7 @@ function ParentShell({ user }) {
         ) : null}
       </header>
 
-      <main className="mx-auto max-w-xl p-4 sm:p-6">
+      <main className="mx-auto max-w-3xl p-4 sm:p-6">
         {children === null ? null : children.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border bg-surface p-6 text-center text-sm text-muted">
             No children are linked to your account yet. Contact the school office to get this set up.
@@ -209,7 +209,7 @@ function ParentShell({ user }) {
       </main>
 
       <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-surface/95 backdrop-blur">
-        <div className="mx-auto flex max-w-xl items-stretch justify-between px-2">
+        <div className="mx-auto flex max-w-3xl items-stretch justify-between px-2">
           {parentTabs.map((tab) => {
             const Icon = tab.icon;
             if (!tab.to) {

@@ -51,7 +51,7 @@ function ReviewModal({ application, classes, onClose, onSaved }) {
 
   return (
     <Modal open onClose={onClose} title={application.childName} className="max-w-xl">
-      <div className="mb-4 grid grid-cols-2 gap-3 rounded-2xl bg-surface-2 p-4 text-sm">
+      <div className="mb-4 grid grid-cols-2 gap-x-3 gap-y-3.5 rounded-2xl bg-surface-2 p-4 text-sm">
         <div><p className="text-xs text-muted">Parent</p><p className="text-fg">{application.parentName}</p></div>
         <div><p className="text-xs text-muted">Phone</p><p className="text-fg">{application.parentPhone}</p></div>
         <div><p className="text-xs text-muted">Email</p><p className="text-fg">{application.parentEmail || "-"}</p></div>
