@@ -22,8 +22,12 @@ export default function LoginPage() {
   async function onSubmit(e) {
     e.preventDefault();
     setError("");
-    if (!loginId.trim() || !password) {
-      setError("Enter your login and password");
+    if (!loginId.trim()) {
+      setError("Enter your email or admission number");
+      return;
+    }
+    if (!password) {
+      setError("Enter your password");
       return;
     }
     const result = await dispatch(login({ loginId: loginId.trim(), password }));
@@ -36,7 +40,7 @@ export default function LoginPage() {
         navigate(location.state?.from?.pathname || roleHome(user.role), { replace: true });
       }
     } else {
-      setError(result.payload || "Invalid login or password");
+      setError(result.payload || "Could not log you in, please try again");
     }
   }
 

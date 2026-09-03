@@ -24,7 +24,7 @@ export const login = createAsyncThunk("auth/login", async ({ loginId, password }
     const { data } = await api.post("/auth/login", { loginId, password });
     return data; // { token, user, mustChangePassword }
   } catch (err) {
-    return rejectWithValue(apiError(err, "Invalid login or password"));
+    return rejectWithValue(apiError(err, "Could not log you in, please try again"));
   }
 });
 
