@@ -19,14 +19,24 @@ export async function login(req, res, next) {
       throw new Error("Login and password are required");
     }
 
-    const query = loginId.includes("@")
+    const byEmail = loginId.includes("@");
+    const query = byEmail
       ? { email: loginId.toLowerCase() }
       : { admissionNo: loginId.toUpperCase() };
 
     const user = await User.findOne(query).select("+password");
-    if (!user || !(await user.matchPassword(password))) {
+    if (!user) {
       res.status(401);
-      throw new Error("Invalid login or password");
+      throw new Error(
+        byEmail
+          ? "No account found with that email address"
+          : "No account found with that admission number"
+      );
+    }
+
+    if (!(await user.matchPassword(password))) {
+      res.status(401);
+      throw new Error("The password is not correct");
     }
 
     if (user.status !== "Active") {
