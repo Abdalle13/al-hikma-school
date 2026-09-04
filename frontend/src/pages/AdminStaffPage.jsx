@@ -143,7 +143,7 @@ export default function AdminStaffPage() {
   return (
     <div>
       <PageHeader
-        title="Staff"
+        title="Teachers"
         description="Teachers, what they teach and which class they lead."
         action={
           <Button onClick={() => setModal(true)}>

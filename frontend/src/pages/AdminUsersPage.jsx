@@ -152,7 +152,7 @@ export default function AdminUsersPage() {
     <div>
       <PageHeader
         title="Users"
-        description="Admin and parent accounts. Teachers live on the Staff page, students on the Students page."
+        description="Admin and parent accounts. Teachers live on the Teachers page, students on the Students page."
         action={
           <Button onClick={() => setModal({ mode: "create" })}>
             <Plus className="h-4 w-4" /> Add account

@@ -29,7 +29,7 @@ const modulesByRole = {
     { label: "Students", icon: GraduationCap, to: "/admin/students" },
     { label: "Classes", icon: School, to: "/admin/classes" },
     { label: "Subjects", icon: BookOpen, to: "/admin/subjects" },
-    { label: "Staff", icon: Briefcase, to: "/admin/staff" },
+    { label: "Teachers", icon: Briefcase, to: "/admin/staff" },
     { label: "Terms", icon: CalendarRange, to: "/admin/terms" },
     { label: "Applications", icon: FileText, to: "/admin/applications" },
     { label: "Attendance", icon: ClipboardCheck, to: "/admin/attendance" },
