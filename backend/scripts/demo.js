@@ -22,11 +22,11 @@ import { computeForClassTerm } from "../controllers/reportCardController.js";
 import { startOfDayUTC } from "../utils/dates.js";
 
 // additive demo data. everything demo carries a marker so it can be removed
-// cleanly: users have an @demo.school email or a 9000-prefixed admission
-// number, a number range no real student would ever be given.
+// cleanly: users have an @demo.school email or an admission number in the
+// STU9000 range, a year no real student would ever be enrolled in.
 const YEAR = "2025/2026";
 const DEMO_EMAIL = /@demo\.school$/;
-const DEMO_ADM = /^9000\d{4}$/;
+const DEMO_ADM = /^STU9000\d{4}$/;
 
 const destroy = process.argv.includes("-d") || process.argv.includes("--destroy");
 
@@ -143,7 +143,7 @@ async function seedDemo() {
   const firstNames = ["Ayaan", "Bilan", "Khadar", "Layla", "Maxamed", "Nasteexo", "Cabdiraxmaan", "Sahra", "Ismaaciil", "Ruweyda", "Daahir", "Hamdi", "Yaasiin", "Iqra", "Cabdullaahi"];
   const students = [];
   for (let i = 0; i < firstNames.length; i += 1) {
-    const admissionNo = `9000${String(i + 1).padStart(4, "0")}`;
+    const admissionNo = `STU9000${String(i + 1).padStart(4, "0")}`;
     let student = await User.findOne({ admissionNo });
     if (!student) {
       const cls = classes[i % classes.length];

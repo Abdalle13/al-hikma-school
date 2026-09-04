@@ -31,11 +31,11 @@ async function checkClassHasRoom(classId, currentStudentId) {
   return classId;
 }
 
-// generates the next admission number for the current year: the four digit
-// enrolment year followed by a four digit sequence, e.g. 20260001. numbers
-// only, nothing to explain, and never reused even after a student is removed.
+// generates the next admission number for the current year: "STU", the four
+// digit enrolment year, then a four digit sequence, e.g. STU20260001. never
+// reused even after a student is removed.
 export async function nextAdmissionNo() {
-  const prefix = String(new Date().getFullYear());
+  const prefix = `STU${new Date().getFullYear()}`;
   const last = await User.findOne({ admissionNo: { $regex: `^${prefix}\\d{4}$` } })
     .select("admissionNo")
     .sort({ admissionNo: -1 });
