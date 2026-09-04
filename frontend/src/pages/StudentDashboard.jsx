@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { ArrowRight, CalendarClock, ClipboardCheck, GraduationCap, Megaphone } from "lucide-react";
+import { ArrowRight, CalendarClock, ClipboardCheck, GraduationCap, Megaphone, Wallet } from "lucide-react";
 import { PageHeader } from "../components/ui/PageHeader.jsx";
 import { StatCard } from "../components/ui/StatCard.jsx";
 import { Card } from "../components/ui/Card.jsx";
@@ -9,11 +9,13 @@ import { Badge } from "../components/ui/Badge.jsx";
 import { Spinner } from "../components/ui/Spinner.jsx";
 import api from "../utils/api.js";
 import { greeting } from "../utils/greeting.js";
+import { formatCurrency } from "../utils/formatter.js";
 
 const quick = [
   { to: "/student/timetable", label: "Timetable", icon: CalendarClock },
   { to: "/student/grades", label: "Grades", icon: GraduationCap },
   { to: "/student/attendance", label: "Attendance", icon: ClipboardCheck },
+  { to: "/student/fees", label: "Fees", icon: Wallet },
   { to: "/student/news", label: "News", icon: Megaphone },
 ];
 
@@ -21,6 +23,7 @@ const today = new Date().toLocaleDateString("en-US", { weekday: "long" });
 
 export default function StudentDashboard() {
   const me = useSelector((s) => s.auth.user);
+  const currency = useSelector((s) => s.settings.data.currency) || "USD";
   const [data, setData] = useState(null);
 
   useEffect(() => {
@@ -30,7 +33,8 @@ export default function StudentDashboard() {
       api.get(`/attendance/summary/${me._id}`).then((r) => r.data).catch(() => null),
       api.get(`/report-cards/student/${me._id}`).then((r) => r.data).catch(() => null),
       api.get("/timetable/me").then((r) => r.data).catch(() => null),
-    ]).then(([att, rc, tt]) => {
+      api.get("/invoices", { params: { student: me._id } }).then((r) => r.data).catch(() => null),
+    ]).then(([att, rc, tt, inv]) => {
       if (!alive) return;
       const entries = tt?.timetable?.entries || [];
       setData({
@@ -38,6 +42,7 @@ export default function StudentDashboard() {
         days: att?.totalDays ?? 0,
         latest: rc?.reportCards?.[0] || null,
         classesToday: entries.filter((e) => e.day === today).length,
+        outstanding: inv?.totals?.outstanding ?? null,
       });
     });
     return () => {
@@ -55,7 +60,7 @@ export default function StudentDashboard() {
         </div>
       ) : (
         <div className="space-y-5">
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <StatCard
               label="Attendance this term"
               value={data.rate != null ? `${data.rate}%` : "n/a"}
@@ -73,6 +78,12 @@ export default function StudentDashboard() {
               value={data.classesToday}
               icon={CalendarClock}
               hint={data.classesToday ? "See your timetable" : "No classes scheduled"}
+            />
+            <StatCard
+              label="Fee balance"
+              value={data.outstanding != null ? formatCurrency(data.outstanding, currency) : "n/a"}
+              icon={Wallet}
+              hint={data.outstanding === 0 ? "Nothing outstanding" : "Due this term"}
             />
           </div>
 

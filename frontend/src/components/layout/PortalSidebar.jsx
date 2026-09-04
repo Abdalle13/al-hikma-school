@@ -56,6 +56,7 @@ const modulesByRole = {
     { label: "Timetable", icon: CalendarClock, to: "/student/timetable" },
     { label: "Grades", icon: GraduationCap, to: "/student/grades" },
     { label: "Attendance", icon: ClipboardCheck, to: "/student/attendance" },
+    { label: "Fees", icon: Wallet, to: "/student/fees" },
     { label: "News", icon: Megaphone, to: "/student/news" },
   ],
 };

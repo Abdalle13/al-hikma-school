@@ -54,6 +54,7 @@ const ParentNotificationsPage = lazy(() => import("./pages/ParentNotificationsPa
 const StudentDashboard = lazy(() => import("./pages/StudentDashboard.jsx"));
 const StudentAttendancePage = lazy(() => import("./pages/StudentAttendancePage.jsx"));
 const StudentGradesPage = lazy(() => import("./pages/StudentGradesPage.jsx"));
+const StudentFeesPage = lazy(() => import("./pages/StudentFeesPage.jsx"));
 const StudentTimetablePage = lazy(() => import("./pages/StudentTimetablePage.jsx"));
 const StudentNewsPage = lazy(() => import("./pages/StudentNewsPage.jsx"));
 
@@ -160,6 +161,7 @@ export default function App() {
               <Route index element={<StudentDashboard />} />
               <Route path="attendance" element={<StudentAttendancePage />} />
               <Route path="grades" element={<StudentGradesPage />} />
+              <Route path="fees" element={<StudentFeesPage />} />
               <Route path="timetable" element={<StudentTimetablePage />} />
               <Route path="news" element={<StudentNewsPage />} />
             </Route>
