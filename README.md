@@ -1,198 +1,200 @@
 # School Management System
 
-A web app for Somali private schools and madrasas that currently run on paper.
-It has two parts:
+A full-stack platform for Somali private schools and madrasas that currently run
+on paper: a public school website plus a login portal with a dashboard for
+admins, teachers, parents and students. MERN stack, light/dark theme, simulated
+mobile-money fee payments.
 
-1. A **public school website** anyone can visit: Home, About, Academics, Admissions
-   (with an application form), News and Events, Contact.
-2. A **portal** behind a login, with a dashboard per role: Admin, Teacher, Parent,
-   Student.
+**Repo:** [github.com/Abdalle13/school-management-system](https://github.com/Abdalle13/school-management-system)
 
-Built by Abdalle Hussein as a portfolio project. MERN stack, deployed on Vercel
-as two projects (the React frontend and a serverless Express backend).
+---
 
-## Accounts and login
+## Features
 
-There is no public sign up. The admin creates every account (teachers, parents,
-students) and sets the password directly. On first login the user is asked to
-change it once. Teachers and parents log in with their **email**, students log in
-with their **admission number**, and one login form accepts either, showing a
-specific error (no matching account, or a wrong password) rather than a vague
-one. There is no self service password reset: if someone forgets their password
-the admin resets it from that user's edit form.
+### Public website
 
-Admission numbers are generated automatically when a student is enrolled
-(`STU` + the enrolment year + a sequence, e.g. `STU20260001`), with a button to
-generate another one or type a custom value instead.
+- Home, About, Academics, Admissions and News, all reading the school's name,
+  contact details and social links from the admin settings.
+- An admissions application form (no fee, no public sign up) that lands
+  straight in the admin's applications queue.
+- A contact form and a news list, both backed by real data, not placeholders.
+- Light and dark theme with a toggle, remembered per browser, light by default.
 
-## What each role can do
+### Admin dashboard
 
-**Admin**
-- Full CRUD on users, students (with enrolment, class, guardians), classes,
-  subjects, staff, terms and the school settings.
-- Review admission applications and turn an accepted one into a student.
-- Take or edit attendance for any class, browse the register, delete records.
+- Full CRUD on users, students (enrolment, class, guardians), classes,
+  subjects, staff, terms and the school's public profile.
+- Review admission applications and turn an accepted one into a student, with
+  an auto-generated, unique admission number.
+- Take or edit attendance for any class, browse and correct the register.
 - Create exams, enter marks, generate report cards, add remarks, publish them.
 - Set fee structures per class and term, generate invoices, add installment
-  plans, record cash payments, view balances.
-- Build the weekly timetable per class.
-- Post announcements to everyone, a class or a role, and read the message log.
-- A reports dashboard (enrolment, attendance, exam performance, fee collection)
-  with a PDF export.
+  plans, record cash payments, see balances.
+- Build the weekly timetable per class and post announcements to everyone, a
+  class or a role.
+- A reports dashboard (enrolment, attendance, exam performance, fee
+  collection) with a PDF export.
 
-**Teacher**
-- Mark the daily register for their classes.
-- Create exams and enter marks for the subjects they are assigned to teach.
-- See their own weekly timetable across every class.
-- Post an announcement to a class they teach.
+### Teacher, parent and student portals
 
-**Parent** (mobile first, with a child switcher)
-- See each child's attendance summary and history, published report cards (with
-  PDF download), fee invoices and installment schedule.
-- Pay fees through the simulated mobile money gateway and download a receipt.
-- Read school announcements and the messages the school has sent.
+- **Teacher**: mark the daily register, create exams and enter marks for
+  assigned subjects, see their own weekly timetable, post class announcements.
+- **Parent** (mobile first, with a child switcher): each child's attendance,
+  published report cards with PDF download, fee invoices and installment
+  schedule, and paying fees through the simulated mobile-money gateway.
+- **Student**: their own timetable, published report cards, attendance and
+  fee balance.
 
-**Student** (light view)
-- Own timetable, published report cards, attendance and fee balance.
+### Backend
 
-## Public website
+- JWT auth, bcrypt hashing, `helmet`, a CORS allow-list, and rate-limited
+  auth endpoints. Login errors say specifically what is wrong (no matching
+  account, or a wrong password) instead of a vague message.
+- Role-based access enforced on every route: a parent only ever sees their
+  own children's data, a student only their own.
+- Report cards, invoices and admission numbers are computed and generated
+  server-side; the client cannot fabricate them.
+- Transactional email and a simulated SMS/WhatsApp notification log for
+  attendance alerts, payments and announcements.
 
-Home, About, Academics, Admissions and News read the school's name, contact
-details and social links from the admin settings, with sensible fallbacks so
-the site still reads correctly before an admin sets them. The photography
-(hero, about, academics) is hotlinked from Unsplash via
-`frontend/src/utils/siteImages.js` so the repo stays free of large binaries;
-swap the ids in that one file for real school photos when you have them. The
-theme defaults to light for every visitor; a toggle switches to dark and the
-choice is remembered per browser.
-
-## Grading
-
-Per subject: `percentage = score / maxMarks * 100`, then a letter: 90+ A, 80+ B,
-70+ C, 60+ D, below 60 F. The term result is the average across subjects, an
-overall grade, a division (First 60+, Second 45 to 59, Third below 45), a class
-position and a teacher remark. Parents and students see a report card only after
-the admin publishes it.
+---
 
 ## Tech stack
 
-| Layer | Tools |
-| :--- | :--- |
-| Frontend | React 19, Vite, Redux Toolkit, React Router 7, Tailwind CSS v4, Framer Motion, Recharts, lucide-react, react-hot-toast, axios |
-| Backend | Node.js, Express 5, Mongoose 9, jsonwebtoken, bcryptjs, helmet, cors, express-rate-limit, multer, imagekit, nodemailer, colors |
-| PDF | jspdf + jspdf-autotable, loaded lazily (report cards, fee receipts, the reports export) |
-| Database | MongoDB Atlas |
-| Images | ImageKit.io |
-| Deployment | Vercel (two projects) |
+| Layer      | Tools                                                                                  |
+| :--------- | :-------------------------------------------------------------------------------------- |
+| Frontend   | React 19, Vite, Redux Toolkit, React Router 7, Tailwind CSS v4, Framer Motion, Recharts |
+| Backend    | Node.js, Express 5, Mongoose 9, JSON Web Tokens, Nodemailer, Multer, Helmet             |
+| Database   | MongoDB Atlas                                                                            |
+| Images     | ImageKit.io (uploads) + hotlinked stock photos for the marketing pages                  |
+| PDF        | jsPDF + jspdf-autotable (lazy-loaded)                                                   |
+| Deployment | Vercel (frontend + backend serverless, two projects)                                    |
 
-The portal is code split away from the public bundle: every portal screen loads
-on demand, and the chart and PDF libraries only load when a screen actually
-needs them.
+The portal is code split away from the public bundle: every portal screen
+loads on demand, and the chart and PDF libraries only load when a screen
+actually needs them.
 
-## Repo layout
+---
 
-```
-backend/    Express 5 + Mongoose 9 api, exported for Vercel serverless
-frontend/   Vite + React 19 single page app
-```
+## Getting started
 
-## Running locally
+### Prerequisites
 
-Backend:
+- Node.js 18+
+- A MongoDB connection string (Atlas or local)
+- An ImageKit account (for photo uploads)
+- An SMTP account for email (a Gmail app password works)
 
-```
-cd backend
-cp .env.example .env      # fill in MONGODB_URI, JWT_SECRET, and the rest
-npm install
-npm run data:import       # create the first admin from the ADMIN_ vars in .env
-npm run dev               # http://localhost:5000
-```
+### 1. Clone and install
 
-Frontend:
+```bash
+git clone https://github.com/Abdalle13/school-management-system.git
+cd school-management-system
 
-```
-cd frontend
-cp .env.example .env      # VITE_API_URL, default http://localhost:5000/api
-npm install
-npm run dev               # http://localhost:5173
+cd backend && npm install
+cd ../frontend && npm install
 ```
 
-Optional demo data (Somali student and parent names, classes, a term, teaching
-assignments, a timetable, attendance, marks, report cards, fee structures with
-invoices and payments, announcements):
+### 2. Configure the backend
+
+Create `backend/.env` from `backend/.env.example`:
 
 ```
+PORT=5000
+NODE_ENV=development
+MONGODB_URI=your-mongodb-connection-string
+JWT_SECRET=any-long-random-string
+JWT_EXPIRES_IN=7d
+FRONTEND_URL=http://localhost:5173
+
+IMAGEKIT_URL_ENDPOINT=...
+IMAGEKIT_PUBLIC_KEY=...
+IMAGEKIT_PRIVATE_KEY=...
+
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USER=you@gmail.com
+EMAIL_PASS=your-app-password
+EMAIL_FROM=School Name <you@gmail.com>
+
+EVC_DEMO_PIN=1234
+
+ADMIN_NAME=School Admin
+ADMIN_EMAIL=admin@school.com
+ADMIN_PASSWORD=change_this_after_first_login
+```
+
+### 3. Configure the frontend
+
+Create `frontend/.env` from `frontend/.env.example`:
+
+```
+VITE_API_URL=http://localhost:5000/api
+```
+
+### 4. Run
+
+```bash
+# terminal 1
+cd backend && npm run data:import   # creates the first admin from the ADMIN_ vars
+npm run dev
+
+# terminal 2
+cd frontend && npm run dev
+```
+
+Frontend on `http://localhost:5173`, API on `http://localhost:5000`.
+
+### 5. Seed demo data
+
+```bash
 cd backend
 npm run demo              # additive, safe to run more than once
 npm run demo:destroy      # remove only the demo data
 ```
 
-Demo logins after `npm run demo`:
+Somali student and parent names, classes, a term, teaching assignments, a
+timetable, attendance, marks, report cards, fee structures with invoices and
+payments, and announcements.
 
-| Role | Login | Password |
-| :--- | :--- | :--- |
-| Admin | `admin@school.com` | `admin123456` |
-| Teacher | `teacher1@demo.school` | `teacher123` |
-| Parent | `parent1@demo.school` | `parent123` |
-| Student | `STU90000001` | `student123` |
+| Role    | Login                  | Password      |
+| :------ | :---------------------- | :------------ |
+| Admin   | `admin@school.com`      | `admin123456` |
+| Teacher | `teacher1@demo.school`  | `teacher123`  |
+| Parent  | `parent1@demo.school`   | `parent123`   |
+| Student | `STU90000001`           | `student123`  |
 
-## Deployment (Vercel)
-
-Two separate Vercel projects, both from this one repo, each with a different
-**Root Directory**.
-
-1. **MongoDB Atlas**: use a cluster that is reachable from Vercel. Under Network
-   Access allow `0.0.0.0/0` (Vercel has no fixed egress IP on the Hobby plan).
-
-2. **Backend project**: import the repo, set Root Directory to `backend`. The
-   `backend/vercel.json` builds `server.js` and sends every request to it;
-   `server.js` calls `listen()` only for local dev. Add these environment
-   variables (values from `backend/.env.example`):
-   `MONGODB_URI`, `JWT_SECRET`, `JWT_EXPIRES_IN`, `IMAGEKIT_URL_ENDPOINT`,
-   `IMAGEKIT_PUBLIC_KEY`, `IMAGEKIT_PRIVATE_KEY`, `EMAIL_HOST`, `EMAIL_PORT`,
-   `EMAIL_USER`, `EMAIL_PASS`, `EMAIL_FROM`, `EVC_DEMO_PIN`. Leave `FRONTEND_URL`
-   for step 4. Deploy, then note the URL, for example
-   `https://your-backend.vercel.app`. Check `…/health` returns `{ "status": "ok" }`.
-
-3. **Frontend project**: import the same repo again, set Root Directory to
-   `frontend`. Vercel detects Vite. Set `VITE_API_URL` to the backend URL plus
-   `/api` (for example `https://your-backend.vercel.app/api`). Deploy, then note
-   the URL, for example `https://your-school.vercel.app`. `frontend/vercel.json`
-   sends unknown paths to `index.html` so deep links survive a refresh.
-
-4. **Close the loop**: back in the backend project, set `FRONTEND_URL` to the
-   frontend URL (no trailing slash) and redeploy. CORS only allows that origin.
-
-5. **First admin**: the app has no public sign up. Run the seeder once against the
-   production database from your machine:
-   `cd backend`, put the production `MONGODB_URI` and the `ADMIN_*` values in
-   `backend/.env`, then `npm run data:import`. Log in with `ADMIN_EMAIL` /
-   `ADMIN_PASSWORD` and change the password.
-
-Notes: the in-memory rate limiter and the 30s Mongo selection timeout are tuned
-for a long-lived server; on serverless they still work but a cold start that also
-has to connect to Atlas can be slow the first time.
-
-## API surface
-
-Mounted under `/api`: `auth`, `users`, `students`, `classes`, `subjects`,
-`staff`, `assignments`, `terms`, `attendance`, `notifications`, `exams`,
-`marks`, `report-cards`, `fee-structures`, `invoices`, `timetable`,
-`announcements`, `applications`, `contact`, `settings`, `reports`. The website
-reads `GET /api/settings` and `GET /api/announcements/public` and posts to
-`/api/applications` and `/api/contact` without a token.
+---
 
 ## Simulated parts
 
 Two things are simulated on purpose, so the app can be demoed without real
 accounts or a paid gateway:
 
-- **Mobile money (EVC Plus / Zaad):** a fake gateway. A valid Somali mobile
-  number plus the demo PIN `1234` approves a payment, anything else fails. No real
-  money moves. A production build would integrate the Hormuud WAAFI merchant API.
-- **SMS / WhatsApp notifications:** written to the database and shown in an admin
-  message log, and optionally emailed. Nothing is really sent to a phone.
+- **Mobile money (EVC Plus / Zaad)**: a fake gateway. A valid Somali mobile
+  number plus the demo PIN (`1234`) always succeeds; any other PIN is
+  rejected. No real money moves. A production build would integrate the
+  Hormuud WAAFI merchant API.
+- **SMS / WhatsApp notifications**: written to the database and shown in an
+  admin message log, and optionally emailed. Nothing is really sent to a
+  phone.
 
-Everything else (enrolment, attendance, grading, invoicing, installment logic,
-the timetable, applications, role access) is real application logic against
-MongoDB.
+Everything else (enrolment, attendance, grading, invoicing, installment
+logic, the timetable, applications, role access) is real application logic
+against MongoDB.
+
+---
+
+## Deployment
+
+Two separate Vercel projects from this one repo, each with a different Root
+Directory (`backend`, `frontend`). Set the backend's environment variables
+from `backend/.env.example` on that project, and `VITE_API_URL` on the
+frontend project to the backend's URL plus `/api`. Set the backend's
+`FRONTEND_URL` to the frontend's URL once you have it, and redeploy. Then run
+`npm run data:import` once against the production `MONGODB_URI` to create the
+first admin.
+
+---
+
+Built by [Abdalle Hussein](https://github.com/Abdalle13).
