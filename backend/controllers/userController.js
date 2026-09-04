@@ -85,7 +85,10 @@ export async function listUsers(req, res, next) {
     const limit = Math.min(100, Math.max(1, Number(req.query.limit) || 20));
 
     const filter = {};
-    if (role) filter.role = role;
+    if (role) {
+      const roles = role.split(",").map((r) => r.trim()).filter(Boolean);
+      filter.role = roles.length > 1 ? { $in: roles } : roles[0];
+    }
     if (status) filter.status = status;
     if (search) {
       const rx = new RegExp(search.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
