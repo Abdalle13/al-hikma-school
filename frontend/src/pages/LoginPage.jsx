@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { GraduationCap } from "lucide-react";
@@ -13,11 +13,18 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const status = useSelector((s) => s.auth.status);
+  const currentUser = useSelector((s) => s.auth.user);
   const { schoolName, logo } = useSelector((s) => s.settings.data);
 
   const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
+  // already signed in (e.g. this tab still has another role's session) - go
+  // straight to that account's own area instead of showing the form again
+  if (currentUser) {
+    return <Navigate to={roleHome(currentUser.role)} replace />;
+  }
 
   async function onSubmit(e) {
     e.preventDefault();

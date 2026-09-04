@@ -131,12 +131,30 @@ function StudentForm({ initial, classes, onCancel, onSaved }) {
   );
   const [saving, setSaving] = useState(false);
   const [guardians, setGuardians] = useState(initial?.guardians || []);
+  const [generating, setGenerating] = useState(false);
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
+
+  async function generateAdmissionNo() {
+    setGenerating(true);
+    try {
+      const { data } = await api.get("/students/next-admission-no");
+      setForm((f) => ({ ...f, admissionNo: data.admissionNo }));
+    } catch (err) {
+      toast.error(apiError(err, "Could not generate a number"));
+    } finally {
+      setGenerating(false);
+    }
+  }
+
+  useEffect(() => {
+    if (!isEdit) generateAdmissionNo();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function onSubmit(e) {
     e.preventDefault();
-    if (!form.name.trim() || !form.admissionNo.trim() || (!isEdit && form.password.length < 6)) {
-      toast.error("Name, admission number and a password of at least 6 characters are required");
+    if (!form.name.trim() || (!isEdit && form.password.length < 6)) {
+      toast.error("Name and a password of at least 6 characters are required");
       return;
     }
     setSaving(true);
@@ -188,7 +206,21 @@ function StudentForm({ initial, classes, onCancel, onSaved }) {
       <form className="flex flex-col gap-4" onSubmit={onSubmit} noValidate>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Input label="Full name" value={form.name} onChange={set("name")} placeholder="Enter the student's full name" />
-          <Input label="Admission number" value={form.admissionNo} onChange={set("admissionNo")} placeholder="Enter the admission number" />
+          <div>
+            <div className="flex items-end gap-2">
+              <Input
+                label="Admission number"
+                value={form.admissionNo}
+                onChange={set("admissionNo")}
+                placeholder="Auto generated"
+                className="flex-1"
+              />
+              <Button type="button" variant="outline" size="md" onClick={generateAdmissionNo} disabled={generating}>
+                {generating ? "..." : "New"}
+              </Button>
+            </div>
+            <p className="mt-1.5 text-xs text-muted">Generated automatically, or type your own.</p>
+          </div>
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Input label="Date of birth" type="date" value={form.dob} onChange={set("dob")} />

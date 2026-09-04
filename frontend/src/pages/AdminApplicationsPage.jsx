@@ -24,20 +24,38 @@ function ReviewModal({ application, classes, onClose, onSaved }) {
   const [password, setPassword] = useState("");
   const [schoolClass, setSchoolClass] = useState("");
   const [saving, setSaving] = useState(false);
+  const [generating, setGenerating] = useState(false);
 
   const canCreateStudent = status === "Accepted" && !application.createdStudent;
 
+  async function generateAdmissionNo() {
+    setGenerating(true);
+    try {
+      const { data } = await api.get("/students/next-admission-no");
+      setAdmissionNo(data.admissionNo);
+    } catch (err) {
+      toast.error(apiError(err, "Could not generate a number"));
+    } finally {
+      setGenerating(false);
+    }
+  }
+
+  useEffect(() => {
+    if (canCreateStudent && !admissionNo) generateAdmissionNo();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [canCreateStudent]);
+
   async function onSubmit(e) {
     e.preventDefault();
-    if (canCreateStudent && admissionNo && password.length < 6) {
+    if (canCreateStudent && password && password.length < 6) {
       toast.error("The student password must be at least 6 characters");
       return;
     }
     setSaving(true);
     try {
       const payload = { status, reviewNote };
-      if (canCreateStudent && admissionNo && password) {
-        Object.assign(payload, { admissionNo, password, schoolClass: schoolClass || undefined });
+      if (canCreateStudent && password) {
+        Object.assign(payload, { admissionNo: admissionNo || undefined, password, schoolClass: schoolClass || undefined });
       }
       const { data } = await api.patch(`/applications/${application._id}/review`, payload);
       toast.success(data.createdStudent ? `Accepted, ${data.createdStudent.name} enrolled` : "Application updated");
@@ -78,7 +96,20 @@ function ReviewModal({ application, classes, onClose, onSaved }) {
               Enrol {application.childName} now (optional, can be done later from Students)
             </p>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <Input label="Admission number" value={admissionNo} onChange={(e) => setAdmissionNo(e.target.value)} placeholder="Enter the admission number" />
+              <div>
+                <div className="flex items-end gap-2">
+                  <Input
+                    label="Admission number"
+                    value={admissionNo}
+                    onChange={(e) => setAdmissionNo(e.target.value)}
+                    placeholder="Auto generated"
+                    className="flex-1"
+                  />
+                  <Button type="button" variant="outline" onClick={generateAdmissionNo} disabled={generating}>
+                    {generating ? "..." : "New"}
+                  </Button>
+                </div>
+              </div>
               <Input label="Password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter a password, at least 6 characters" />
             </div>
             <Select label="Class" value={schoolClass} onChange={(e) => setSchoolClass(e.target.value)} className="mt-3">
