@@ -31,14 +31,35 @@ async function checkClassHasRoom(classId, currentStudentId) {
   return classId;
 }
 
+// generates the next admission number for the current year: the four digit
+// enrolment year followed by a four digit sequence, e.g. 20260001. numbers
+// only, nothing to explain, and never reused even after a student is removed.
+export async function nextAdmissionNo() {
+  const prefix = String(new Date().getFullYear());
+  const last = await User.findOne({ admissionNo: { $regex: `^${prefix}\\d{4}$` } })
+    .select("admissionNo")
+    .sort({ admissionNo: -1 });
+  const seq = last ? parseInt(last.admissionNo.slice(prefix.length), 10) + 1 : 1;
+  return `${prefix}${String(seq).padStart(4, "0")}`;
+}
+
+// GET /api/students/next-admission-no  (admin)
+export async function suggestAdmissionNo(req, res, next) {
+  try {
+    res.json({ admissionNo: await nextAdmissionNo() });
+  } catch (err) {
+    next(err);
+  }
+}
+
 // POST /api/students  (admin)
 export async function createStudent(req, res, next) {
   try {
-    const { name, admissionNo, password, dob, gender, phone } = req.body;
+    const { name, password, dob, gender, phone } = req.body;
 
-    if (!name || !admissionNo || !password) {
+    if (!name || !password) {
       res.status(400);
-      throw new Error("Name, admission number and password are required");
+      throw new Error("Name and password are required");
     }
     if (password.length < 6) {
       res.status(400);
@@ -49,9 +70,14 @@ export async function createStudent(req, res, next) {
       throw new Error("Gender must be Male or Female");
     }
 
-    if (await User.findOne({ admissionNo: admissionNo.toUpperCase() })) {
-      res.status(409);
-      throw new Error("That admission number is already in use");
+    let admissionNo = req.body.admissionNo ? String(req.body.admissionNo).toUpperCase() : "";
+    if (admissionNo) {
+      if (await User.findOne({ admissionNo })) {
+        res.status(409);
+        throw new Error("That admission number is already in use");
+      }
+    } else {
+      admissionNo = await nextAdmissionNo();
     }
 
     const schoolClass = await checkClassHasRoom(req.body.schoolClass);

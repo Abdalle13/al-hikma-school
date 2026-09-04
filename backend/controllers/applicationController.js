@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import Application from "../models/applicationModel.js";
 import SchoolClass from "../models/schoolClassModel.js";
 import User from "../models/userModel.js";
+import { nextAdmissionNo } from "./studentController.js";
 
 const isValidId = (id) => mongoose.Types.ObjectId.isValid(id);
 
@@ -93,14 +94,19 @@ export async function reviewApplication(req, res, next) {
     app.reviewedBy = req.user._id;
 
     let createdStudent = null;
-    if (app.status === "Accepted" && !app.createdStudent && req.body.admissionNo && req.body.password) {
+    if (app.status === "Accepted" && !app.createdStudent && req.body.password) {
       if (String(req.body.password).length < 6) {
         res.status(400);
         throw new Error("The student password must be at least 6 characters");
       }
-      if (await User.findOne({ admissionNo: String(req.body.admissionNo).toUpperCase() })) {
-        res.status(409);
-        throw new Error("That admission number is already in use");
+      let admissionNo = req.body.admissionNo ? String(req.body.admissionNo).toUpperCase() : "";
+      if (admissionNo) {
+        if (await User.findOne({ admissionNo })) {
+          res.status(409);
+          throw new Error("That admission number is already in use");
+        }
+      } else {
+        admissionNo = await nextAdmissionNo();
       }
       let schoolClass;
       if (req.body.schoolClass) {
@@ -117,7 +123,7 @@ export async function reviewApplication(req, res, next) {
       }
       createdStudent = await User.create({
         name: app.childName,
-        admissionNo: req.body.admissionNo,
+        admissionNo,
         password: req.body.password,
         role: "Student",
         status: "Active",

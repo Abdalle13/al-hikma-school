@@ -5,6 +5,7 @@ import {
   getStudent,
   updateStudent,
   deleteStudent,
+  suggestAdmissionNo,
 } from "../controllers/studentController.js";
 import { addGuardian, removeGuardian } from "../controllers/userController.js";
 import { protect, admin, teacher } from "../middleware/authMiddleware.js";
@@ -13,6 +14,7 @@ const router = express.Router();
 
 // teachers and admins can read the student roster
 router.get("/", protect, teacher, listStudents);
+router.get("/next-admission-no", protect, admin, suggestAdmissionNo);
 router.get("/:id", protect, teacher, getStudent);
 
 // admin only writes
