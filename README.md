@@ -5,7 +5,7 @@ on paper: a public school website plus a login portal with a dashboard for
 admins, teachers, parents and students. MERN stack, light/dark theme, simulated
 mobile-money fee payments.
 
-**Repo:** [github.com/Abdalle13/school-management-system](https://github.com/Abdalle13/school-management-system)
+**Live:** [al-hikma-school.vercel.app](https://al-hikma-school.vercel.app/) &nbsp;·&nbsp; **Repo:** [github.com/Abdalle13/al-hikma-school](https://github.com/Abdalle13/al-hikma-school)
 
 ---
 
@@ -88,8 +88,8 @@ actually needs them.
 ### 1. Clone and install
 
 ```bash
-git clone https://github.com/Abdalle13/school-management-system.git
-cd school-management-system
+git clone https://github.com/Abdalle13/al-hikma-school.git
+cd al-hikma-school
 
 cd backend && npm install
 cd ../frontend && npm install
