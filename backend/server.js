@@ -65,6 +65,22 @@ app.get("/health", (req, res) => {
   res.json({ status: "ok", env: process.env.NODE_ENV || "development", time: new Date().toISOString() });
 });
 
+// on serverless a cold start's first connection attempt can fail (a slow
+// Atlas handshake, a config change not yet live) and nothing was ever
+// retrying it, so every request on that warm instance kept failing with a
+// mongoose buffering timeout forever after. retry here on every /api request
+// instead: connectDB() resolves instantly once actually connected, and
+// re-attempts on its own if the last attempt failed.
+app.use("/api", async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    res.status(503);
+    next(new Error("Could not reach the database, please try again"));
+  }
+});
+
 // feature routers get mounted here phase by phase
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
