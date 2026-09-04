@@ -16,9 +16,14 @@ as two projects (the React frontend and a serverless Express backend).
 There is no public sign up. The admin creates every account (teachers, parents,
 students) and sets the password directly. On first login the user is asked to
 change it once. Teachers and parents log in with their **email**, students log in
-with their **admission number**, and one login form accepts either. There is no
-self service password reset: if someone forgets their password the admin resets
-it from that user's edit form.
+with their **admission number**, and one login form accepts either, showing a
+specific error (no matching account, or a wrong password) rather than a vague
+one. There is no self service password reset: if someone forgets their password
+the admin resets it from that user's edit form.
+
+Admission numbers are generated automatically when a student is enrolled
+(`STU` + the enrolment year + a sequence, e.g. `STU20260001`), with a button to
+generate another one or type a custom value instead.
 
 ## What each role can do
 
@@ -48,7 +53,18 @@ it from that user's edit form.
 - Read school announcements and the messages the school has sent.
 
 **Student** (light view)
-- Own timetable, published report cards and attendance.
+- Own timetable, published report cards, attendance and fee balance.
+
+## Public website
+
+Home, About, Academics, Admissions and News read the school's name, contact
+details and social links from the admin settings, with sensible fallbacks so
+the site still reads correctly before an admin sets them. The photography
+(hero, about, academics) is hotlinked from Unsplash via
+`frontend/src/utils/siteImages.js` so the repo stays free of large binaries;
+swap the ids in that one file for real school photos when you have them. The
+theme defaults to light for every visitor; a toggle switches to dark and the
+choice is remembered per browser.
 
 ## Grading
 
@@ -118,7 +134,7 @@ Demo logins after `npm run demo`:
 | Admin | `admin@school.com` | `admin123456` |
 | Teacher | `teacher1@demo.school` | `teacher123` |
 | Parent | `parent1@demo.school` | `parent123` |
-| Student | `D-001` | `student123` |
+| Student | `STU90000001` | `student123` |
 
 ## Deployment (Vercel)
 
