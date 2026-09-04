@@ -21,7 +21,6 @@ import NewsPage from "./pages/NewsPage.jsx";
 import NewsArticlePage from "./pages/NewsArticlePage.jsx";
 import ContactPage from "./pages/ContactPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
-import ChangePasswordPage from "./pages/ChangePasswordPage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
 
 // the portal is behind a login, so it is code split away from the public bundle
@@ -115,9 +114,6 @@ export default function App() {
             </Suspense>
           }
         >
-          {/* any signed in role can be sent here after login or on their own */}
-          <Route path="/change-password" element={<ChangePasswordPage />} />
-
           <Route element={<RoleRoute allow={["Admin"]} />}>
             <Route path="/admin" element={<PortalLayout />}>
               <Route index element={<AdminDashboard />} />

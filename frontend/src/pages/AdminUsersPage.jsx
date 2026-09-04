@@ -16,7 +16,7 @@ import { ConfirmDialog } from "../components/ui/ConfirmDialog.jsx";
 import { useSelector } from "react-redux";
 import api, { apiError } from "../utils/api.js";
 
-const roleTone = { Admin: "info", Teacher: "success", Parent: "neutral" };
+const roleTone = { Admin: "info", Parent: "neutral" };
 const empty = { name: "", role: "Parent", email: "", phone: "", password: "" };
 
 function UserForm({ initial, onCancel, onSaved }) {
@@ -97,8 +97,10 @@ export default function AdminUsersPage() {
 
   async function load() {
     try {
+      // this page is scoped to admin and parent accounts only, teachers live
+      // on the staff page and students on the students page
       const { data } = await api.get("/users", {
-        params: { search: search || undefined, role: roleFilter || undefined, page, limit: 15 },
+        params: { search: search || undefined, role: roleFilter || "Admin,Parent", page, limit: 15 },
       });
       setUsers(data.users);
       setMeta({ page: data.page, pages: data.pages });
@@ -168,9 +170,7 @@ export default function AdminUsersPage() {
         <Select value={roleFilter} onChange={(e) => { setPage(1); setRoleFilter(e.target.value); }} className="max-w-[10rem]">
           <option value="">All roles</option>
           <option value="Admin">Admin</option>
-          <option value="Teacher">Teacher</option>
           <option value="Parent">Parent</option>
-          <option value="Student">Student</option>
         </Select>
       </div>
 

@@ -39,13 +39,9 @@ export default function LoginPage() {
     }
     const result = await dispatch(login({ loginId: loginId.trim(), password }));
     if (login.fulfilled.match(result)) {
-      const { user, mustChangePassword } = result.payload;
+      const { user } = result.payload;
       toast.success(`Welcome, ${user.name.split(" ")[0]}`);
-      if (mustChangePassword) {
-        navigate("/change-password", { replace: true });
-      } else {
-        navigate(location.state?.from?.pathname || roleHome(user.role), { replace: true });
-      }
+      navigate(location.state?.from?.pathname || roleHome(user.role), { replace: true });
     } else {
       setError(result.payload || "Could not log you in, please try again");
     }
