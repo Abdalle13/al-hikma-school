@@ -5,8 +5,6 @@ on paper: a public school website plus a login portal with a dashboard for
 admins, teachers, parents and students. MERN stack, light/dark theme, simulated
 mobile-money fee payments.
 
-**Live:** [al-hikma-school.vercel.app](https://al-hikma-school.vercel.app/) &nbsp;·&nbsp; **Repo:** [github.com/Abdalle13/al-hikma-school](https://github.com/Abdalle13/al-hikma-school)
-
 ---
 
 ## Features
