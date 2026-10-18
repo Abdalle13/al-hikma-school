@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
+  baseURL: (import.meta.env.VITE_API_URL || "https://al-hikma-school-o2h3.vercel.app/api").trim().replace(/\/+$/, ""),
 });
 
 // attach the stored token to every request

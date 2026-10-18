@@ -71,6 +71,16 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", apiLimiter);
 
+app.get("/", (req, res) => {
+  res.json({
+    success: true,
+    message: "Al-Hikma School Management System API is running smoothly.",
+    status: "ok",
+    environment: process.env.NODE_ENV || "production",
+    time: new Date().toISOString()
+  });
+});
+
 app.get("/health", (req, res) => {
   res.json({ status: "ok", env: process.env.NODE_ENV || "development", time: new Date().toISOString() });
 });
