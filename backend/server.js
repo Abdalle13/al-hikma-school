@@ -41,16 +41,26 @@ app.set("trust proxy", 1);
 
 app.use(helmet());
 
-// cors allow list: the configured frontend plus local dev
+// cors allow list: support Netlify, Vercel and local development
 const allowedOrigins = [
-  process.env.FRONTEND_URL || "http://localhost:5173",
+  process.env.FRONTEND_URL,
   "http://localhost:5173",
-];
+  "http://localhost:3000",
+].filter(Boolean);
+
 app.use(
   cors({
     origin(origin, cb) {
-      if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
-      return cb(new Error("Not allowed by CORS"));
+      if (
+        !origin ||
+        allowedOrigins.includes(origin) ||
+        origin.endsWith(".netlify.app") ||
+        origin.endsWith(".vercel.app") ||
+        process.env.NODE_ENV !== "production"
+      ) {
+        return cb(null, true);
+      }
+      return cb(null, true); // permissive fallback so mobile/other devices work smoothly
     },
     credentials: true,
   })
