@@ -46,8 +46,11 @@ const faqs = [
 
 const empty = {
   childName: "",
+  motherName: "",
   dob: "",
   gender: "",
+  feeCategory: "Regular",
+  previousSchool: "",
   parentName: "",
   relationship: "",
   parentPhone: "",
@@ -123,13 +126,20 @@ function ApplicationForm() {
   return (
     <Card className="p-6 sm:p-8">
       <form className="grid gap-4 sm:grid-cols-2" onSubmit={onSubmit} noValidate>
-        <Input label="Child's full name" placeholder="Enter your child's full name" value={form.childName} onChange={set("childName")} error={errors.childName} className="sm:col-span-2" />
+        <Input label="Child's full name (Magaca ardayga)" placeholder="Enter your child's full name" value={form.childName} onChange={set("childName")} error={errors.childName} className="sm:col-span-2" />
+        <Input label="Mother's full name (Magaca hooyada)" placeholder="Enter mother's full name" value={form.motherName} onChange={set("motherName")} className="sm:col-span-2" />
         <Input label="Date of birth" type="date" value={form.dob} onChange={set("dob")} />
         <Select label="Gender" value={form.gender} onChange={set("gender")} error={errors.gender}>
           <option value="">Select gender</option>
           <option value="Male">Male</option>
           <option value="Female">Female</option>
         </Select>
+        <Select label="Fee Category / Xaaladda Lacagta" value={form.feeCategory} onChange={set("feeCategory")}>
+          <option value="Regular">Caadi (Regular Tuition)</option>
+          <option value="Orphan">Agoon (Orphan - Codsi Deeq 100%)</option>
+          <option value="Scholarship">Codsi Deeq Waxbarasho (Scholarship)</option>
+        </Select>
+        <Input label="Previous school (Dugsigiisii hore)" placeholder="School previously attended (optional)" value={form.previousSchool} onChange={set("previousSchool")} />
 
         <Input label="Parent or guardian name" placeholder="Enter the parent or guardian name" value={form.parentName} onChange={set("parentName")} error={errors.parentName} />
         <Select label="You are the child's" value={form.relationship} onChange={set("relationship")}>

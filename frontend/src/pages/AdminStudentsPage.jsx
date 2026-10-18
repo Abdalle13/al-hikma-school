@@ -1,6 +1,17 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { GraduationCap, Pencil, Plus, Trash2, UserPlus, X } from "lucide-react";
+import {
+  GraduationCap,
+  Pencil,
+  Plus,
+  Trash2,
+  UserPlus,
+  X,
+  HeartHandshake,
+  Activity,
+  BookOpen,
+  UserCheck,
+} from "lucide-react";
 import { PageHeader } from "../components/ui/PageHeader.jsx";
 import { Button } from "../components/ui/Button.jsx";
 import { Input } from "../components/ui/Input.jsx";
@@ -19,7 +30,27 @@ import { formatDate } from "../utils/formatter.js";
 const statusTone = { Enrolled: "success", Graduated: "info", Withdrawn: "warning" };
 
 const empty = {
-  name: "", admissionNo: "", password: "", dob: "", gender: "", phone: "", schoolClass: "",
+  name: "",
+  motherName: "",
+  admissionNo: "",
+  password: "",
+  dob: "",
+  gender: "",
+  phone: "",
+  placeOfBirth: "",
+  address: "",
+  schoolClass: "",
+  bloodGroup: "",
+  medicalConditions: "",
+  previousSchool: "",
+  lastGradeCompleted: "",
+  emergencyName: "",
+  emergencyPhone: "",
+  emergencyRelation: "",
+  feeCategory: "Regular",
+  discountPercent: 0,
+  discountReason: "",
+  sponsorName: "",
 };
 
 function toDateInput(d) {
@@ -68,7 +99,9 @@ function GuardianPicker({ studentId, onLinked }) {
     <div className="rounded-2xl border border-dashed border-border p-3">
       {selected ? (
         <div className="flex items-center justify-between">
-          <span className="text-sm text-fg">{selected.name} ({selected.email})</span>
+          <span className="text-sm text-fg">
+            {selected.name} ({selected.email || selected.phone})
+          </span>
           <button type="button" onClick={() => setSelected(null)} className="text-muted hover:text-fg">
             <X className="h-4 w-4" />
           </button>
@@ -76,7 +109,7 @@ function GuardianPicker({ studentId, onLinked }) {
       ) : (
         <div className="relative">
           <Input
-            placeholder="Search a parent by name or email"
+            placeholder="Search a parent by name, phone or email"
             value={term}
             onChange={(e) => setTerm(e.target.value)}
           />
@@ -86,10 +119,13 @@ function GuardianPicker({ studentId, onLinked }) {
                 <li key={p._id}>
                   <button
                     type="button"
-                    onClick={() => { setSelected(p); setResults([]); }}
+                    onClick={() => {
+                      setSelected(p);
+                      setResults([]);
+                    }}
                     className="w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-surface-2"
                   >
-                    {p.name} <span className="text-muted">{p.email}</span>
+                    {p.name} <span className="text-muted">{p.phone || p.email}</span>
                   </button>
                 </li>
               ))}
@@ -100,9 +136,9 @@ function GuardianPicker({ studentId, onLinked }) {
 
       <div className="mt-2 flex items-center gap-2">
         <Select value={relation} onChange={(e) => setRelation(e.target.value)} className="flex-1">
-          <option value="Father">Father</option>
-          <option value="Mother">Mother</option>
-          <option value="Guardian">Guardian</option>
+          <option value="Father">Father (Aabbe)</option>
+          <option value="Mother">Mother (Hooyo)</option>
+          <option value="Guardian">Guardian (Mas'uul)</option>
           <option value="Other">Other</option>
         </Select>
         <Button type="button" size="sm" disabled={!selected || busy} onClick={link}>
@@ -115,17 +151,32 @@ function GuardianPicker({ studentId, onLinked }) {
 
 function StudentForm({ initial, classes, onCancel, onSaved }) {
   const isEdit = Boolean(initial?._id);
+  const [tab, setTab] = useState("basic");
   const [form, setForm] = useState(
     initial
       ? {
-          name: initial.name,
-          admissionNo: initial.admissionNo,
+          name: initial.name || "",
+          motherName: initial.motherName || "",
+          admissionNo: initial.admissionNo || "",
           password: "",
           dob: toDateInput(initial.dob),
           gender: initial.gender || "",
           phone: initial.phone || "",
+          placeOfBirth: initial.placeOfBirth || "",
+          address: initial.address || "",
           schoolClass: initial.schoolClass?._id || "",
           enrollmentStatus: initial.enrollmentStatus || "Enrolled",
+          feeCategory: initial.feeCategory || "Regular",
+          discountPercent: initial.discountPercent || 0,
+          discountReason: initial.discountReason || "",
+          sponsorName: initial.sponsorName || "",
+          bloodGroup: initial.bloodGroup || "",
+          medicalConditions: initial.medicalConditions || "",
+          previousSchool: initial.previousSchool || "",
+          lastGradeCompleted: initial.lastGradeCompleted || "",
+          emergencyName: initial.emergencyContact?.name || "",
+          emergencyPhone: initial.emergencyContact?.phone || "",
+          emergencyRelation: initial.emergencyContact?.relation || "",
         }
       : empty
   );
@@ -147,7 +198,7 @@ function StudentForm({ initial, classes, onCancel, onSaved }) {
   }
 
   useEffect(() => {
-    if (!isEdit) generateAdmissionNo();
+    if (!isEdit && !form.admissionNo) generateAdmissionNo();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -159,29 +210,45 @@ function StudentForm({ initial, classes, onCancel, onSaved }) {
     }
     setSaving(true);
     try {
+      const emergencyContact =
+        form.emergencyName || form.emergencyPhone
+          ? { name: form.emergencyName, phone: form.emergencyPhone, relation: form.emergencyRelation }
+          : undefined;
+
+      const payload = {
+        name: form.name.trim(),
+        motherName: form.motherName ? form.motherName.trim() : null,
+        admissionNo: form.admissionNo ? form.admissionNo.trim() : undefined,
+        phone: form.phone || null,
+        dob: form.dob || null,
+        gender: form.gender || null,
+        placeOfBirth: form.placeOfBirth || null,
+        address: form.address || null,
+        schoolClass: form.schoolClass || null,
+        feeCategory: form.feeCategory,
+        discountPercent: form.feeCategory === "Orphan" ? 100 : Number(form.discountPercent) || 0,
+        discountReason:
+          form.feeCategory === "Orphan"
+            ? "Agoonimo (100% Free Tuition)"
+            : form.discountReason || null,
+        sponsorName: form.sponsorName || null,
+        bloodGroup: form.bloodGroup || "",
+        medicalConditions: form.medicalConditions || null,
+        previousSchool: form.previousSchool || null,
+        lastGradeCompleted: form.lastGradeCompleted || null,
+        emergencyContact,
+      };
+
       if (isEdit) {
-        // on edit, send null for cleared optionals so they can be unset
-        const payload = {
-          name: form.name,
-          admissionNo: form.admissionNo,
-          phone: form.phone,
-          dob: form.dob || null,
-          gender: form.gender || null,
-          schoolClass: form.schoolClass || null,
-          enrollmentStatus: form.enrollmentStatus,
-        };
+        payload.enrollmentStatus = form.enrollmentStatus;
         if (form.password) payload.password = form.password;
         const { data } = await api.put(`/students/${initial._id}`, payload);
         toast.success("Student updated");
         onSaved(data.student);
       } else {
-        // on create, omit empty optionals entirely (dob is a date, "" breaks the cast)
-        const payload = { name: form.name, admissionNo: form.admissionNo, password: form.password };
-        ["dob", "gender", "phone", "schoolClass"].forEach((k) => {
-          if (form[k]) payload[k] = form[k];
-        });
+        payload.password = form.password;
         const { data } = await api.post("/students", payload);
-        toast.success(`${data.student.name} enrolled`);
+        toast.success(`${data.student.name} enrolled successfully`);
         onSaved(data.student);
       }
     } catch (err) {
@@ -203,99 +270,332 @@ function StudentForm({ initial, classes, onCancel, onSaved }) {
 
   return (
     <div className="space-y-6">
+      <div className="flex border-b border-border pb-1 overflow-x-auto gap-2">
+        <button
+          type="button"
+          onClick={() => setTab("basic")}
+          className={`flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap ${
+            tab === "basic" ? "bg-primary text-primary-fg" : "text-muted hover:text-fg hover:bg-surface-2"
+          }`}
+        >
+          <UserCheck className="h-3.5 w-3.5" /> 1. Xogta Guud
+        </button>
+        <button
+          type="button"
+          onClick={() => setTab("fee")}
+          className={`flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap ${
+            tab === "fee" ? "bg-primary text-primary-fg" : "text-muted hover:text-fg hover:bg-surface-2"
+          }`}
+        >
+          <HeartHandshake className="h-3.5 w-3.5" /> 2. Lacagta / Agoonta
+          {form.feeCategory === "Orphan" && (
+            <span className="ml-1 px-1.5 py-0.2 text-[10px] bg-purple-500 text-white rounded-full">
+              Agoon
+            </span>
+          )}
+        </button>
+        <button
+          type="button"
+          onClick={() => setTab("medical")}
+          className={`flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap ${
+            tab === "medical" ? "bg-primary text-primary-fg" : "text-muted hover:text-fg hover:bg-surface-2"
+          }`}
+        >
+          <Activity className="h-3.5 w-3.5" /> 3. Caafimaadka & Gurmadka
+        </button>
+        <button
+          type="button"
+          onClick={() => setTab("background")}
+          className={`flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap ${
+            tab === "background" ? "bg-primary text-primary-fg" : "text-muted hover:text-fg hover:bg-surface-2"
+          }`}
+        >
+          <BookOpen className="h-3.5 w-3.5" /> 4. Dugsiga Hore & Waalidka
+        </button>
+      </div>
+
       <form className="flex flex-col gap-4" onSubmit={onSubmit} noValidate>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Input label="Full name" value={form.name} onChange={set("name")} placeholder="Enter the student's full name" />
-          <div>
-            <div className="flex items-end gap-2">
+        {tab === "basic" && (
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Input
-                label="Admission number"
-                value={form.admissionNo}
-                onChange={set("admissionNo")}
-                placeholder="Auto generated"
-                className="flex-1"
+                label="Full student name (Magaca ardayga)"
+                value={form.name}
+                onChange={set("name")}
+                placeholder="Tusaale: Maxamed Cali Axmed"
+                required
               />
-              <Button type="button" variant="outline" size="md" onClick={generateAdmissionNo} disabled={generating}>
-                {generating ? "..." : "New"}
-              </Button>
+              <Input
+                label="Mother's full name (Magaca hooyada)"
+                value={form.motherName}
+                onChange={set("motherName")}
+                placeholder="Tusaale: Faadumo Xasan Nuur"
+              />
             </div>
-            <p className="mt-1.5 text-xs text-muted">Generated automatically, or type your own.</p>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <div className="flex items-end gap-2">
+                  <Input
+                    label="Admission number"
+                    value={form.admissionNo}
+                    onChange={set("admissionNo")}
+                    placeholder="Auto generated"
+                    className="flex-1"
+                  />
+                  <Button type="button" variant="outline" size="md" onClick={generateAdmissionNo} disabled={generating}>
+                    {generating ? "..." : "New"}
+                  </Button>
+                </div>
+              </div>
+              <Select label="Class (Fasalka)" value={form.schoolClass} onChange={set("schoolClass")}>
+                <option value="">Not assigned</option>
+                {classes.map((c) => (
+                  <option key={c._id} value={c._id}>
+                    {c.name} {c.section}
+                  </option>
+                ))}
+              </Select>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <Input label="Date of birth" type="date" value={form.dob} onChange={set("dob")} />
+              <Select label="Gender (Jinsiga)" value={form.gender} onChange={set("gender")}>
+                <option value="">Not set</option>
+                <option value="Male">Lab (Male)</option>
+                <option value="Female">Dhedig (Female)</option>
+              </Select>
+              <Input
+                label="Place of birth (Goobta dhalashada)"
+                value={form.placeOfBirth}
+                onChange={set("placeOfBirth")}
+                placeholder="Tusaale: Muqdisho"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <Input
+                label="Address / Neighborhood (Xaafadda)"
+                value={form.address}
+                onChange={set("address")}
+                placeholder="Tusaale: Hodan, Taleex"
+              />
+              <Input
+                label="Student phone (if any)"
+                value={form.phone}
+                onChange={set("phone")}
+                placeholder="Enter student phone"
+              />
+            </div>
+
+            {isEdit && (
+              <Select label="Enrolment status" value={form.enrollmentStatus} onChange={set("enrollmentStatus")}>
+                <option value="Enrolled">Enrolled</option>
+                <option value="Graduated">Graduated</option>
+                <option value="Withdrawn">Withdrawn</option>
+              </Select>
+            )}
+
+            <Input
+              label={isEdit ? "Reset password (optional)" : "Login Password"}
+              value={form.password}
+              onChange={set("password")}
+              placeholder={isEdit ? "Leave blank to keep the current one" : "Enter a password, at least 6 characters"}
+            />
+          </div>
+        )}
+
+        {tab === "fee" && (
+          <div className="space-y-4">
+            <div className="rounded-xl border border-border p-4 bg-surface-2/40">
+              <label className="text-sm font-semibold text-fg block mb-2">
+                Fee Category / Qaybta Lacag-bixinta
+              </label>
+              <Select value={form.feeCategory} onChange={set("feeCategory")} className="w-full">
+                <option value="Regular">Caadi (Regular - 100% Tuition Bixiye)</option>
+                <option value="Orphan">Agoon (Orphan - 100% Free Tuition / Bilaash)</option>
+                <option value="Scholarship">Deeq Waxbarasho (Scholarship)</option>
+                <option value="StaffChild">Ilmo Shaqaale (Staff Child Discount)</option>
+                <option value="Discount">Qiimo Dhimis Gaar ah (Custom Discount)</option>
+              </Select>
+            </div>
+
+            {form.feeCategory === "Orphan" && (
+              <div className="rounded-2xl border border-purple-500/30 bg-purple-500/10 p-4 space-y-3">
+                <div className="flex items-start gap-3">
+                  <HeartHandshake className="h-6 w-6 text-purple-600 dark:text-purple-400 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold text-purple-900 dark:text-purple-200 text-sm">
+                      Deeqda Agoonta (100% Full Tuition Waiver)
+                    </h4>
+                    <p className="text-xs text-purple-800/80 dark:text-purple-300/80 mt-1">
+                      Ardaygan waxaa loo diiwaangeliyay Agoon. Nidaamka xisaabaadka dugsigu wuxuu si toos ah uga dhaafayaa
+                      dhammaan lacagta waxbarashada ($0 Total Billed).
+                    </p>
+                  </div>
+                </div>
+                <Input
+                  label="Kafaalo-qaade / Sponsor Name (Optional)"
+                  value={form.sponsorName}
+                  onChange={set("sponsorName")}
+                  placeholder="Tusaale: Hay'adda Hormuud / Shakhsi kafaalo qaaday"
+                />
+              </div>
+            )}
+
+            {form.feeCategory !== "Regular" && form.feeCategory !== "Orphan" && (
+              <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 space-y-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <Input
+                    label="Qiimo dhimis % (Discount Percent)"
+                    type="number"
+                    min="1"
+                    max="100"
+                    value={form.discountPercent}
+                    onChange={set("discountPercent")}
+                    placeholder="Tusaale: 50"
+                  />
+                  <Input
+                    label="Sababta deeqda / Reason"
+                    value={form.discountReason}
+                    onChange={set("discountReason")}
+                    placeholder="Tusaale: Kaalinta 1-aad / Duruuf gaar ah"
+                  />
+                </div>
+                <Input
+                  label="Sponsor / Bixiye (Optional)"
+                  value={form.sponsorName}
+                  onChange={set("sponsorName")}
+                  placeholder="Qofka ama hay'adda dhimista bixinaysa"
+                />
+              </div>
+            )}
+          </div>
+        )}
+
+        {tab === "medical" && (
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Select label="Nooca Dhiigga (Blood Group)" value={form.bloodGroup} onChange={set("bloodGroup")}>
+                <option value="">Not tested / Lama oga</option>
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+              </Select>
+              <Input
+                label="Qofka gurmadka (Emergency Contact Name)"
+                value={form.emergencyName}
+                onChange={set("emergencyName")}
+                placeholder="Magaca qofka gurmadka"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Input
+                label="Telefoonka Gurmadka (Emergency Phone)"
+                value={form.emergencyPhone}
+                onChange={set("emergencyPhone")}
+                placeholder="+252 61 ..."
+              />
+              <Input
+                label="Xiriirka (Relationship)"
+                value={form.emergencyRelation}
+                onChange={set("emergencyRelation")}
+                placeholder="Tusaale: Adeer, Eedo, Abti, Deris"
+              />
+            </div>
+
+            <Input
+              label="Xaalado Caafimaad / Xasaasiyad (Allergies or Medical Notes)"
+              value={form.medicalConditions}
+              onChange={set("medicalConditions")}
+              placeholder="Tusaale: Neefta (Asthma), Xasaasiyad daawo gaar ah, iwm."
+            />
+          </div>
+        )}
+
+        {tab === "background" && (
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Input
+                label="Dugsigiisii hore (Previous School attended)"
+                value={form.previousSchool}
+                onChange={set("previousSchool")}
+                placeholder="Tusaale: Dugsiga Hoose/Dhexe ee Banaadir"
+              />
+              <Input
+                label="Fasalkii ugu dambeeyay (Last Grade Completed)"
+                value={form.lastGradeCompleted}
+                onChange={set("lastGradeCompleted")}
+                placeholder="Tusaale: Grade 6"
+              />
+            </div>
+
+            {isEdit && (
+              <div className="pt-2">
+                <p className="mb-2 text-sm font-semibold text-fg">Linked Guardians / Waalidiinta ku xiran</p>
+                {guardians.length ? (
+                  <ul className="mb-3 divide-y divide-border rounded-2xl border border-border">
+                    {guardians.map((g) => (
+                      <li key={g.user._id} className="flex items-center justify-between px-4 py-2.5 text-sm">
+                        <span>
+                          <span className="font-medium text-fg">{g.user.name}</span>
+                          <span className="text-muted"> · {g.relation}</span>
+                          {g.user.phone && <span className="text-muted text-xs ml-2">({g.user.phone})</span>}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => removeGuardian(g.user._id)}
+                          className="rounded-lg p-1.5 text-muted hover:bg-danger/10 hover:text-danger"
+                          aria-label="Unlink guardian"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="mb-3 text-sm text-muted">No parent linked yet.</p>
+                )}
+                <GuardianPicker
+                  studentId={initial._id}
+                  onLinked={async () => {
+                    const { data } = await api.get(`/students/${initial._id}`);
+                    setGuardians(data.student.guardians || []);
+                  }}
+                />
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className="flex items-center justify-between border-t border-border pt-4 mt-2">
+          <div className="text-xs text-muted">
+            {tab !== "basic" && (
+              <button
+                type="button"
+                onClick={() => setTab("basic")}
+                className="text-primary hover:underline font-medium"
+              >
+                ← Back to Basic info
+              </button>
+            )}
+          </div>
+          <div className="flex gap-2">
+            <Button type="button" variant="outline" onClick={onCancel} disabled={saving}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={saving}>
+              {saving ? "Saving..." : isEdit ? "Save changes" : "Enrol student"}
+            </Button>
           </div>
         </div>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Input label="Date of birth" type="date" value={form.dob} onChange={set("dob")} />
-          <Select label="Gender" value={form.gender} onChange={set("gender")}>
-            <option value="">Not set</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-          </Select>
-        </div>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Input label="Phone" value={form.phone} onChange={set("phone")} placeholder="Enter the phone number" />
-          <Select label="Class" value={form.schoolClass} onChange={set("schoolClass")}>
-            <option value="">Not assigned</option>
-            {classes.map((c) => (
-              <option key={c._id} value={c._id}>{c.name} {c.section}</option>
-            ))}
-          </Select>
-        </div>
-        {isEdit ? (
-          <Select label="Enrolment status" value={form.enrollmentStatus} onChange={set("enrollmentStatus")}>
-            <option value="Enrolled">Enrolled</option>
-            <option value="Graduated">Graduated</option>
-            <option value="Withdrawn">Withdrawn</option>
-          </Select>
-        ) : null}
-        <Input
-          label={isEdit ? "Reset password (optional)" : "Password"}
-          value={form.password}
-          onChange={set("password")}
-          placeholder={isEdit ? "Leave blank to keep the current one" : "Enter a password, at least 6 characters"}
-        />
-        <div className="flex justify-end gap-2">
-          <Button type="button" variant="outline" onClick={onCancel} disabled={saving}>
-            Cancel
-          </Button>
-          <Button type="submit" disabled={saving}>
-            {saving ? "Saving..." : isEdit ? "Save changes" : "Enrol student"}
-          </Button>
-        </div>
       </form>
-
-      {isEdit ? (
-        <div>
-          <p className="mb-2 text-sm font-semibold text-fg">Guardians</p>
-          {guardians.length ? (
-            <ul className="mb-3 divide-y divide-border rounded-2xl border border-border">
-              {guardians.map((g) => (
-                <li key={g.user._id} className="flex items-center justify-between px-4 py-2.5 text-sm">
-                  <span>
-                    <span className="font-medium text-fg">{g.user.name}</span>
-                    <span className="text-muted"> · {g.relation}</span>
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => removeGuardian(g.user._id)}
-                    className="rounded-lg p-1.5 text-muted hover:bg-danger/10 hover:text-danger"
-                    aria-label="Unlink guardian"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="mb-3 text-sm text-muted">No parent linked yet.</p>
-          )}
-          <GuardianPicker
-            studentId={initial._id}
-            onLinked={async () => {
-              const { data } = await api.get(`/students/${initial._id}`);
-              setGuardians(data.student.guardians || []);
-            }}
-          />
-        </div>
-      ) : null}
     </div>
   );
 }
@@ -307,6 +607,7 @@ export default function AdminStudentsPage() {
   const [search, setSearch] = useState("");
   const [classFilter, setClassFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [feeCategoryFilter, setFeeCategoryFilter] = useState("");
   const [page, setPage] = useState(1);
   const [modal, setModal] = useState(null);
   const [toDelete, setToDelete] = useState(null);
@@ -319,6 +620,7 @@ export default function AdminStudentsPage() {
           search: search || undefined,
           schoolClass: classFilter || undefined,
           enrollmentStatus: statusFilter || undefined,
+          feeCategory: feeCategoryFilter || undefined,
           page,
           limit: 15,
         },
@@ -335,7 +637,7 @@ export default function AdminStudentsPage() {
     const t = setTimeout(load, 250);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search, classFilter, statusFilter, page]);
+  }, [search, classFilter, statusFilter, feeCategoryFilter, page]);
 
   useEffect(() => {
     api.get("/classes").then(({ data }) => setClasses(data.classes)).catch(() => {});
@@ -369,7 +671,7 @@ export default function AdminStudentsPage() {
     <div>
       <PageHeader
         title="Students"
-        description="Enrolment, class assignment and parent links."
+        description="Enrolment, class assignment, fee/orphan status and parent links."
         action={
           <Button onClick={() => setModal({ mode: "create" })}>
             <Plus className="h-4 w-4" /> Enrol student
@@ -379,18 +681,51 @@ export default function AdminStudentsPage() {
 
       <div className="mb-4 flex flex-wrap gap-3">
         <Input
-          placeholder="Search by name or admission number"
+          placeholder="Search by name, mother or admission #"
           value={search}
-          onChange={(e) => { setPage(1); setSearch(e.target.value); }}
+          onChange={(e) => {
+            setPage(1);
+            setSearch(e.target.value);
+          }}
           className="max-w-xs"
         />
-        <Select value={classFilter} onChange={(e) => { setPage(1); setClassFilter(e.target.value); }} className="max-w-[10rem]">
+        <Select
+          value={classFilter}
+          onChange={(e) => {
+            setPage(1);
+            setClassFilter(e.target.value);
+          }}
+          className="max-w-[10rem]"
+        >
           <option value="">All classes</option>
           {classes.map((c) => (
-            <option key={c._id} value={c._id}>{c.name} {c.section}</option>
+            <option key={c._id} value={c._id}>
+              {c.name} {c.section}
+            </option>
           ))}
         </Select>
-        <Select value={statusFilter} onChange={(e) => { setPage(1); setStatusFilter(e.target.value); }} className="max-w-[10rem]">
+        <Select
+          value={feeCategoryFilter}
+          onChange={(e) => {
+            setPage(1);
+            setFeeCategoryFilter(e.target.value);
+          }}
+          className="max-w-[11rem]"
+        >
+          <option value="">All Fee Status</option>
+          <option value="Regular">Caadi (Regular)</option>
+          <option value="Orphan">Agoon (100% Free)</option>
+          <option value="Scholarship">Deeq (Scholarship)</option>
+          <option value="StaffChild">Ilmo Shaqaale</option>
+        </Select>
+        <Select
+          value={statusFilter}
+          onChange={(e) => {
+            setPage(1);
+            setStatusFilter(e.target.value);
+          }}
+          className="max-w-[10rem]"
+        >
           <option value="">Any status</option>
           <option value="Enrolled">Enrolled</option>
           <option value="Graduated">Graduated</option>
@@ -411,21 +746,47 @@ export default function AdminStudentsPage() {
         />
       ) : (
         <>
-          <Table headers={["Student", "Admission no.", "Class", "Gender", "Status", ""]}>
+          <Table headers={["Student & Mother", "Admission no.", "Class", "Fee Status", "Gender", "Status", ""]}>
             {students.map((s) => (
               <Table.Row key={s._id}>
                 <Table.Cell>
                   <div className="flex items-center gap-3">
                     <Avatar name={s.name} size="sm" />
                     <div>
-                      <p className="font-medium">{s.name}</p>
-                      {s.dob ? <p className="text-xs text-muted">Born {formatDate(s.dob)}</p> : null}
+                      <p className="font-medium text-fg">{s.name}</p>
+                      <div className="flex items-center gap-2 text-xs text-muted mt-0.5">
+                        {s.motherName ? (
+                          <span>
+                            Hooyo: <strong className="text-fg/80">{s.motherName}</strong>
+                          </span>
+                        ) : null}
+                        {s.dob ? <span>Born {formatDate(s.dob)}</span> : null}
+                      </div>
                     </div>
                   </div>
                 </Table.Cell>
-                <Table.Cell className="tabular-nums">{s.admissionNo}</Table.Cell>
+                <Table.Cell className="tabular-nums font-mono text-xs">{s.admissionNo}</Table.Cell>
                 <Table.Cell className="text-muted">
                   {s.schoolClass ? `${s.schoolClass.name} ${s.schoolClass.section || ""}` : "Not assigned"}
+                </Table.Cell>
+                <Table.Cell>
+                  {s.feeCategory === "Orphan" ? (
+                    <Badge tone="purple" className="bg-purple-500/15 text-purple-700 dark:text-purple-300 border border-purple-500/30">
+                      Agoon (Free)
+                    </Badge>
+                  ) : s.feeCategory === "Scholarship" ? (
+                    <Badge tone="warning" className="border border-amber-500/30">
+                      Deeq ({s.discountPercent || 100}%)
+                    </Badge>
+                  ) : s.feeCategory === "StaffChild" ? (
+                    <Badge tone="info" className="border border-blue-500/30">
+                      Ilmo Shaqaale
+                    </Badge>
+                  ) : s.feeCategory === "Discount" ? (
+                    <Badge tone="info">Dhimis ({s.discountPercent}%)</Badge>
+                  ) : (
+                    <Badge tone="neutral">Caadi</Badge>
+                  )}
                 </Table.Cell>
                 <Table.Cell className="text-muted">{s.gender || "-"}</Table.Cell>
                 <Table.Cell>
@@ -461,8 +822,8 @@ export default function AdminStudentsPage() {
       <Modal
         open={Boolean(modal)}
         onClose={() => setModal(null)}
-        title={modal?.mode === "edit" ? "Edit student" : "Enrol a student"}
-        className="max-w-xl"
+        title={modal?.mode === "edit" ? `Edit: ${modal.student?.name}` : "Diiwaangeli Arday Cusub (Enrol Student)"}
+        className="max-w-2xl"
       >
         {modal ? (
           <StudentForm initial={modal.student} classes={classes} onCancel={() => setModal(null)} onSaved={onSaved} />

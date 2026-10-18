@@ -61,7 +61,7 @@ export async function generateInvoices(req, res, next) {
       role: "Student",
       schoolClass,
       enrollmentStatus: "Enrolled",
-    }).select("_id");
+    }).select("_id feeCategory discountPercent discountReason");
 
     const already = await Invoice.find({
       term,
@@ -71,16 +71,58 @@ export async function generateInvoices(req, res, next) {
 
     const toCreate = students
       .filter((s) => !has.has(String(s._id)))
-      .map((s) => ({
-        student: s._id,
-        term,
-        schoolClass,
-        lineItems: structure.lineItems.map((li) => ({ label: li.label, amount: li.amount })),
-        total: structure.total,
-        dueDate: trm.endDate,
-        balance: structure.total,
-        status: "Unpaid",
-      }));
+      .map((s) => {
+        const isOrphan = s.feeCategory === "Orphan" || s.discountPercent === 100;
+        const discountPct = Number(s.discountPercent) || 0;
+
+        if (isOrphan) {
+          // 100% Free Tuition for Orphans / Full Scholarships
+          return {
+            student: s._id,
+            term,
+            schoolClass,
+            lineItems: [
+              ...structure.lineItems.map((li) => ({ label: li.label, amount: li.amount })),
+              { label: `Deeq Agoonimo / 100% Scholarship (${s.discountReason || "Agoon"})`, amount: -structure.total }
+            ],
+            total: 0,
+            dueDate: trm.endDate,
+            amountPaid: 0,
+            balance: 0,
+            status: "Paid",
+          };
+        } else if (discountPct > 0) {
+          // Partial discount
+          const discountAmount = Math.round((structure.total * (discountPct / 100)) * 100) / 100;
+          const discountedTotal = Math.max(0, Math.round((structure.total - discountAmount) * 100) / 100);
+          return {
+            student: s._id,
+            term,
+            schoolClass,
+            lineItems: [
+              ...structure.lineItems.map((li) => ({ label: li.label, amount: li.amount })),
+              { label: `Qiimo Dhimis (${discountPct}% Discount - ${s.discountReason || "Deeq"})`, amount: -discountAmount }
+            ],
+            total: discountedTotal,
+            dueDate: trm.endDate,
+            amountPaid: 0,
+            balance: discountedTotal,
+            status: discountedTotal === 0 ? "Paid" : "Unpaid",
+          };
+        }
+
+        return {
+          student: s._id,
+          term,
+          schoolClass,
+          lineItems: structure.lineItems.map((li) => ({ label: li.label, amount: li.amount })),
+          total: structure.total,
+          dueDate: trm.endDate,
+          amountPaid: 0,
+          balance: structure.total,
+          status: "Unpaid",
+        };
+      });
 
     if (toCreate.length) await Invoice.insertMany(toCreate);
 

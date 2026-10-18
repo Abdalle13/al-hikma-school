@@ -82,6 +82,16 @@ export async function createStudent(req, res, next) {
 
     const schoolClass = await checkClassHasRoom(req.body.schoolClass);
 
+    // Extract professional school info
+    let feeCategory = req.body.feeCategory || "Regular";
+    let discountPercent = Number(req.body.discountPercent) || 0;
+    let discountReason = req.body.discountReason || "";
+
+    if (feeCategory === "Orphan") {
+      discountPercent = 100;
+      discountReason = discountReason || "Agoonimo (100% Free Tuition)";
+    }
+
     const student = await User.create({
       name,
       admissionNo,
@@ -95,6 +105,18 @@ export async function createStudent(req, res, next) {
       schoolClass: schoolClass || undefined,
       enrolledAt: new Date(),
       enrollmentStatus: "Enrolled",
+      motherName: req.body.motherName || undefined,
+      placeOfBirth: req.body.placeOfBirth || undefined,
+      address: req.body.address || undefined,
+      bloodGroup: req.body.bloodGroup || "",
+      medicalConditions: req.body.medicalConditions || undefined,
+      previousSchool: req.body.previousSchool || undefined,
+      lastGradeCompleted: req.body.lastGradeCompleted || undefined,
+      emergencyContact: req.body.emergencyContact || undefined,
+      feeCategory,
+      discountPercent,
+      discountReason: discountReason || undefined,
+      sponsorName: req.body.sponsorName || undefined,
     });
 
     const fresh = await populatedStudent(User.findById(student._id));
@@ -112,7 +134,7 @@ export async function createStudent(req, res, next) {
 // GET /api/students  (any signed in user, teachers and admins in practice)
 export async function listStudents(req, res, next) {
   try {
-    const { schoolClass, enrollmentStatus, gender, search } = req.query;
+    const { schoolClass, enrollmentStatus, gender, search, feeCategory } = req.query;
     const page = Math.max(1, Number(req.query.page) || 1);
     const limit = Math.min(200, Math.max(1, Number(req.query.limit) || 20));
 
@@ -120,6 +142,7 @@ export async function listStudents(req, res, next) {
     if (schoolClass && isValidId(schoolClass)) filter.schoolClass = schoolClass;
     if (enrollmentStatus) filter.enrollmentStatus = enrollmentStatus;
     if (gender) filter.gender = gender;
+    if (feeCategory) filter.feeCategory = feeCategory;
     if (search) {
       const rx = new RegExp(search.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
       filter.$or = [{ name: rx }, { admissionNo: rx }, { phone: rx }];
@@ -190,6 +213,26 @@ export async function updateStudent(req, res, next) {
       }
       student.gender = gender || undefined;
     }
+
+    // Extended professional fields
+    if (req.body.motherName !== undefined) student.motherName = req.body.motherName;
+    if (req.body.placeOfBirth !== undefined) student.placeOfBirth = req.body.placeOfBirth;
+    if (req.body.address !== undefined) student.address = req.body.address;
+    if (req.body.bloodGroup !== undefined) student.bloodGroup = req.body.bloodGroup;
+    if (req.body.medicalConditions !== undefined) student.medicalConditions = req.body.medicalConditions;
+    if (req.body.previousSchool !== undefined) student.previousSchool = req.body.previousSchool;
+    if (req.body.lastGradeCompleted !== undefined) student.lastGradeCompleted = req.body.lastGradeCompleted;
+    if (req.body.emergencyContact !== undefined) student.emergencyContact = req.body.emergencyContact;
+    if (req.body.feeCategory !== undefined) {
+      student.feeCategory = req.body.feeCategory;
+      if (req.body.feeCategory === "Orphan") {
+        student.discountPercent = 100;
+        student.discountReason = student.discountReason || "Agoonimo (100% Free Tuition)";
+      }
+    }
+    if (req.body.discountPercent !== undefined) student.discountPercent = Number(req.body.discountPercent) || 0;
+    if (req.body.discountReason !== undefined) student.discountReason = req.body.discountReason;
+    if (req.body.sponsorName !== undefined) student.sponsorName = req.body.sponsorName;
 
     if (admissionNo !== undefined) {
       const taken = await User.findOne({

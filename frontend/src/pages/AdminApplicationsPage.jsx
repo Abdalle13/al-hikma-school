@@ -55,7 +55,14 @@ function ReviewModal({ application, classes, onClose, onSaved }) {
     try {
       const payload = { status, reviewNote };
       if (canCreateStudent && password) {
-        Object.assign(payload, { admissionNo: admissionNo || undefined, password, schoolClass: schoolClass || undefined });
+        Object.assign(payload, {
+          admissionNo: admissionNo || undefined,
+          password,
+          schoolClass: schoolClass || undefined,
+          motherName: application.motherName || undefined,
+          feeCategory: application.feeCategory || "Regular",
+          previousSchool: application.previousSchool || undefined
+        });
       }
       const { data } = await api.patch(`/applications/${application._id}/review`, payload);
       toast.success(data.createdStudent ? `Accepted, ${data.createdStudent.name} enrolled` : "Application updated");

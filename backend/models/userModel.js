@@ -59,6 +59,34 @@ const userSchema = new mongoose.Schema(
       default: undefined,
     },
 
+    // --- Professional School Student Extensions ---
+    motherName: { type: String, trim: true },
+    placeOfBirth: { type: String, trim: true },
+    address: { type: String, trim: true },
+    bloodGroup: {
+      type: String,
+      enum: ["", "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
+      default: "",
+    },
+    medicalConditions: { type: String, trim: true },
+    previousSchool: { type: String, trim: true },
+    lastGradeCompleted: { type: String, trim: true },
+    emergencyContact: {
+      name: { type: String, trim: true },
+      phone: { type: String, trim: true },
+      relation: { type: String, trim: true },
+    },
+
+    // Fee & Scholarship Category (Agoon, Deeq, Caadi)
+    feeCategory: {
+      type: String,
+      enum: ["Regular", "Orphan", "Scholarship", "StaffChild", "Discount"],
+      default: "Regular",
+    },
+    discountPercent: { type: Number, min: 0, max: 100, default: 0 },
+    discountReason: { type: String, trim: true },
+    sponsorName: { type: String, trim: true },
+
     // set true by the admin on create, cleared after the user changes it once
     mustChangePassword: { type: Boolean, default: true },
 
@@ -98,6 +126,18 @@ userSchema.methods.toSafeJSON = function toSafeJSON() {
     schoolClass: this.schoolClass,
     enrolledAt: this.enrolledAt,
     enrollmentStatus: this.enrollmentStatus,
+    motherName: this.motherName,
+    placeOfBirth: this.placeOfBirth,
+    address: this.address,
+    bloodGroup: this.bloodGroup,
+    medicalConditions: this.medicalConditions,
+    previousSchool: this.previousSchool,
+    lastGradeCompleted: this.lastGradeCompleted,
+    emergencyContact: this.emergencyContact,
+    feeCategory: this.feeCategory || "Regular",
+    discountPercent: this.discountPercent || 0,
+    discountReason: this.discountReason,
+    sponsorName: this.sponsorName,
     createdAt: this.createdAt,
     updatedAt: this.updatedAt,
   };

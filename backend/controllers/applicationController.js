@@ -24,6 +24,11 @@ export async function submitApplication(req, res, next) {
       parentPhone,
       parentEmail: req.body.parentEmail,
       message: req.body.message,
+      motherName: req.body.motherName,
+      feeCategory: req.body.feeCategory || "Regular",
+      previousSchool: req.body.previousSchool,
+      bloodGroup: req.body.bloodGroup,
+      address: req.body.address,
     });
     res.status(201).json({
       message: "Your application has been received. The school will contact you.",
@@ -121,6 +126,9 @@ export async function reviewApplication(req, res, next) {
         }
         schoolClass = cls._id;
       }
+      const finalFeeCategory = req.body.feeCategory || app.feeCategory || "Regular";
+      const isOrphan = finalFeeCategory === "Orphan";
+
       createdStudent = await User.create({
         name: app.childName,
         admissionNo,
@@ -133,6 +141,13 @@ export async function reviewApplication(req, res, next) {
         schoolClass,
         enrolledAt: new Date(),
         enrollmentStatus: "Enrolled",
+        motherName: req.body.motherName || app.motherName || undefined,
+        feeCategory: finalFeeCategory,
+        discountPercent: isOrphan ? 100 : 0,
+        discountReason: isOrphan ? "Agoonimo (100% Free Tuition)" : undefined,
+        previousSchool: req.body.previousSchool || app.previousSchool || undefined,
+        bloodGroup: app.bloodGroup || "",
+        address: app.address || undefined,
       });
       app.createdStudent = createdStudent._id;
     }
