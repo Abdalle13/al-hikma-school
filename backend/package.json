@@ -1,4 +1,4 @@
-{
+﻿{
   "name": "school-management-system-backend",
   "version": "1.0.0",
   "description": "Backend API for the school management system",
@@ -10,7 +10,9 @@
     "data:import": "node seeder.js",
     "data:destroy": "node seeder.js -d",
     "demo": "node scripts/demo.js",
-    "demo:destroy": "node scripts/demo.js -d"
+    "demo:destroy": "node scripts/demo.js -d",
+    "seed:import": "node seed.js",
+    "seed:destroy": "node seed.js -d"
   },
   "author": "Abdalle Hussein",
   "license": "MIT",
@@ -31,3 +33,4 @@
     "nodemailer": "^9.1.0"
   }
 }
+

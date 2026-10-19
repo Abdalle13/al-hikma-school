@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Briefcase, KeyRound, Plus, ShieldOff, ShieldCheck } from "lucide-react";
+import {
+  Briefcase, KeyRound, Plus, ShieldOff, ShieldCheck,
+  Eye, Pencil, X, ChevronDown,
+} from "lucide-react";
 import { PageHeader } from "../components/ui/PageHeader.jsx";
 import { Button } from "../components/ui/Button.jsx";
 import { Input } from "../components/ui/Input.jsx";
@@ -12,65 +15,246 @@ import { Spinner } from "../components/ui/Spinner.jsx";
 import { Modal } from "../components/ui/Modal.jsx";
 import api, { apiError } from "../utils/api.js";
 
-const empty = { name: "", email: "", phone: "", password: "" };
+// ─── helpers ─────────────────────────────────────────────────────────────────
+const TAB_LABELS = ["Basic Info", "Professional", "Emergency"];
 
-function TeacherForm({ onCancel, onSaved }) {
-  const [form, setForm] = useState(empty);
+const EMPTY_TEACHER = {
+  name: "", email: "", phone: "", password: "",
+  gender: "", dob: "",
+  // professional
+  employeeId: "", qualification: "", specialization: "",
+  nationality: "", nin: "", joinDate: "", contractType: "",
+  // emergency
+  emergencyName: "", emergencyPhone: "", emergencyRelation: "",
+};
+
+function TabBar({ tabs, active, onChange }) {
+  return (
+    <div className="flex gap-1 border-b border-border mb-6">
+      {tabs.map((t, i) => (
+        <button
+          key={t}
+          type="button"
+          onClick={() => onChange(i)}
+          className={`px-4 py-2 text-sm font-medium rounded-t transition-colors ${
+            active === i
+              ? "border-b-2 border-accent text-accent"
+              : "text-muted hover:text-fg"
+          }`}
+        >
+          {t}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function FormField({ label, children }) {
+  return (
+    <div className="flex flex-col gap-1">
+      <label className="text-xs font-semibold text-muted uppercase tracking-wide">{label}</label>
+      {children}
+    </div>
+  );
+}
+
+function SelectField({ label, value, onChange, options, placeholder }) {
+  return (
+    <FormField label={label}>
+      <div className="relative">
+        <select
+          value={value}
+          onChange={onChange}
+          className="w-full appearance-none rounded-lg border border-border bg-surface px-3 py-2 text-sm text-fg pr-8 focus:outline-none focus:ring-2 focus:ring-accent"
+        >
+          <option value="">{placeholder || "— Select —"}</option>
+          {options.map((o) => (
+            <option key={o.value ?? o} value={o.value ?? o}>{o.label ?? o}</option>
+          ))}
+        </select>
+        <ChevronDown className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted" />
+      </div>
+    </FormField>
+  );
+}
+
+// ─── Add / Edit teacher form ─────────────────────────────────────────────────
+function TeacherForm({ initial, onCancel, onSaved }) {
+  const isEdit = Boolean(initial?._id);
+  const [form, setForm] = useState(() => {
+    if (!initial) return EMPTY_TEACHER;
+    return {
+      name: initial.name || "",
+      email: initial.email || "",
+      phone: initial.phone || "",
+      password: "",
+      gender: initial.gender || "",
+      dob: initial.dob ? initial.dob.slice(0, 10) : "",
+      employeeId: initial.employeeId || "",
+      qualification: initial.qualification || "",
+      specialization: initial.specialization || "",
+      nationality: initial.nationality || "",
+      nin: initial.nin || "",
+      joinDate: initial.joinDate ? initial.joinDate.slice(0, 10) : "",
+      contractType: initial.contractType || "",
+      emergencyName: initial.teacherEmergencyContact?.name || "",
+      emergencyPhone: initial.teacherEmergencyContact?.phone || "",
+      emergencyRelation: initial.teacherEmergencyContact?.relation || "",
+    };
+  });
+  const [tab, setTab] = useState(0);
   const [saving, setSaving] = useState(false);
+
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
   async function onSubmit(e) {
     e.preventDefault();
-    if (!form.name.trim() || !form.email.trim() || form.password.length < 6) {
-      toast.error("Name, email and a password of at least 6 characters are required");
-      return;
+    if (!form.name.trim() || !form.email.trim()) {
+      toast.error("Name and email are required"); setTab(0); return;
     }
+    if (!isEdit && form.password.length < 6) {
+      toast.error("Password must be at least 6 characters"); setTab(0); return;
+    }
+
+    const payload = {
+      name: form.name,
+      email: form.email,
+      phone: form.phone || undefined,
+      gender: form.gender || undefined,
+      dob: form.dob || undefined,
+      employeeId: form.employeeId || undefined,
+      qualification: form.qualification || undefined,
+      specialization: form.specialization || undefined,
+      nationality: form.nationality || undefined,
+      nin: form.nin || undefined,
+      joinDate: form.joinDate || undefined,
+      contractType: form.contractType || undefined,
+      teacherEmergencyContact: (form.emergencyName || form.emergencyPhone)
+        ? { name: form.emergencyName, phone: form.emergencyPhone, relation: form.emergencyRelation }
+        : undefined,
+    };
+    if (!isEdit) { payload.role = "Teacher"; payload.password = form.password; }
+    else if (form.password) { payload.password = form.password; }
+
     setSaving(true);
     try {
-      const { data } = await api.post("/users", { ...form, role: "Teacher" });
-      toast.success(`${data.user.name} added. Share the password with them directly.`);
+      if (isEdit) {
+        await api.put(`/users/${initial._id}`, payload);
+        toast.success(`${form.name}'s profile updated`);
+      } else {
+        const { data } = await api.post("/users", payload);
+        toast.success(`${data.user.name} added. Share the password with them directly.`);
+      }
       onSaved();
     } catch (err) {
-      toast.error(apiError(err, "Could not add this teacher"));
+      toast.error(apiError(err, isEdit ? "Could not update this teacher" : "Could not add this teacher"));
     } finally {
       setSaving(false);
     }
   }
 
   return (
-    <form className="flex flex-col gap-4" onSubmit={onSubmit} noValidate>
-      <Input label="Full name" value={form.name} onChange={set("name")} placeholder="Enter the teacher's full name" />
-      <Input label="Email" type="email" value={form.email} onChange={set("email")} placeholder="Enter the teacher's email" />
-      <Input label="Phone" value={form.phone} onChange={set("phone")} placeholder="Enter the phone number" />
-      <Input
-        label="Password"
-        value={form.password}
-        onChange={set("password")}
-        placeholder="Enter a password, at least 6 characters"
-        hint="Give this to the teacher directly. They will be asked to change it on first login."
-      />
-      <div className="flex justify-end gap-2">
-        <Button type="button" variant="outline" onClick={onCancel} disabled={saving}>
-          Cancel
-        </Button>
-        <Button type="submit" disabled={saving}>
-          {saving ? "Saving..." : "Add teacher"}
-        </Button>
+    <form onSubmit={onSubmit} noValidate>
+      <TabBar tabs={TAB_LABELS} active={tab} onChange={setTab} />
+
+      {/* ── Tab 0: Basic Info ── */}
+      {tab === 0 && (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="sm:col-span-2">
+            <Input label="Full Name *" value={form.name} onChange={set("name")}
+              placeholder="Teacher's full name" required />
+          </div>
+          <Input label="Email *" type="email" value={form.email} onChange={set("email")}
+            placeholder="teacher@school.com" required />
+          <Input label="Phone" value={form.phone} onChange={set("phone")}
+            placeholder="+252 61 xxxxxxx" />
+          <SelectField label="Gender" value={form.gender} onChange={set("gender")}
+            options={["Male", "Female"]} />
+          <FormField label="Date of Birth">
+            <input type="date" value={form.dob} onChange={set("dob")}
+              className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-fg focus:outline-none focus:ring-2 focus:ring-accent" />
+          </FormField>
+          <div className="sm:col-span-2">
+            <Input
+              label={isEdit ? "New Password (leave blank to keep)" : "Password *"}
+              value={form.password} onChange={set("password")}
+              placeholder={isEdit ? "Leave blank to keep current password" : "At least 6 characters"}
+              hint={isEdit ? "" : "Give this to the teacher directly. They will change it on first login."}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* ── Tab 1: Professional Details ── */}
+      {tab === 1 && (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <Input label="Employee ID" value={form.employeeId} onChange={set("employeeId")}
+            placeholder="e.g. EMP-2025-001" />
+          <SelectField label="Contract Type" value={form.contractType} onChange={set("contractType")}
+            options={[
+              { value: "Permanent", label: "Permanent" },
+              { value: "Contract", label: "Contract" },
+              { value: "PartTime", label: "Part-Time" },
+              { value: "Volunteer", label: "Volunteer" },
+            ]} />
+          <Input label="Qualification" value={form.qualification} onChange={set("qualification")}
+            placeholder="e.g. B.Ed Mathematics, M.Sc Physics" />
+          <Input label="Specialization" value={form.specialization} onChange={set("specialization")}
+            placeholder="e.g. Mathematics & Physics" />
+          <Input label="Nationality" value={form.nationality} onChange={set("nationality")}
+            placeholder="e.g. Somali" />
+          <Input label="National ID (NIN)" value={form.nin} onChange={set("nin")}
+            placeholder="National identification number" />
+          <FormField label="Join Date">
+            <input type="date" value={form.joinDate} onChange={set("joinDate")}
+              className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-fg focus:outline-none focus:ring-2 focus:ring-accent" />
+          </FormField>
+        </div>
+      )}
+
+      {/* ── Tab 2: Emergency Contact ── */}
+      {tab === 2 && (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="sm:col-span-2">
+            <p className="text-sm text-muted mb-3">Person to contact in case of emergency (not the teacher).</p>
+          </div>
+          <Input label="Contact Name" value={form.emergencyName} onChange={set("emergencyName")}
+            placeholder="Full name of the contact person" />
+          <Input label="Contact Phone" value={form.emergencyPhone} onChange={set("emergencyPhone")}
+            placeholder="+252 61 xxxxxxx" />
+          <Input label="Relationship" value={form.emergencyRelation} onChange={set("emergencyRelation")}
+            placeholder="e.g. Spouse, Sibling, Parent" />
+        </div>
+      )}
+
+      <div className="flex justify-between mt-6 pt-4 border-t border-border">
+        <div className="flex gap-2">
+          {tab > 0 && (
+            <Button type="button" variant="outline" onClick={() => setTab(t => t - 1)}>← Back</Button>
+          )}
+          {tab < TAB_LABELS.length - 1 && (
+            <Button type="button" onClick={() => setTab(t => t + 1)}>Next →</Button>
+          )}
+        </div>
+        <div className="flex gap-2">
+          <Button type="button" variant="outline" onClick={onCancel} disabled={saving}>Cancel</Button>
+          <Button type="submit" disabled={saving}>
+            {saving ? "Saving..." : isEdit ? "Save changes" : "Add teacher"}
+          </Button>
+        </div>
       </div>
     </form>
   );
 }
 
+// ─── Reset Password form ─────────────────────────────────────────────────────
 function ResetPasswordForm({ teacher, onCancel, onSaved }) {
   const [password, setPassword] = useState("");
   const [saving, setSaving] = useState(false);
 
   async function onSubmit(e) {
     e.preventDefault();
-    if (password.length < 6) {
-      toast.error("The new password must be at least 6 characters");
-      return;
-    }
+    if (password.length < 6) { toast.error("The new password must be at least 6 characters"); return; }
     setSaving(true);
     try {
       await api.put(`/users/${teacher._id}`, { password });
@@ -78,9 +262,7 @@ function ResetPasswordForm({ teacher, onCancel, onSaved }) {
       onSaved();
     } catch (err) {
       toast.error(apiError(err, "Could not reset the password"));
-    } finally {
-      setSaving(false);
-    }
+    } finally { setSaving(false); }
   }
 
   return (
@@ -89,25 +271,111 @@ function ResetPasswordForm({ teacher, onCancel, onSaved }) {
         label="New password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        placeholder="Enter a password, at least 6 characters"
+        placeholder="At least 6 characters"
         hint="The teacher will be asked to change it on their next login."
       />
       <div className="flex justify-end gap-2">
-        <Button type="button" variant="outline" onClick={onCancel} disabled={saving}>
-          Cancel
-        </Button>
-        <Button type="submit" disabled={saving}>
-          {saving ? "Saving..." : "Reset password"}
-        </Button>
+        <Button type="button" variant="outline" onClick={onCancel} disabled={saving}>Cancel</Button>
+        <Button type="submit" disabled={saving}>{saving ? "Saving..." : "Reset password"}</Button>
       </div>
     </form>
   );
 }
 
+// ─── View Profile Drawer ─────────────────────────────────────────────────────
+function ProfileRow({ label, value }) {
+  if (!value) return null;
+  return (
+    <div className="flex flex-col gap-0.5">
+      <span className="text-xs font-semibold text-muted uppercase tracking-wide">{label}</span>
+      <span className="text-sm text-fg">{value}</span>
+    </div>
+  );
+}
+
+function ViewProfile({ teacher, onClose, onEdit }) {
+  const ec = teacher.teacherEmergencyContact;
+  const fmt = (d) => d ? new Date(d).toLocaleDateString("en-GB", { day:"2-digit", month:"short", year:"numeric" }) : null;
+
+  const contractLabels = { Permanent:"Permanent", Contract:"Contract", PartTime:"Part-Time", Volunteer:"Volunteer" };
+
+  return (
+    <div className="flex flex-col gap-6">
+      {/* Header */}
+      <div className="flex items-center gap-4 pb-4 border-b border-border">
+        <Avatar name={teacher.name} size="lg" />
+        <div>
+          <h3 className="font-semibold text-lg text-fg">{teacher.name}</h3>
+          <p className="text-sm text-muted">{teacher.email}</p>
+          {teacher.employeeId && <p className="text-xs text-muted font-mono">{teacher.employeeId}</p>}
+        </div>
+        <div className="ml-auto flex gap-2">
+          <Button variant="outline" size="sm" onClick={onEdit}><Pencil className="h-3 w-3 mr-1" />Edit</Button>
+          <button onClick={onClose} className="rounded-lg p-1.5 text-muted hover:bg-surface-2"><X className="h-4 w-4" /></button>
+        </div>
+      </div>
+
+      {/* Personal */}
+      <div>
+        <h4 className="text-xs font-bold text-muted uppercase tracking-widest mb-3">Personal Information</h4>
+        <div className="grid grid-cols-2 gap-3">
+          <ProfileRow label="Phone" value={teacher.phone} />
+          <ProfileRow label="Gender" value={teacher.gender} />
+          <ProfileRow label="Date of Birth" value={fmt(teacher.dob)} />
+          <ProfileRow label="Nationality" value={teacher.nationality} />
+          <ProfileRow label="National ID" value={teacher.nin} />
+          <ProfileRow label="Status" value={
+            <Badge tone={teacher.status === "Active" ? "success" : "danger"}>{teacher.status}</Badge>
+          } />
+        </div>
+      </div>
+
+      {/* Professional */}
+      <div>
+        <h4 className="text-xs font-bold text-muted uppercase tracking-widest mb-3">Professional Details</h4>
+        <div className="grid grid-cols-2 gap-3">
+          <ProfileRow label="Qualification" value={teacher.qualification} />
+          <ProfileRow label="Specialization" value={teacher.specialization} />
+          <ProfileRow label="Contract Type" value={contractLabels[teacher.contractType] || teacher.contractType} />
+          <ProfileRow label="Join Date" value={fmt(teacher.joinDate)} />
+          <ProfileRow label="Teaches" value={teacher.assignmentCount > 0 ? `${teacher.assignmentCount} subject${teacher.assignmentCount === 1 ? "" : "s"}` : null} />
+          <ProfileRow label="Class Teacher Of" value={
+            teacher.classTeacherOf?.length
+              ? teacher.classTeacherOf.map((c) => `${c.name} ${c.section || ""}`.trim()).join(", ")
+              : null
+          } />
+        </div>
+      </div>
+
+      {/* Emergency Contact */}
+      {(ec?.name || ec?.phone) && (
+        <div>
+          <h4 className="text-xs font-bold text-muted uppercase tracking-widest mb-3">Emergency Contact</h4>
+          <div className="grid grid-cols-2 gap-3">
+            <ProfileRow label="Name" value={ec?.name} />
+            <ProfileRow label="Phone" value={ec?.phone} />
+            <ProfileRow label="Relationship" value={ec?.relation} />
+          </div>
+        </div>
+      )}
+
+      {/* Timestamps */}
+      <div className="pt-3 border-t border-border">
+        <p className="text-xs text-muted">
+          Joined system: {fmt(teacher.createdAt)} &nbsp;·&nbsp; Last updated: {fmt(teacher.updatedAt)}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ─── Main page ───────────────────────────────────────────────────────────────
 export default function AdminStaffPage() {
   const [staff, setStaff] = useState(null);
   const [search, setSearch] = useState("");
-  const [modal, setModal] = useState(false);
+  const [modal, setModal] = useState(false);       // add modal
+  const [editTeacher, setEditTeacher] = useState(null);
+  const [viewTeacher, setViewTeacher] = useState(null);
   const [resetFor, setResetFor] = useState(null);
   const [busyId, setBusyId] = useState(null);
 
@@ -140,11 +408,15 @@ export default function AdminStaffPage() {
     }
   }
 
+  function openEdit(t) { setEditTeacher(t); setViewTeacher(null); }
+  function closeEdit() { setEditTeacher(null); }
+  function afterSave() { closeEdit(); setModal(false); load(); }
+
   return (
     <div>
       <PageHeader
         title="Teachers"
-        description="Teachers, what they teach and which class they lead."
+        description="Manage teaching staff — profiles, qualifications and assignments."
         action={
           <Button onClick={() => setModal(true)}>
             <Plus className="h-4 w-4" /> Add teacher
@@ -153,13 +425,12 @@ export default function AdminStaffPage() {
       />
 
       <div className="mb-4 max-w-sm">
-        <Input placeholder="Search by name, email or phone" value={search} onChange={(e) => setSearch(e.target.value)} />
+        <Input placeholder="Search by name, email or phone" value={search}
+          onChange={(e) => setSearch(e.target.value)} />
       </div>
 
       {staff === null ? (
-        <div className="grid place-items-center py-16">
-          <Spinner />
-        </div>
+        <div className="grid place-items-center py-16"><Spinner /></div>
       ) : staff.length === 0 ? (
         <EmptyState
           icon={Briefcase}
@@ -168,18 +439,25 @@ export default function AdminStaffPage() {
           action={<Button onClick={() => setModal(true)}>Add teacher</Button>}
         />
       ) : (
-        <Table headers={["Teacher", "Contact", "Class teacher of", "Teaches", "Status", ""]}>
+        <Table headers={["Teacher", "Contact", "Qualification", "Class Teacher Of", "Teaches", "Status", ""]}>
           {staff.map((t) => (
             <Table.Row key={t._id}>
               <Table.Cell>
                 <div className="flex items-center gap-3">
                   <Avatar name={t.name} size="sm" />
-                  <span className="font-medium">{t.name}</span>
+                  <div>
+                    <div className="font-medium">{t.name}</div>
+                    {t.employeeId && <div className="text-xs text-muted font-mono">{t.employeeId}</div>}
+                  </div>
                 </div>
               </Table.Cell>
               <Table.Cell className="text-muted">
                 {t.email}
-                {t.phone ? <div className="text-xs">{t.phone}</div> : null}
+                {t.phone && <div className="text-xs">{t.phone}</div>}
+              </Table.Cell>
+              <Table.Cell className="text-muted text-sm">
+                {t.qualification || "-"}
+                {t.specialization && <div className="text-xs">{t.specialization}</div>}
               </Table.Cell>
               <Table.Cell className="text-muted">
                 {t.classTeacherOf?.length
@@ -188,26 +466,31 @@ export default function AdminStaffPage() {
               </Table.Cell>
               <Table.Cell className="tabular-nums text-muted">{t.assignmentCount}</Table.Cell>
               <Table.Cell>
-                {t.status === "Active" ? <Badge tone="success">Active</Badge> : <Badge tone="danger">Inactive</Badge>}
+                {t.status === "Active"
+                  ? <Badge tone="success">Active</Badge>
+                  : <Badge tone="danger">Inactive</Badge>}
               </Table.Cell>
               <Table.Cell>
                 <div className="flex justify-end gap-1">
-                  <button
-                    type="button"
-                    onClick={() => setResetFor(t)}
-                    title="Reset password"
-                    aria-label={`Reset password for ${t.name}`}
-                    className="rounded-lg p-2 text-muted transition-colors hover:bg-surface-2 hover:text-fg"
-                  >
+                  {/* View profile */}
+                  <button type="button" onClick={() => setViewTeacher(t)} title="View profile"
+                    className="rounded-lg p-2 text-muted transition-colors hover:bg-surface-2 hover:text-fg">
+                    <Eye className="h-4 w-4" />
+                  </button>
+                  {/* Edit profile */}
+                  <button type="button" onClick={() => openEdit(t)} title="Edit profile"
+                    className="rounded-lg p-2 text-muted transition-colors hover:bg-surface-2 hover:text-fg">
+                    <Pencil className="h-4 w-4" />
+                  </button>
+                  {/* Reset password */}
+                  <button type="button" onClick={() => setResetFor(t)} title="Reset password"
+                    className="rounded-lg p-2 text-muted transition-colors hover:bg-surface-2 hover:text-fg">
                     <KeyRound className="h-4 w-4" />
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => toggleStatus(t)}
-                    disabled={busyId === t._id}
+                  {/* Toggle status */}
+                  <button type="button" onClick={() => toggleStatus(t)} disabled={busyId === t._id}
                     title={t.status === "Active" ? "Deactivate" : "Reactivate"}
-                    className="rounded-lg p-2 text-muted transition-colors hover:bg-surface-2 hover:text-fg"
-                  >
+                    className="rounded-lg p-2 text-muted transition-colors hover:bg-surface-2 hover:text-fg">
                     {t.status === "Active" ? <ShieldOff className="h-4 w-4" /> : <ShieldCheck className="h-4 w-4" />}
                   </button>
                 </div>
@@ -217,22 +500,43 @@ export default function AdminStaffPage() {
         </Table>
       )}
 
-      <Modal open={modal} onClose={() => setModal(false)} title="Add teacher">
-        <TeacherForm onCancel={() => setModal(false)} onSaved={() => { setModal(false); load(); }} />
+      {/* Add teacher modal */}
+      <Modal open={modal} onClose={() => setModal(false)} title="Add Teacher">
+        <TeacherForm onCancel={() => setModal(false)} onSaved={afterSave} />
       </Modal>
 
+      {/* Edit teacher modal */}
+      <Modal open={Boolean(editTeacher)} onClose={closeEdit}
+        title={editTeacher ? `Edit — ${editTeacher.name}` : "Edit Teacher"}>
+        {editTeacher && (
+          <TeacherForm initial={editTeacher} onCancel={closeEdit} onSaved={afterSave} />
+        )}
+      </Modal>
+
+      {/* View profile modal */}
+      <Modal open={Boolean(viewTeacher)} onClose={() => setViewTeacher(null)} title="Teacher Profile">
+        {viewTeacher && (
+          <ViewProfile
+            teacher={viewTeacher}
+            onClose={() => setViewTeacher(null)}
+            onEdit={() => openEdit(viewTeacher)}
+          />
+        )}
+      </Modal>
+
+      {/* Reset password modal */}
       <Modal
         open={Boolean(resetFor)}
         onClose={() => setResetFor(null)}
-        title={resetFor ? `Reset password for ${resetFor.name}` : "Reset password"}
+        title={resetFor ? `Reset password — ${resetFor.name}` : "Reset password"}
       >
-        {resetFor ? (
+        {resetFor && (
           <ResetPasswordForm
             teacher={resetFor}
             onCancel={() => setResetFor(null)}
             onSaved={() => setResetFor(null)}
           />
-        ) : null}
+        )}
       </Modal>
     </div>
   );

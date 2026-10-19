@@ -87,6 +87,25 @@ const userSchema = new mongoose.Schema(
     discountReason: { type: String, trim: true },
     sponsorName: { type: String, trim: true },
 
+
+    // --- Professional Teacher / Staff Extensions ---
+    employeeId: { type: String, trim: true, uppercase: true, unique: true, sparse: true },
+    qualification: { type: String, trim: true },       // e.g. "B.Ed Mathematics"
+    specialization: { type: String, trim: true },      // e.g. "Mathematics & Physics"
+    nationality: { type: String, trim: true },
+    nin: { type: String, trim: true },                 // National ID Number
+    joinDate: { type: Date },
+    contractType: {
+      type: String,
+      enum: ["", "Permanent", "Contract", "PartTime", "Volunteer"],
+      default: "",
+    },
+    teacherEmergencyContact: {
+      name: { type: String, trim: true },
+      phone: { type: String, trim: true },
+      relation: { type: String, trim: true },
+    },
+
     // set true by the admin on create, cleared after the user changes it once
     mustChangePassword: { type: Boolean, default: true },
 
