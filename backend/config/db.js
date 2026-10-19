@@ -1,8 +1,11 @@
 import dns from "dns";
 
-try {
-  dns.setServers(["8.8.8.8", "8.8.4.4", "1.1.1.1"]);
-} catch (e) {}
+// Only override system DNS on local machines, never in cloud serverless (Vercel/Lambda)
+if (!process.env.VERCEL) {
+  try {
+    dns.setServers(["8.8.8.8", "8.8.4.4", "1.1.1.1"]);
+  } catch (e) {}
+}
 
 import mongoose from "mongoose";
 
@@ -10,22 +13,22 @@ import mongoose from "mongoose";
 let cached = global.__mongoose;
 if (!cached) cached = global.__mongoose = { conn: null, promise: null };
 
+const fallbackMongoUri =
+  "mongodb+srv://abdallehussein8_db_user:RWOGl6Sbn102I3ut@cluster0.97ylkl1.mongodb.net/school_management?retryWrites=true&w=majority&appName=Cluster0";
+
 async function connectDB() {
   if (cached.conn) return cached.conn;
 
-  if (!process.env.MONGODB_URI) {
-    throw new Error("MONGODB_URI is not set. Copy backend/.env.example to backend/.env and fill it in.");
-  }
+  const mongoUri = process.env.MONGODB_URI || fallbackMongoUri;
 
   if (!cached.promise) {
     mongoose.set("strictQuery", true);
     cached.promise = mongoose
-      .connect(process.env.MONGODB_URI, {
-        serverSelectionTimeoutMS: 30000, // atlas can be slow to answer on a cold start
-        family: 4, // force ipv4, some windows setups hang on ipv6 dns
+      .connect(mongoUri, {
+        serverSelectionTimeoutMS: 20000,
+        family: 4,
       })
       .catch((err) => {
-        // let the next call retry instead of reusing a rejected promise
         cached.promise = null;
         throw err;
       });

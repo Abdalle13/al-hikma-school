@@ -236,3 +236,36 @@ export async function deleteAnnouncement(req, res, next) {
     next(err);
   }
 }
+
+// GET /api/announcements/public   (no auth)  the website news list
+export async function listPublic(req, res, next) {
+  try {
+    const items = await Announcement.find({ isPublic: true })
+      .select("title body createdAt priority category isPinned")
+      .sort({ isPinned: -1, createdAt: -1 })
+      .limit(50);
+    res.json({ announcements: items, total: items.length });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// GET /api/announcements/public/:id   (no auth)  a single website article
+export async function getPublic(req, res, next) {
+  try {
+    if (!isValidId(req.params.id)) {
+      res.status(400);
+      throw new Error("Invalid announcement id");
+    }
+    const a = await Announcement.findOne({ _id: req.params.id, isPublic: true }).select(
+      "title body createdAt priority category"
+    );
+    if (!a) {
+      res.status(404);
+      throw new Error("Article not found");
+    }
+    res.json({ announcement: a });
+  } catch (err) {
+    next(err);
+  }
+}
