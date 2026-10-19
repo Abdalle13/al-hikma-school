@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
-import { Plus, Trash2, Wallet, X } from "lucide-react";
+import { Plus, Trash2, Wallet, X, Search, Sparkles, DollarSign, CheckCircle2, AlertCircle } from "lucide-react";
 import { PageHeader } from "../components/ui/PageHeader.jsx";
 import { Tabs } from "../components/ui/Tabs.jsx";
 import { Button } from "../components/ui/Button.jsx";
@@ -17,6 +17,14 @@ import api, { apiError } from "../utils/api.js";
 import { formatCurrency } from "../utils/formatter.js";
 
 const statusTone = { Unpaid: "danger", Partial: "warning", Paid: "success" };
+const FEE_ITEM_PRESETS = [
+  "Monthly Tuition Fee",
+  "Annual Registration Fee",
+  "Books & Materials",
+  "Exam & Assessment Fee",
+  "School Uniform",
+  "Bus Transportation",
+];
 
 function useTermsClasses() {
   const [terms, setTerms] = useState([]);
@@ -32,7 +40,7 @@ function FeeStructuresPanel() {
   const { terms, classes } = useTermsClasses();
   const [term, setTerm] = useState("");
   const [schoolClass, setSchoolClass] = useState("");
-  const [structure, setStructure] = useState(null); // null=not loaded, {} or doc
+  const [structure, setStructure] = useState(null);
   const [lines, setLines] = useState([]);
   const [saving, setSaving] = useState(false);
 
@@ -49,18 +57,32 @@ function FeeStructuresPanel() {
       .then(({ data }) => {
         const doc = data.feeStructures[0] || null;
         setStructure(doc || {});
-        setLines(doc ? doc.lineItems.map((l) => ({ ...l })) : [{ label: "Tuition", amount: "" }]);
+        setLines(doc ? doc.lineItems.map((l) => ({ ...l })) : [{ label: "Monthly Tuition", amount: "50" }]);
       })
-      .catch((err) => { toast.error(apiError(err, "Could not load the structure")); setStructure({}); });
+      .catch((err) => {
+        toast.error(apiError(err, "Could not load the fee structure"));
+        setStructure({});
+      });
   }, [term, schoolClass]);
 
   const total = useMemo(() => lines.reduce((s, l) => s + (Number(l.amount) || 0), 0), [lines]);
+
+  function addPreset(label) {
+    if (lines.some((l) => l.label.toLowerCase() === label.toLowerCase())) {
+      toast("This line item is already added");
+      return;
+    }
+    setLines((p) => [...p, { label, amount: "" }]);
+  }
 
   async function save() {
     const clean = lines
       .filter((l) => l.label.trim() && Number(l.amount) >= 0)
       .map((l) => ({ label: l.label.trim(), amount: Number(l.amount) }));
-    if (!clean.length) { toast.error("Add at least one line item"); return; }
+    if (!clean.length) {
+      toast.error("Please add at least one line item with an amount");
+      return;
+    }
     setSaving(true);
     try {
       if (structure?._id) {
@@ -69,7 +91,7 @@ function FeeStructuresPanel() {
         const { data } = await api.post("/fee-structures", { term, schoolClass, lineItems: clean });
         setStructure(data.feeStructure);
       }
-      toast.success("Fee structure saved");
+      toast.success("Fee structure saved successfully");
     } catch (err) {
       toast.error(apiError(err, "Could not save the structure"));
     } finally {
@@ -79,46 +101,104 @@ function FeeStructuresPanel() {
 
   return (
     <div>
-      <div className="mb-4 flex flex-wrap gap-3">
-        <Select value={term} onChange={(e) => setTerm(e.target.value)} className="min-w-[10rem]">
-          {terms.map((t) => <option key={t._id} value={t._id}>{t.name} ({t.academicYear})</option>)}
+      <div className="mb-4 flex flex-wrap gap-3 rounded-2xl border border-border bg-surface p-4">
+        <Select label="Term" value={term} onChange={(e) => setTerm(e.target.value)} className="min-w-[12rem]">
+          {terms.map((t) => (
+            <option key={t._id} value={t._id}>
+              {t.name} ({t.academicYear})
+            </option>
+          ))}
         </Select>
-        <Select value={schoolClass} onChange={(e) => setSchoolClass(e.target.value)} className="min-w-[10rem]">
-          {classes.map((c) => <option key={c._id} value={c._id}>{c.name} {c.section}</option>)}
+        <Select label="Class" value={schoolClass} onChange={(e) => setSchoolClass(e.target.value)} className="min-w-[12rem]">
+          {classes.map((c) => (
+            <option key={c._id} value={c._id}>
+              {c.name} {c.section}
+            </option>
+          ))}
         </Select>
       </div>
 
       {structure === null ? (
-        <div className="grid place-items-center py-16"><Spinner /></div>
+        <div className="grid place-items-center py-16">
+          <Spinner />
+        </div>
       ) : (
-        <div className="max-w-lg space-y-3">
-          {lines.map((l, i) => (
-            <div key={i} className="flex items-center gap-2">
-              <input
-                value={l.label}
-                onChange={(e) => setLines((p) => p.map((x, j) => (j === i ? { ...x, label: e.target.value } : x)))}
-                placeholder="Enter a name, for example Tuition"
-                className="flex-1 rounded-xl border border-border bg-surface px-3 py-2 text-sm text-fg focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-              <input
-                type="number"
-                min="0"
-                value={l.amount}
-                onChange={(e) => setLines((p) => p.map((x, j) => (j === i ? { ...x, amount: e.target.value } : x)))}
-                placeholder="0"
-                className="w-28 rounded-xl border border-border bg-surface px-3 py-2 text-sm text-fg focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-              <button type="button" onClick={() => setLines((p) => p.filter((_, j) => j !== i))} className="rounded-lg p-2 text-muted hover:bg-danger/10 hover:text-danger">
-                <X className="h-4 w-4" />
-              </button>
+        <div className="max-w-xl space-y-4 rounded-2xl border border-border bg-surface p-5">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-fg">Line Items & Amounts</h3>
+            <span className="text-xs text-muted">Currency: USD ($)</span>
+          </div>
+
+          {/* Quick Presets */}
+          <div className="rounded-xl border border-dashed border-primary/30 bg-primary/5 p-3">
+            <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-primary">
+              <Sparkles className="h-3.5 w-3.5" /> Quick Fee Presets
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {FEE_ITEM_PRESETS.map((p) => (
+                <button
+                  key={p}
+                  type="button"
+                  onClick={() => addPreset(p)}
+                  className="rounded-lg border border-border bg-surface px-2 py-1 text-xs text-muted hover:border-primary hover:text-primary transition-colors"
+                >
+                  + {p}
+                </button>
+              ))}
             </div>
-          ))}
-          <Button variant="outline" size="sm" onClick={() => setLines((p) => [...p, { label: "", amount: "" }])}>
-            <Plus className="h-4 w-4" /> Add line
+          </div>
+
+          <div className="space-y-2.5">
+            {lines.map((l, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <input
+                  value={l.label}
+                  onChange={(e) =>
+                    setLines((p) => p.map((x, j) => (j === i ? { ...x, label: e.target.value } : x)))
+                  }
+                  placeholder="e.g. Monthly Tuition"
+                  className="flex-1 rounded-xl border border-border bg-surface px-3 py-2 text-sm text-fg focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted">$</span>
+                  <input
+                    type="number"
+                    min="0"
+                    value={l.amount}
+                    onChange={(e) =>
+                      setLines((p) => p.map((x, j) => (j === i ? { ...x, amount: e.target.value } : x)))
+                    }
+                    placeholder="0"
+                    className="w-28 rounded-xl border border-border bg-surface pl-6 pr-3 py-2 text-sm font-semibold text-fg focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setLines((p) => p.filter((_, j) => j !== i))}
+                  className="rounded-lg p-2 text-muted hover:bg-danger/10 hover:text-danger"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setLines((p) => [...p, { label: "", amount: "" }])}
+          >
+            <Plus className="h-4 w-4" /> Add Custom Line Item
           </Button>
-          <div className="flex items-center justify-between border-t border-border pt-3">
-            <span className="text-sm font-semibold text-fg">Total: <span className="tabular-nums">{total}</span></span>
-            <Button onClick={save} disabled={saving}>{saving ? "Saving..." : "Save structure"}</Button>
+
+          <div className="flex items-center justify-between border-t border-border pt-4">
+            <div>
+              <p className="text-xs text-muted">Term Fee Total</p>
+              <p className="text-xl font-bold text-fg tabular-nums">${total}</p>
+            </div>
+            <Button onClick={save} disabled={saving} size="lg">
+              {saving ? "Saving..." : "Save Fee Structure"}
+            </Button>
           </div>
         </div>
       )}
@@ -140,7 +220,9 @@ function InvoiceAdminModal({ invoice: initial, onClose, onChanged }) {
 
   async function setPlan() {
     const per = Math.round((invoice.total / count) * 100) / 100;
-    const amounts = Array.from({ length: count }, (_, i) => (i === count - 1 ? invoice.total - per * (count - 1) : per));
+    const amounts = Array.from({ length: count }, (_, i) =>
+      i === count - 1 ? invoice.total - per * (count - 1) : per
+    );
     const now = new Date();
     const installments = amounts.map((amount, i) => {
       const d = new Date(now.getFullYear(), now.getMonth() + i + 1, now.getDate());
@@ -149,7 +231,7 @@ function InvoiceAdminModal({ invoice: initial, onClose, onChanged }) {
     setBusy(true);
     try {
       await api.post(`/invoices/${invoice._id}/installment-plan`, { installments });
-      toast.success("Installment plan set");
+      toast.success("Installment plan enabled");
       refresh();
     } catch (err) {
       toast.error(apiError(err, "Could not set the plan"));
@@ -162,7 +244,7 @@ function InvoiceAdminModal({ invoice: initial, onClose, onChanged }) {
     setBusy(true);
     try {
       await api.delete(`/invoices/${invoice._id}/installment-plan`);
-      toast.success("Plan cleared");
+      toast.success("Installment plan cleared");
       refresh();
     } catch (err) {
       toast.error(apiError(err, "Could not clear the plan"));
@@ -174,11 +256,14 @@ function InvoiceAdminModal({ invoice: initial, onClose, onChanged }) {
   async function recordCash(e) {
     e.preventDefault();
     const a = Number(cashAmount);
-    if (!(a > 0)) { toast.error("Enter an amount"); return; }
+    if (!(a > 0)) {
+      toast.error("Please enter a valid amount");
+      return;
+    }
     setBusy(true);
     try {
       await api.post(`/invoices/${invoice._id}/record-cash`, { amount: a });
-      toast.success("Cash payment recorded");
+      toast.success("Cash payment recorded successfully");
       setCashAmount("");
       refresh();
     } catch (err) {
@@ -188,30 +273,74 @@ function InvoiceAdminModal({ invoice: initial, onClose, onChanged }) {
     }
   }
 
+  function payInFull() {
+    setCashAmount(String(invoice.balance || invoice.total));
+  }
+
   return (
-    <Modal open onClose={onClose} title={invoice.student?.name} className="max-w-2xl">
+    <Modal open onClose={onClose} title={`Invoice · ${invoice.student?.name}`} className="max-w-2xl">
       <InvoiceDetail invoice={invoice} />
 
       {invoice.status !== "Paid" ? (
         <div className="mt-6 space-y-4 border-t border-border pt-5">
-          <div className="flex flex-wrap items-end gap-2">
-            <Select label="Split into" value={count} onChange={(e) => setCount(Number(e.target.value))} className="w-28">
-              <option value={2}>2</option>
-              <option value={3}>3</option>
-              <option value={4}>4</option>
-            </Select>
-            <Button variant="outline" onClick={setPlan} disabled={busy}>Set installment plan</Button>
-            {invoice.installmentPlan?.enabled ? (
-              <Button variant="ghost" onClick={clearPlan} disabled={busy}>Clear plan</Button>
-            ) : null}
+          <div className="rounded-2xl bg-surface-2 p-4">
+            <div className="flex items-center justify-between pb-2">
+              <span className="text-xs font-semibold text-fg">Record Cash / Direct Payment</span>
+              {invoice.balance > 0 && (
+                <button
+                  type="button"
+                  onClick={payInFull}
+                  className="text-xs font-medium text-primary hover:underline"
+                >
+                  Fill full balance (${invoice.balance})
+                </button>
+              )}
+            </div>
+            <form className="flex items-end gap-2" onSubmit={recordCash}>
+              <div className="relative flex-1">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted">$</span>
+                <Input
+                  type="number"
+                  min="0"
+                  max={invoice.balance}
+                  value={cashAmount}
+                  onChange={(e) => setCashAmount(e.target.value)}
+                  placeholder="Amount"
+                  className="pl-6 text-sm"
+                />
+              </div>
+              <Button type="submit" disabled={busy}>
+                Record Payment
+              </Button>
+            </form>
           </div>
 
-          <form className="flex items-end gap-2" onSubmit={recordCash}>
-            <Input label="Record cash payment" type="number" min="0" value={cashAmount} onChange={(e) => setCashAmount(e.target.value)} className="w-40" />
-            <Button type="submit" disabled={busy}>Record</Button>
-          </form>
+          <div className="flex flex-wrap items-end gap-2">
+            <Select
+              label="Split invoice into"
+              value={count}
+              onChange={(e) => setCount(Number(e.target.value))}
+              className="w-32"
+            >
+              <option value={2}>2 Installments</option>
+              <option value={3}>3 Installments</option>
+              <option value={4}>4 Installments</option>
+            </Select>
+            <Button variant="outline" onClick={setPlan} disabled={busy}>
+              Create Installment Schedule
+            </Button>
+            {invoice.installmentPlan?.enabled ? (
+              <Button variant="ghost" onClick={clearPlan} disabled={busy}>
+                Clear Plan
+              </Button>
+            ) : null}
+          </div>
         </div>
-      ) : null}
+      ) : (
+        <div className="mt-4 flex items-center gap-2 rounded-xl bg-success/10 p-3 text-xs text-success font-semibold">
+          <CheckCircle2 className="h-4 w-4" /> This invoice is fully paid.
+        </div>
+      )}
     </Modal>
   );
 }
@@ -222,6 +351,7 @@ function InvoicesPanel() {
   const [term, setTerm] = useState("");
   const [schoolClass, setSchoolClass] = useState("");
   const [status, setStatus] = useState("");
+  const [search, setSearch] = useState("");
   const [data, setData] = useState(null);
   const [detail, setDetail] = useState(null);
   const [busy, setBusy] = useState(false);
@@ -234,7 +364,11 @@ function InvoicesPanel() {
     setData(null);
     try {
       const res = await api.get("/invoices", {
-        params: { term: term || undefined, schoolClass: schoolClass || undefined, status: status || undefined },
+        params: {
+          term: term || undefined,
+          schoolClass: schoolClass || undefined,
+          status: status || undefined,
+        },
       });
       setData(res.data);
     } catch (err) {
@@ -249,7 +383,10 @@ function InvoicesPanel() {
   }, [term, schoolClass, status]);
 
   async function generate() {
-    if (!term || !schoolClass) { toast.error("Pick a term and a class first"); return; }
+    if (!term || !schoolClass) {
+      toast.error("Please pick a term and a class first");
+      return;
+    }
     setBusy(true);
     try {
       const { data: r } = await api.post("/invoices/generate", { term, schoolClass });
@@ -264,57 +401,134 @@ function InvoicesPanel() {
 
   const money = (n) => formatCurrency(n || 0, currency);
 
+  const filteredInvoices = useMemo(() => {
+    if (!data?.invoices) return [];
+    if (!search) return data.invoices;
+    const q = search.toLowerCase();
+    return data.invoices.filter(
+      (inv) =>
+        inv.student?.name?.toLowerCase().includes(q) ||
+        inv.student?.admissionNo?.toLowerCase().includes(q)
+    );
+  }, [data?.invoices, search]);
+
+  const collectionRate = useMemo(() => {
+    if (!data?.totals?.billed) return 0;
+    return Math.round(((data.totals.paid || 0) / data.totals.billed) * 100);
+  }, [data?.totals]);
+
   return (
     <div>
-      <div className="mb-4 flex flex-wrap items-end gap-3">
-        <Select value={term} onChange={(e) => setTerm(e.target.value)} className="min-w-[9rem]">
-          {terms.map((t) => <option key={t._id} value={t._id}>{t.name}</option>)}
+      <div className="mb-4 flex flex-wrap items-end gap-3 rounded-2xl border border-border bg-surface p-4">
+        <Select label="Term" value={term} onChange={(e) => setTerm(e.target.value)} className="min-w-[10rem]">
+          {terms.map((t) => (
+            <option key={t._id} value={t._id}>
+              {t.name}
+            </option>
+          ))}
         </Select>
-        <Select value={schoolClass} onChange={(e) => setSchoolClass(e.target.value)} className="min-w-[9rem]">
+        <Select label="Class" value={schoolClass} onChange={(e) => setSchoolClass(e.target.value)} className="min-w-[10rem]">
           <option value="">All classes</option>
-          {classes.map((c) => <option key={c._id} value={c._id}>{c.name} {c.section}</option>)}
+          {classes.map((c) => (
+            <option key={c._id} value={c._id}>
+              {c.name} {c.section}
+            </option>
+          ))}
         </Select>
-        <Select value={status} onChange={(e) => setStatus(e.target.value)} className="w-36">
+        <Select label="Payment Status" value={status} onChange={(e) => setStatus(e.target.value)} className="w-36">
           <option value="">Any status</option>
           <option value="Unpaid">Unpaid</option>
           <option value="Partial">Partial</option>
           <option value="Paid">Paid</option>
         </Select>
-        <Button variant="outline" onClick={generate} disabled={busy || !schoolClass}>Generate invoices</Button>
+        <Button variant="outline" onClick={generate} disabled={busy || !schoolClass}>
+          Generate Invoices for Class
+        </Button>
       </div>
 
+      {data && (
+        <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <div className="rounded-2xl border border-border bg-surface p-3.5">
+            <p className="text-[11px] text-muted font-medium">Total Billed</p>
+            <p className="text-lg font-bold text-fg tabular-nums mt-0.5">{money(data.totals.billed)}</p>
+          </div>
+          <div className="rounded-2xl border border-border bg-surface p-3.5">
+            <p className="text-[11px] text-muted font-medium">Total Collected</p>
+            <p className="text-lg font-bold text-success tabular-nums mt-0.5">{money(data.totals.paid)}</p>
+          </div>
+          <div className="rounded-2xl border border-border bg-surface p-3.5">
+            <p className="text-[11px] text-muted font-medium">Outstanding Balance</p>
+            <p className="text-lg font-bold text-danger tabular-nums mt-0.5">{money(data.totals.outstanding)}</p>
+          </div>
+          <div className="rounded-2xl border border-border bg-surface p-3.5">
+            <p className="text-[11px] text-muted font-medium">Collection Efficiency</p>
+            <p className="text-lg font-bold text-primary tabular-nums mt-0.5">{collectionRate}%</p>
+          </div>
+        </div>
+      )}
+
+      {data && data.invoices.length > 0 && (
+        <div className="mb-4 max-w-xs">
+          <Input
+            placeholder="Search student or admission no..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="text-xs"
+          />
+        </div>
+      )}
+
       {data === null ? (
-        <div className="grid place-items-center py-16"><Spinner /></div>
-      ) : data.invoices.length === 0 ? (
+        <div className="grid place-items-center py-16">
+          <Spinner />
+        </div>
+      ) : filteredInvoices.length === 0 ? (
         <EmptyState
           icon={Wallet}
-          title="No invoices"
-          description="Set a fee structure for this class and term, then generate invoices."
+          title={data.invoices.length === 0 ? "No invoices found" : "No matching invoices"}
+          description={
+            data.invoices.length === 0
+              ? "Ensure fee structure is configured for this class and term, then click 'Generate Invoices'."
+              : "Try adjusting your search query or payment status filter."
+          }
         />
       ) : (
-        <>
-          <div className="mb-3 flex flex-wrap gap-4 text-sm">
-            <span className="text-muted">Billed <span className="font-semibold text-fg tabular-nums">{money(data.totals.billed)}</span></span>
-            <span className="text-muted">Paid <span className="font-semibold text-success tabular-nums">{money(data.totals.paid)}</span></span>
-            <span className="text-muted">Outstanding <span className="font-semibold text-danger tabular-nums">{money(data.totals.outstanding)}</span></span>
-          </div>
-          <Table headers={["Student", "Total", "Paid", "Balance", "Status", ""]}>
-            {data.invoices.map((inv) => (
-              <Table.Row key={inv._id}>
-                <Table.Cell className="font-medium">{inv.student?.name}</Table.Cell>
-                <Table.Cell className="tabular-nums text-muted">{money(inv.total)}</Table.Cell>
-                <Table.Cell className="tabular-nums text-muted">{money(inv.amountPaid)}</Table.Cell>
-                <Table.Cell className="tabular-nums text-muted">{money(inv.balance)}</Table.Cell>
-                <Table.Cell><Badge tone={statusTone[inv.status]}>{inv.status}</Badge></Table.Cell>
-                <Table.Cell>
-                  <div className="flex justify-end">
-                    <Button size="sm" variant="outline" onClick={() => setDetail(inv)}>Open</Button>
-                  </div>
-                </Table.Cell>
-              </Table.Row>
-            ))}
-          </Table>
-        </>
+        <Table headers={["Student", "Fee Category", "Total Bill", "Paid", "Balance Due", "Status", ""]}>
+          {filteredInvoices.map((inv) => (
+            <Table.Row key={inv._id}>
+              <Table.Cell>
+                <p className="font-semibold text-fg">{inv.student?.name}</p>
+                <p className="text-xs text-muted tabular-nums">{inv.student?.admissionNo}</p>
+              </Table.Cell>
+              <Table.Cell>
+                <Badge
+                  tone={
+                    inv.student?.feeCategory === "Orphan"
+                      ? "warning"
+                      : inv.student?.feeCategory === "Scholarship"
+                      ? "info"
+                      : "neutral"
+                  }
+                >
+                  {inv.student?.feeCategory || "Regular"}
+                </Badge>
+              </Table.Cell>
+              <Table.Cell className="tabular-nums font-medium text-fg">{money(inv.total)}</Table.Cell>
+              <Table.Cell className="tabular-nums text-success font-medium">{money(inv.amountPaid)}</Table.Cell>
+              <Table.Cell className="tabular-nums text-danger font-medium">{money(inv.balance)}</Table.Cell>
+              <Table.Cell>
+                <Badge tone={statusTone[inv.status]}>{inv.status}</Badge>
+              </Table.Cell>
+              <Table.Cell>
+                <div className="flex justify-end">
+                  <Button size="sm" variant="outline" onClick={() => setDetail(inv)}>
+                    Manage / Pay
+                  </Button>
+                </div>
+              </Table.Cell>
+            </Table.Row>
+          ))}
+        </Table>
       )}
 
       {detail ? (
@@ -328,14 +542,17 @@ export default function AdminFeesPage() {
   const [tab, setTab] = useState("invoices");
   return (
     <div>
-      <PageHeader title="Fees" description="Fee structures per class and term, invoices, installments and payments." />
+      <PageHeader
+        title="School Fees & Finance"
+        description="Term tuition structures, student invoices, installment schedules, and receipt management."
+      />
       <Tabs
         className="mb-6"
         value={tab}
         onChange={setTab}
         tabs={[
-          { value: "invoices", label: "Invoices" },
-          { value: "structures", label: "Fee structures" },
+          { value: "invoices", label: "Student Invoices" },
+          { value: "structures", label: "Term Fee Structures" },
         ]}
       />
       {tab === "invoices" ? <InvoicesPanel /> : <FeeStructuresPanel />}

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { CheckCheck } from "lucide-react";
+import { CheckCheck, RotateCcw, Calendar, Search } from "lucide-react";
 import { Button } from "./Button.jsx";
 import { Select } from "./Select.jsx";
 import { Input } from "./Input.jsx";
@@ -24,6 +24,12 @@ function todayISO() {
   return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
 }
 
+function yesterdayISO() {
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+}
+
 export function AttendanceMarker({ classes }) {
   const [classId, setClassId] = useState(classes[0]?._id || "");
   const [date, setDate] = useState(todayISO());
@@ -32,6 +38,7 @@ export function AttendanceMarker({ classes }) {
   const [note, setNote] = useState("");
   const [existingId, setExistingId] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     if (!classId) return;
@@ -66,8 +73,12 @@ export function AttendanceMarker({ classes }) {
 
   const counts = useMemo(() => {
     const c = { Present: 0, Absent: 0, Late: 0, Excused: 0 };
-    Object.values(statuses).forEach((s) => (c[s] += 1));
-    return c;
+    Object.values(statuses).forEach((s) => {
+      if (c[s] !== undefined) c[s] += 1;
+    });
+    const total = Object.keys(statuses).length || 1;
+    const rate = Math.round((c.Present / total) * 100);
+    return { ...c, total, rate };
   }, [statuses]);
 
   function setAll(status) {
@@ -82,13 +93,13 @@ export function AttendanceMarker({ classes }) {
         schoolClass: classId,
         date,
         note,
-        records: roster.map((s) => ({ student: s._id, status: statuses[s._id] })),
+        records: roster.map((s) => ({ student: s._id, status: statuses[s._id] || "Present" })),
       });
       setExistingId(data.attendance._id);
       toast.success(
         data.notificationsSent
-          ? `Saved. ${data.notificationsSent} parent notification(s) sent for absences.`
-          : "Attendance saved"
+          ? `Attendance saved. ${data.notificationsSent} parent SMS/notifications queued for absences.`
+          : "Attendance saved successfully"
       );
     } catch (err) {
       toast.error(apiError(err, "Could not save attendance"));
@@ -97,17 +108,62 @@ export function AttendanceMarker({ classes }) {
     }
   }
 
+  const visibleRoster = useMemo(() => {
+    if (!roster) return [];
+    if (!search) return roster;
+    const q = search.toLowerCase();
+    return roster.filter((s) => s.name?.toLowerCase().includes(q) || s.admissionNo?.toLowerCase().includes(q));
+  }, [roster, search]);
+
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap items-end gap-3">
-        <Select label="Class" value={classId} onChange={(e) => setClassId(e.target.value)} className="min-w-[12rem]">
+      <div className="flex flex-wrap items-end gap-3 rounded-2xl border border-border bg-surface p-4">
+        <Select
+          label="Select Class"
+          value={classId}
+          onChange={(e) => setClassId(e.target.value)}
+          className="min-w-[14rem]"
+        >
           {classes.map((c) => (
-            <option key={c._id} value={c._id}>{c.name} {c.section}</option>
+            <option key={c._id} value={c._id}>
+              {c.name} {c.section}
+            </option>
           ))}
         </Select>
-        <Input label="Date" type="date" value={date} max={todayISO()} onChange={(e) => setDate(e.target.value)} />
+
+        <div>
+          <label className="text-xs font-medium text-fg mb-1 block">Date</label>
+          <div className="flex items-center gap-2">
+            <Input
+              type="date"
+              value={date}
+              max={todayISO()}
+              onChange={(e) => setDate(e.target.value)}
+              className="text-xs"
+            />
+            <Button
+              type="button"
+              variant={date === todayISO() ? "primary" : "outline"}
+              size="sm"
+              onClick={() => setDate(todayISO())}
+            >
+              Today
+            </Button>
+            <Button
+              type="button"
+              variant={date === yesterdayISO() ? "primary" : "outline"}
+              size="sm"
+              onClick={() => setDate(yesterdayISO())}
+            >
+              Yesterday
+            </Button>
+          </div>
+        </div>
+
         {existingId ? (
-          <span className="pb-2 text-xs font-medium text-muted">Editing an existing record for this day</span>
+          <span className="pb-2 text-xs font-medium text-warning">
+            Updating previously recorded register for this date
+          </span>
         ) : null}
       </div>
 
@@ -117,27 +173,46 @@ export function AttendanceMarker({ classes }) {
         </div>
       ) : roster.length === 0 ? (
         <EmptyState
-          title="No students in this class"
-          description="Enrol students into this class before marking attendance."
+          title="No students enrolled in this class"
+          description="Enrol students into this class first to mark the daily register."
         />
       ) : (
         <>
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex gap-2 text-xs text-muted">
-              <span className="text-success">{counts.Present} present</span>
-              <span className="text-danger">{counts.Absent} absent</span>
-              <span className="text-warning">{counts.Late} late</span>
-              <span className="text-primary">{counts.Excused} excused</span>
+          {/* Quick Metrics Bar */}
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-surface p-3.5">
+            <div className="flex flex-wrap items-center gap-4 text-xs">
+              <span className="font-semibold text-fg">
+                Rate: <strong className="text-success text-sm">{counts.rate}%</strong>
+              </span>
+              <span className="text-success font-medium">{counts.Present} Present</span>
+              <span className="text-danger font-medium">{counts.Absent} Absent</span>
+              <span className="text-warning font-medium">{counts.Late} Late</span>
+              <span className="text-primary font-medium">{counts.Excused} Excused</span>
             </div>
-            <Button variant="outline" size="sm" onClick={() => setAll("Present")}>
-              <CheckCheck className="h-4 w-4" /> Mark all present
-            </Button>
+
+            <div className="flex items-center gap-2">
+              <Input
+                placeholder="Search student..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-40 text-xs"
+              />
+              <Button variant="outline" size="sm" onClick={() => setAll("Present")}>
+                <CheckCheck className="h-4 w-4" /> All Present
+              </Button>
+              <Button variant="ghost" size="sm" onClick={() => setAll("Absent")}>
+                <RotateCcw className="h-4 w-4" /> Reset
+              </Button>
+            </div>
           </div>
 
           <div className="overflow-hidden rounded-2xl border border-border">
             <ul className="divide-y divide-border">
-              {roster.map((s) => (
-                <li key={s._id} className="flex flex-wrap items-center justify-between gap-3 bg-surface px-4 py-3">
+              {visibleRoster.map((s) => (
+                <li
+                  key={s._id}
+                  className="flex flex-wrap items-center justify-between gap-3 bg-surface px-4 py-3 hover:bg-surface-2/30"
+                >
                   <div className="flex items-center gap-3">
                     <Avatar name={s.name} size="sm" />
                     <div>
@@ -145,14 +220,14 @@ export function AttendanceMarker({ classes }) {
                       <p className="text-xs text-muted tabular-nums">{s.admissionNo}</p>
                     </div>
                   </div>
-                  <div className="flex gap-1">
+                  <div className="flex gap-1.5">
                     {STATUSES.map((st) => (
                       <button
                         key={st}
                         type="button"
                         onClick={() => setStatuses((p) => ({ ...p, [s._id]: st }))}
                         className={cn(
-                          "rounded-xl border px-2.5 py-1 text-xs font-medium transition-colors",
+                          "rounded-xl border px-3 py-1.5 text-xs font-semibold transition-all",
                           statuses[s._id] === st
                             ? statusStyle[st]
                             : "border-border text-muted hover:bg-surface-2"
@@ -168,16 +243,16 @@ export function AttendanceMarker({ classes }) {
           </div>
 
           <Textarea
-            label="Note (optional)"
+            label="Attendance Session Note (optional)"
             rows={2}
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            placeholder="Enter a note, for example school trip or half day"
+            placeholder="e.g. Rainy morning, special school assembly, sports day"
           />
 
-          <div className="flex justify-end">
-            <Button onClick={save} disabled={saving}>
-              {saving ? "Saving..." : existingId ? "Update attendance" : "Save attendance"}
+          <div className="flex justify-end pt-2">
+            <Button onClick={save} disabled={saving} size="lg">
+              {saving ? "Saving Register..." : existingId ? "Update Attendance Register" : "Submit Attendance Register"}
             </Button>
           </div>
         </>

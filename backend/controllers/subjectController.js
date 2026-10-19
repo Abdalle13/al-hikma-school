@@ -7,7 +7,7 @@ const isValidId = (id) => mongoose.Types.ObjectId.isValid(id);
 // POST /api/subjects  (admin)
 export async function createSubject(req, res, next) {
   try {
-    const { name, code, gradeLevel, description } = req.body;
+    const { name, code, department, gradeLevel, periodsPerWeek, passMarks, totalMarks, description } = req.body;
     if (!name || !code) {
       res.status(400);
       throw new Error("Name and code are required");
@@ -18,7 +18,16 @@ export async function createSubject(req, res, next) {
       throw new Error("That subject code is already in use");
     }
 
-    const subject = await Subject.create({ name, code, gradeLevel, description });
+    const subject = await Subject.create({
+      name,
+      code,
+      department: department || "General Academics",
+      gradeLevel,
+      periodsPerWeek: Number(periodsPerWeek) || 5,
+      passMarks: Number(passMarks) || 50,
+      totalMarks: Number(totalMarks) || 100,
+      description,
+    });
     res.status(201).json({ subject });
   } catch (err) {
     if (err.code === 11000) {
@@ -89,6 +98,10 @@ export async function updateSubject(req, res, next) {
     if (typeof name === "string") subject.name = name;
     if (gradeLevel !== undefined) subject.gradeLevel = gradeLevel;
     if (description !== undefined) subject.description = description;
+    if (department !== undefined) subject.department = department;
+    if (periodsPerWeek !== undefined) subject.periodsPerWeek = Number(periodsPerWeek);
+    if (passMarks !== undefined) subject.passMarks = Number(passMarks);
+    if (totalMarks !== undefined) subject.totalMarks = Number(totalMarks);
 
     await subject.save();
     res.json({ subject });

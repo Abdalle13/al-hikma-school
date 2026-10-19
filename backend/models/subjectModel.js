@@ -4,8 +4,11 @@ const subjectSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, trim: true },
     code: { type: String, required: true, unique: true, uppercase: true, trim: true },
-    // "Primary", "Secondary", or a specific grade like "Grade 4". free text on purpose.
+    department: { type: String, trim: true, default: "General Academics" },
     gradeLevel: { type: String, trim: true },
+    periodsPerWeek: { type: Number, default: 5 },
+    passMarks: { type: Number, default: 50 },
+    totalMarks: { type: Number, default: 100 },
     description: { type: String, trim: true },
   },
   { timestamps: true }

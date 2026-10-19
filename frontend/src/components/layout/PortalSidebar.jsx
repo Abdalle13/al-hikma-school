@@ -21,25 +21,51 @@ import { cn } from "../../utils/formatter.js";
 import { Brand } from "../ui/Brand.jsx";
 import { logout } from "../../redux/slices/authSlice.js";
 
-// which modules each role sees. a "to" means the screen is built and live,
-// no "to" means it is still coming in a later phase (shown as "soon").
-const modulesByRole = {
-  admin: [
-    { label: "Users", icon: Users, to: "/admin/users" },
-    { label: "Students", icon: GraduationCap, to: "/admin/students" },
-    { label: "Classes", icon: School, to: "/admin/classes" },
-    { label: "Subjects", icon: BookOpen, to: "/admin/subjects" },
-    { label: "Teachers", icon: Briefcase, to: "/admin/staff" },
-    { label: "Terms", icon: CalendarRange, to: "/admin/terms" },
-    { label: "Applications", icon: FileText, to: "/admin/applications" },
-    { label: "Attendance", icon: ClipboardCheck, to: "/admin/attendance" },
-    { label: "Exams", icon: GraduationCap, to: "/admin/exams" },
-    { label: "Report cards", icon: Award, to: "/admin/report-cards" },
-    { label: "Fees", icon: Wallet, to: "/admin/fees" },
-    { label: "Timetable", icon: CalendarClock, to: "/admin/timetable" },
-    { label: "Announcements", icon: Megaphone, to: "/admin/announcements" },
-    { label: "Reports", icon: BarChart3, to: "/admin/reports" },
-  ],
+// Structured navigation sections for Admin
+const adminNavSections = [
+  {
+    title: "Overview",
+    items: [
+      { label: "Dashboard", icon: LayoutDashboard, to: "/admin" },
+    ],
+  },
+  {
+    title: "Management",
+    items: [
+      { label: "Students", icon: GraduationCap, to: "/admin/students" },
+      { label: "Teachers", icon: Briefcase, to: "/admin/staff" },
+      { label: "Users & Accounts", icon: Users, to: "/admin/users" },
+    ],
+  },
+  {
+    title: "Academics",
+    items: [
+      { label: "Subjects", icon: BookOpen, to: "/admin/subjects" },
+      { label: "Classes", icon: School, to: "/admin/classes" },
+      { label: "Terms", icon: CalendarRange, to: "/admin/terms" },
+      { label: "Timetable", icon: CalendarClock, to: "/admin/timetable" },
+    ],
+  },
+  {
+    title: "Admissions & Exams",
+    items: [
+      { label: "Applications", icon: FileText, to: "/admin/applications" },
+      { label: "Attendance", icon: ClipboardCheck, to: "/admin/attendance" },
+      { label: "Exams", icon: Award, to: "/admin/exams" },
+      { label: "Report cards", icon: GraduationCap, to: "/admin/report-cards" },
+    ],
+  },
+  {
+    title: "Finance & Admin",
+    items: [
+      { label: "Fees", icon: Wallet, to: "/admin/fees" },
+      { label: "Announcements", icon: Megaphone, to: "/admin/announcements" },
+      { label: "Reports", icon: BarChart3, to: "/admin/reports" },
+    ],
+  },
+];
+
+const nonAdminModules = {
   teacher: [
     { label: "Attendance", icon: ClipboardCheck, to: "/teacher/attendance" },
     { label: "Exams and marks", icon: GraduationCap, to: "/teacher/exams" },
@@ -64,7 +90,7 @@ const modulesByRole = {
 const itemClass = ({ isActive }) =>
   cn(
     "group relative flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors",
-    isActive ? "bg-primary/10 text-primary" : "text-muted hover:bg-surface-2 hover:text-fg"
+    isActive ? "bg-primary/10 text-primary font-semibold" : "text-muted hover:bg-surface-2 hover:text-fg"
   );
 
 const activeBar = (isActive) =>
@@ -75,7 +101,6 @@ const activeBar = (isActive) =>
 
 export function PortalSidebar({ role = "admin", basePath = "/admin", onNavigate }) {
   const dispatch = useDispatch();
-  const modules = modulesByRole[role] || modulesByRole.admin;
 
   return (
     <div className="flex h-full flex-col">
@@ -83,48 +108,82 @@ export function PortalSidebar({ role = "admin", basePath = "/admin", onNavigate 
         <Brand to={basePath} />
       </div>
 
-      <nav className="flex-1 overflow-y-auto px-3 py-4">
-        <NavLink to={basePath} end onClick={onNavigate} className={itemClass}>
-          {({ isActive }) => (
-            <>
-              <span className={activeBar(isActive)} aria-hidden="true" />
-              <LayoutDashboard className="h-4 w-4 shrink-0" />
-              Dashboard
-            </>
-          )}
-        </NavLink>
-
-        <ul className="mt-1 flex flex-col gap-0.5">
-          {modules.map((m) => {
-            const Icon = m.icon;
-            if (!m.to) {
+      <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-4">
+        {role === "admin" ? (
+          adminNavSections.map((section, idx) => (
+            <div key={section.title || idx} className="space-y-1">
+              {section.title && (
+                <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-muted/60">
+                  {section.title}
+                </p>
+              )}
+              <ul className="flex flex-col gap-0.5">
+                {section.items.map((m) => {
+                  const Icon = m.icon;
+                  const isDashboard = m.to === basePath;
+                  return (
+                    <NavLink
+                      key={m.label}
+                      to={m.to}
+                      end={isDashboard}
+                      onClick={onNavigate}
+                      className={itemClass}
+                    >
+                      {({ isActive }) => (
+                        <>
+                          <span className={activeBar(isActive)} aria-hidden="true" />
+                          <Icon className="h-4 w-4 shrink-0" />
+                          <span>{m.label}</span>
+                        </>
+                      )}
+                    </NavLink>
+                  );
+                })}
+              </ul>
+            </div>
+          ))
+        ) : (
+          <ul className="flex flex-col gap-0.5">
+            <NavLink to={basePath} end onClick={onNavigate} className={itemClass}>
+              {({ isActive }) => (
+                <>
+                  <span className={activeBar(isActive)} aria-hidden="true" />
+                  <LayoutDashboard className="h-4 w-4 shrink-0" />
+                  Dashboard
+                </>
+              )}
+            </NavLink>
+            {(nonAdminModules[role] || []).map((m) => {
+              const Icon = m.icon;
+              if (!m.to) {
+                return (
+                  <li
+                    key={m.label}
+                    className="flex items-center justify-between gap-3 rounded-xl px-3 py-2 text-sm text-muted/70"
+                    title="Available in a later phase"
+                  >
+                    <span className="flex items-center gap-3">
+                      <Icon className="h-4 w-4 shrink-0" />
+                      {m.label}
+                    </span>
+                    <span className="rounded-full bg-surface-2 px-2 py-0.5 text-[10px] font-medium">soon</span>
+                  </li>
+                );
+              }
               return (
-                <li
-                  key={m.label}
-                  className="flex items-center justify-between gap-3 rounded-xl px-3 py-2 text-sm text-muted/70"
-                  title="Available in a later phase"
-                >
-                  <span className="flex items-center gap-3">
-                    <Icon className="h-4 w-4 shrink-0" />
-                    {m.label}
-                  </span>
-                  <span className="rounded-full bg-surface-2 px-2 py-0.5 text-[10px] font-medium">soon</span>
-                </li>
+                <NavLink key={m.label} to={m.to} onClick={onNavigate} className={itemClass}>
+                  {({ isActive }) => (
+                    <>
+                      <span className={activeBar(isActive)} aria-hidden="true" />
+                      <Icon className="h-4 w-4 shrink-0" />
+                      {m.label}
+                    </>
+                  )}
+                </NavLink>
               );
-            }
-            return (
-              <NavLink key={m.label} to={m.to} onClick={onNavigate} className={itemClass}>
-                {({ isActive }) => (
-                  <>
-                    <span className={activeBar(isActive)} aria-hidden="true" />
-                    <Icon className="h-4 w-4 shrink-0" />
-                    {m.label}
-                  </>
-                )}
-              </NavLink>
-            );
-          })}
-        </ul>
+            })}
+          </ul>
+        )}
       </nav>
 
       <div className="border-t border-border p-3">
