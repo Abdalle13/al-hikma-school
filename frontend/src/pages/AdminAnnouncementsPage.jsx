@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Inbox } from "lucide-react";
+import { Inbox, MessageSquare, Megaphone, Smartphone } from "lucide-react";
 import { PageHeader } from "../components/ui/PageHeader.jsx";
 import { Tabs } from "../components/ui/Tabs.jsx";
 import { Select } from "../components/ui/Select.jsx";
@@ -29,7 +29,7 @@ function MessageLog() {
       });
       setData(res.data);
     } catch (err) {
-      toast.error(apiError(err, "Could not load the message log"));
+      toast.error(apiError(err, "Could not load message log"));
       setData({ notifications: [], pages: 1 });
     }
   }
@@ -40,46 +40,79 @@ function MessageLog() {
   }, [relatedTo, channel, page]);
 
   return (
-    <div>
-      <p className="mb-4 text-sm text-muted">
-        Everything the school has sent to families through the simulated SMS and WhatsApp channel.
-        Nothing is really delivered to a phone.
-      </p>
-      <div className="mb-4 flex flex-wrap gap-3">
-        <Select value={relatedTo} onChange={(e) => { setPage(1); setRelatedTo(e.target.value); }} className="w-44">
-          <option value="">Any type</option>
-          <option value="attendance">Attendance</option>
-          <option value="fee">Fees</option>
-          <option value="announcement">Announcements</option>
-          <option value="account">Account</option>
-        </Select>
-        <Select value={channel} onChange={(e) => { setPage(1); setChannel(e.target.value); }} className="w-36">
-          <option value="">Any channel</option>
-          <option value="whatsapp">WhatsApp</option>
-          <option value="sms">SMS</option>
-          <option value="email">Email</option>
-        </Select>
+    <div className="space-y-4">
+      <div className="rounded-2xl border border-border bg-surface p-4 shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <Smartphone className="h-4 w-4 text-primary" />
+            <span className="text-xs font-semibold text-fg">Family Dispatch History</span>
+            <span className="text-xs text-muted">· Simulated WhatsApp and SMS notification records</span>
+          </div>
+
+          <div className="flex flex-wrap gap-2.5">
+            <Select
+              value={relatedTo}
+              onChange={(e) => {
+                setPage(1);
+                setRelatedTo(e.target.value);
+              }}
+              className="w-40 text-xs"
+            >
+              <option value="">Any notice type</option>
+              <option value="attendance">Attendance Alert</option>
+              <option value="fee">Fee Reminder</option>
+              <option value="announcement">Announcement</option>
+              <option value="account">Account Details</option>
+            </Select>
+
+            <Select
+              value={channel}
+              onChange={(e) => {
+                setPage(1);
+                setChannel(e.target.value);
+              }}
+              className="w-36 text-xs"
+            >
+              <option value="">All Channels</option>
+              <option value="whatsapp">WhatsApp</option>
+              <option value="sms">SMS</option>
+              <option value="email">Email</option>
+            </Select>
+          </div>
+        </div>
       </div>
 
       {data === null ? (
-        <div className="grid place-items-center py-16"><Spinner /></div>
+        <div className="grid place-items-center py-16">
+          <Spinner />
+        </div>
       ) : data.notifications.length === 0 ? (
-        <EmptyState icon={Inbox} title="Nothing sent yet" description="Absence alerts, payment confirmations and announcements show here." />
+        <EmptyState
+          icon={Inbox}
+          title="No notification records yet"
+          description="Attendance absence alerts, fee invoices, and announcements sent to families appear here."
+        />
       ) : (
-        <>
-          <Table headers={["Sent", "To", "Channel", "Type", "Message"]}>
+        <div className="rounded-2xl border border-border bg-surface overflow-hidden shadow-sm">
+          <Table headers={["Timestamp", "Recipient Parent", "Channel", "Type", "Dispatched Message Content"]}>
             {data.notifications.map((n) => (
               <Table.Row key={n._id}>
-                <Table.Cell className="whitespace-nowrap text-muted">{formatDate(n.createdAt)}</Table.Cell>
-                <Table.Cell className="text-muted">{n.to?.name || "-"}</Table.Cell>
-                <Table.Cell><Badge tone="neutral">{channelLabel[n.channel] || n.channel}</Badge></Table.Cell>
-                <Table.Cell className="text-muted">{n.relatedTo || "-"}</Table.Cell>
-                <Table.Cell className="max-w-md text-fg">{n.content}</Table.Cell>
+                <Table.Cell className="whitespace-nowrap text-xs text-muted">{formatDate(n.createdAt)}</Table.Cell>
+                <Table.Cell className="font-medium text-xs text-fg">{n.to?.name || "Parent"}</Table.Cell>
+                <Table.Cell>
+                  <Badge tone={n.channel === "whatsapp" ? "success" : "info"} className="text-[10px]">
+                    {channelLabel[n.channel] || n.channel}
+                  </Badge>
+                </Table.Cell>
+                <Table.Cell className="capitalize text-xs text-muted">{n.relatedTo || "Notice"}</Table.Cell>
+                <Table.Cell className="max-w-lg text-xs text-fg font-mono leading-relaxed">{n.content}</Table.Cell>
               </Table.Row>
             ))}
           </Table>
-          <Pagination page={data.page} pages={data.pages} onChange={setPage} />
-        </>
+          <div className="p-3 border-t border-border">
+            <Pagination page={data.page} pages={data.pages} onChange={setPage} />
+          </div>
+        </div>
       )}
     </div>
   );
@@ -90,21 +123,28 @@ export default function AdminAnnouncementsPage() {
   const [classes, setClasses] = useState([]);
 
   useEffect(() => {
-    api.get("/classes").then(({ data }) => setClasses(data.classes)).catch(() => {});
+    api
+      .get("/classes")
+      .then(({ data }) => setClasses(data.classes || []))
+      .catch(() => {});
   }, []);
 
   return (
-    <div>
-      <PageHeader title="Announcements" description="Post to families or staff, and see the message log." />
+    <div className="space-y-6">
+      <PageHeader
+        title="School Notice Board & Announcements"
+        description="Broadcast official bulletins, urgent alerts, and notifications to students, parents, and faculty."
+      />
+
       <Tabs
-        className="mb-6"
         value={tab}
         onChange={setTab}
         tabs={[
-          { value: "announcements", label: "Announcements" },
-          { value: "log", label: "Message log" },
+          { value: "announcements", label: "Notice Board & Bulletins" },
+          { value: "log", label: "Family Message Log (WhatsApp / SMS)" },
         ]}
       />
+
       {tab === "announcements" ? (
         <AnnouncementsView canPostAll classOptions={classes} />
       ) : (

@@ -4,6 +4,17 @@ const announcementSchema = new mongoose.Schema(
   {
     title: { type: String, required: true, trim: true },
     body: { type: String, required: true, trim: true },
+    priority: {
+      type: String,
+      enum: ["Normal", "Important", "Urgent"],
+      default: "Normal",
+    },
+    category: {
+      type: String,
+      enum: ["General", "Exams", "Fees", "Holiday", "Events", "Urgent"],
+      default: "General",
+    },
+    isPinned: { type: Boolean, default: false },
     audience: { type: String, enum: ["All", "Class", "Role"], default: "All" },
     schoolClass: { type: mongoose.Schema.Types.ObjectId, ref: "SchoolClass" }, // when audience Class
     role: { type: String, enum: ["Admin", "Teacher", "Parent", "Student"] }, // when audience Role

@@ -41,7 +41,7 @@ async function dispatch(announcement) {
   const rows = recipientIds.map((to) => ({
     to,
     channel: "whatsapp",
-    content: `${announcement.title}: ${announcement.body}`.slice(0, 500),
+    content: `[${announcement.priority || "Notice"}] ${announcement.title}: ${announcement.body}`.slice(0, 500),
     relatedTo: "announcement",
     relatedId: announcement._id,
     status: "sent",
@@ -60,7 +60,7 @@ async function canTargetClass(user, classId) {
 // POST /api/announcements   (admin, or a teacher for their own class)
 export async function createAnnouncement(req, res, next) {
   try {
-    const { title, body, audience = "All", role } = req.body;
+    const { title, body, audience = "All", role, priority = "Normal", category = "General", isPinned = false } = req.body;
     if (!title || !body) {
       res.status(400);
       throw new Error("title and body are required");
@@ -99,6 +99,9 @@ export async function createAnnouncement(req, res, next) {
       audience,
       schoolClass: audience === "Class" ? schoolClass : undefined,
       role: audience === "Role" ? role : undefined,
+      priority: ["Normal", "Important", "Urgent"].includes(priority) ? priority : "Normal",
+      category: category || "General",
+      isPinned: Boolean(isPinned),
       isPublic,
       createdBy: req.user._id,
     });
@@ -121,6 +124,8 @@ export async function listAnnouncements(req, res, next) {
 
     if (u.role === "Admin" || u.role === "Teacher") {
       if (req.query.audience) filter.audience = req.query.audience;
+      if (req.query.priority) filter.priority = req.query.priority;
+      if (req.query.category) filter.category = req.query.category;
       if (req.query.isPublic === "true") filter.isPublic = true;
       if (req.query.schoolClass && isValidId(req.query.schoolClass)) filter.schoolClass = req.query.schoolClass;
     } else {
@@ -137,7 +142,14 @@ export async function listAnnouncements(req, res, next) {
       filter = { $or: or };
     }
 
-    const items = await populated(Announcement.find(filter).sort({ createdAt: -1 }));
+    if (req.query.search) {
+      const rx = new RegExp(req.query.search.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+      filter.$and = filter.$and || [];
+      filter.$and.push({ $or: [{ title: rx }, { body: rx }] });
+    }
+
+    // Sort pinned items first, then newest
+    const items = await populated(Announcement.find(filter).sort({ isPinned: -1, createdAt: -1 }));
     res.json({ announcements: items, total: items.length });
   } catch (err) {
     next(err);
@@ -174,13 +186,22 @@ export async function updateAnnouncement(req, res, next) {
       res.status(404);
       throw new Error("Announcement not found");
     }
-    if (req.user.role !== "Admin" && !a.createdBy?.equals(req.user._id)) {
+
+    const isCreator = a.createdBy?.equals(req.user._id);
+    const isAdmin = req.user.role === "Admin";
+    if (!isCreator && !isAdmin) {
       res.status(403);
-      throw new Error("You can only edit your own announcements");
+      throw new Error("You can only edit announcements you posted");
     }
-    if (req.body.title !== undefined) a.title = req.body.title;
-    if (req.body.body !== undefined) a.body = req.body.body;
-    if (req.body.isPublic !== undefined && req.user.role === "Admin") a.isPublic = Boolean(req.body.isPublic);
+
+    const { title, body, isPublic, priority, category, isPinned } = req.body;
+    if (typeof title === "string") a.title = title.trim();
+    if (typeof body === "string") a.body = body.trim();
+    if (priority && ["Normal", "Important", "Urgent"].includes(priority)) a.priority = priority;
+    if (category) a.category = category;
+    if (isPinned !== undefined) a.isPinned = Boolean(isPinned);
+    if (isAdmin && typeof isPublic === "boolean") a.isPublic = isPublic;
+
     await a.save();
     res.json({ announcement: await populated(Announcement.findById(a._id)) });
   } catch (err) {
@@ -200,45 +221,17 @@ export async function deleteAnnouncement(req, res, next) {
       res.status(404);
       throw new Error("Announcement not found");
     }
-    if (req.user.role !== "Admin" && !a.createdBy?.equals(req.user._id)) {
+
+    const isCreator = a.createdBy?.equals(req.user._id);
+    const isAdmin = req.user.role === "Admin";
+    if (!isCreator && !isAdmin) {
       res.status(403);
-      throw new Error("You can only delete your own announcements");
+      throw new Error("You can only delete announcements you posted");
     }
+
     await a.deleteOne();
+    await Notification.deleteMany({ relatedTo: "announcement", relatedId: a._id });
     res.json({ message: "Announcement deleted" });
-  } catch (err) {
-    next(err);
-  }
-}
-
-// GET /api/announcements/public   (no auth)  the website news list
-export async function listPublic(req, res, next) {
-  try {
-    const items = await Announcement.find({ isPublic: true })
-      .select("title body createdAt")
-      .sort({ createdAt: -1 })
-      .limit(50);
-    res.json({ announcements: items, total: items.length });
-  } catch (err) {
-    next(err);
-  }
-}
-
-// GET /api/announcements/public/:id   (no auth)  a single website article
-export async function getPublic(req, res, next) {
-  try {
-    if (!isValidId(req.params.id)) {
-      res.status(400);
-      throw new Error("Invalid announcement id");
-    }
-    const a = await Announcement.findOne({ _id: req.params.id, isPublic: true }).select(
-      "title body createdAt"
-    );
-    if (!a) {
-      res.status(404);
-      throw new Error("Article not found");
-    }
-    res.json({ announcement: a });
   } catch (err) {
     next(err);
   }
