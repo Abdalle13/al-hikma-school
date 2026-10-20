@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+﻿import { useState } from "react";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { GraduationCap } from "lucide-react";
@@ -55,6 +55,13 @@ export default function LoginPage() {
         <div className="absolute inset-0 bg-gradient-to-b from-primary-soft/40 via-bg to-bg" />
       </div>
 
+      {/* Back to home header */}
+      <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-6 py-4 z-10">
+        <Link to="/" className="inline-flex items-center gap-2 rounded-xl border border-border bg-surface/80 backdrop-blur px-4 py-2 text-sm font-semibold text-fg shadow-sm hover:bg-surface transition-all">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          Back to Home
+        </Link>
+      </div>
       <div className="w-full max-w-md overflow-hidden rounded-3xl border border-border bg-surface shadow-card-hover">
         <div className="h-1.5 bg-primary" />
         <div className="p-8 sm:p-10">

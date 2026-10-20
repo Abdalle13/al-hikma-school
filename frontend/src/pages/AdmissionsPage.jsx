@@ -126,34 +126,75 @@ function ApplicationForm() {
   return (
     <Card className="p-6 sm:p-8">
       <form className="grid gap-4 sm:grid-cols-2" onSubmit={onSubmit} noValidate>
-        <Input label="Child's full name (Magaca ardayga)" placeholder="Enter your child's full name" value={form.childName} onChange={set("childName")} error={errors.childName} className="sm:col-span-2" />
-        <Input label="Mother's full name (Magaca hooyada)" placeholder="Enter mother's full name" value={form.motherName} onChange={set("motherName")} className="sm:col-span-2" />
-        <Input label="Date of birth" type="date" value={form.dob} onChange={set("dob")} />
-        <Select label="Gender" value={form.gender} onChange={set("gender")} error={errors.gender}>
+        <Input
+          label="Child's full name"
+          placeholder="Enter child's full name"
+          value={form.childName}
+          onChange={set("childName")}
+          error={errors.childName}
+          className="sm:col-span-2"
+        />
+        <Input
+          label="Mother's full name"
+          placeholder="Enter mother's full name"
+          value={form.motherName}
+          onChange={set("motherName")}
+          className="sm:col-span-2"
+        />
+        <Input
+          label="Date of birth"
+          type="date"
+          value={form.dob}
+          onChange={set("dob")}
+        />
+        <Select
+          label="Gender"
+          value={form.gender}
+          onChange={set("gender")}
+          error={errors.gender}
+        >
           <option value="">Select gender</option>
           <option value="Male">Male</option>
           <option value="Female">Female</option>
         </Select>
-        <Select label="Fee Category / Xaaladda Lacagta" value={form.feeCategory} onChange={set("feeCategory")}>
-          <option value="Regular">Caadi (Regular Tuition)</option>
-          <option value="Orphan">Agoon (Orphan - Codsi Deeq 100%)</option>
-          <option value="Scholarship">Codsi Deeq Waxbarasho (Scholarship)</option>
-        </Select>
-        <Input label="Previous school (Dugsigiisii hore)" placeholder="School previously attended (optional)" value={form.previousSchool} onChange={set("previousSchool")} />
+        <Input
+          label="Previous school (optional)"
+          placeholder="School previously attended"
+          value={form.previousSchool}
+          onChange={set("previousSchool")}
+          className="sm:col-span-2"
+        />
 
-        <Input label="Parent or guardian name" placeholder="Enter the parent or guardian name" value={form.parentName} onChange={set("parentName")} error={errors.parentName} />
-        <Select label="You are the child's" value={form.relationship} onChange={set("relationship")}>
-          <option value="">Select one</option>
+        <Input
+          label="Parent or guardian name"
+          placeholder="Enter parent or guardian name"
+          value={form.parentName}
+          onChange={set("parentName")}
+          error={errors.parentName}
+        />
+        <Select
+          label="Relationship to child"
+          value={form.relationship}
+          onChange={set("relationship")}
+        >
+          <option value="">Select relationship</option>
           <option value="Father">Father</option>
           <option value="Mother">Mother</option>
           <option value="Guardian">Guardian</option>
           <option value="Other">Other</option>
         </Select>
-        <Input label="Phone" placeholder="Enter your phone number" value={form.parentPhone} onChange={set("parentPhone")} error={errors.parentPhone} className="sm:col-span-2" />
+        <Input
+          label="Phone number"
+          placeholder="Enter phone number"
+          value={form.parentPhone}
+          onChange={set("parentPhone")}
+          error={errors.parentPhone}
+          className="sm:col-span-2"
+        />
         <Input
           label="Email (optional)"
           type="email"
-          placeholder="Enter your email address"
+          placeholder="Enter email address"
           value={form.parentEmail}
           onChange={set("parentEmail")}
           error={errors.parentEmail}
@@ -161,7 +202,8 @@ function ApplicationForm() {
         />
         <Textarea
           label="Anything else we should know? (optional)"
-          rows={4}
+          placeholder="Special requirements, medical notes, or questions..."
+          rows={3}
           value={form.message}
           onChange={set("message")}
           className="sm:col-span-2"
