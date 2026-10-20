@@ -27,6 +27,8 @@ import applicationRoutes from "./routes/applicationRoutes.js";
 import contactRoutes from "./routes/contactRoutes.js";
 import settingsRoutes from "./routes/settingsRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
+import { dashboardReport } from "./controllers/reportController.js";
+import { protect, teacher } from "./middleware/authMiddleware.js";
 
 // Ensure JWT_SECRET is never undefined so token signing never crashes
 if (!process.env.JWT_SECRET) {
@@ -123,6 +125,10 @@ app.use("/api/applications", applicationRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/settings", settingsRoutes);
 app.use("/api/reports", reportRoutes);
+
+// Direct dashboard endpoints
+app.get("/api/dashboard/admin", protect, teacher, dashboardReport);
+app.get("/api/dashboard", protect, teacher, dashboardReport);
 
 app.use(notFound);
 app.use(errorHandler);

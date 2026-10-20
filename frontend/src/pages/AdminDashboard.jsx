@@ -80,10 +80,18 @@ export default function AdminDashboard() {
     let alive = true;
     (async () => {
       try {
-        const res = await api.get("/dashboard/admin");
-        if (alive) setData(res.data);
+        let res;
+        try {
+          res = await api.get("/reports/dashboard");
+        } catch {
+          res = await api.get("/dashboard/admin");
+        }
+        if (alive && res?.data) {
+          setData(res.data);
+        }
       } catch (e) {
         console.error("Dashboard error", e);
+        if (alive) setData({});
       }
     })();
     return () => {
@@ -97,26 +105,29 @@ export default function AdminDashboard() {
   const attendance = data?.attendance || {};
   const exams = data?.exams || {};
 
-  const enrolByClass = (enrolment.byClass || []).map((b) => ({
-    name: b.className,
-    enrolled: b.enrolled,
-    capacity: b.capacity,
+  const rawClasses = enrolment.perClass || enrolment.byClass || [];
+  const enrolByClass = rawClasses.map((b) => ({
+    name: b.name ? `${b.name} ${b.section || ""}`.trim() : (b.className || "Class"),
+    enrolled: b.enrolled || 0,
+    capacity: b.capacity || 0,
   }));
 
   const genderData = [
-    { name: "Male", value: enrolment.byGender?.male || 0 },
-    { name: "Female", value: enrolment.byGender?.female || 0 },
+    { name: "Male", value: enrolment.gender?.Male ?? enrolment.byGender?.male ?? 0 },
+    { name: "Female", value: enrolment.gender?.Female ?? enrolment.byGender?.female ?? 0 },
   ];
   const totalGender = genderData.reduce((s, g) => s + g.value, 0);
 
-  const attByClass = (attendance.byClass || []).map((a) => ({
-    name: a.className,
-    rate: a.rate,
-    present: a.present,
-    total: a.total,
+  const rawAttendance = attendance.perClass || attendance.byClass || [];
+  const attByClass = rawAttendance.map((a) => ({
+    name: a.className || a.name || "Class",
+    rate: a.rate != null ? a.rate : 0,
+    present: a.present || a.attended || 0,
+    total: a.total || 0,
   }));
 
-  const gradeDist = Object.entries(exams.distribution || {}).map(([grade, count]) => ({
+  const gradeDistMap = exams.gradeDistribution || exams.distribution || {};
+  const gradeDist = Object.entries(gradeDistMap).map(([grade, count]) => ({
     name: grade,
     count,
   }));
