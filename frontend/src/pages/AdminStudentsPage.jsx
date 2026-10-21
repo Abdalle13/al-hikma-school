@@ -11,6 +11,7 @@ import {
   Activity,
   BookOpen,
   UserCheck,
+  Users,
 } from "lucide-react";
 import { PageHeader } from "../components/ui/PageHeader.jsx";
 import { Button } from "../components/ui/Button.jsx";
