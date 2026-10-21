@@ -184,7 +184,7 @@ async function computeExams(query = {}) {
 }
 
 async function computeOverview() {
-  const [students, teachers, parents, classes, activeTerm] = await Promise.all([
+  const [students, teachers, parents, classes, totalUsers, activeTerm] = await Promise.all([
     User.countDocuments({ role: "Student", enrollmentStatus: "Enrolled" }),
     User.countDocuments({ role: "Teacher", status: "Active" }),
     User.countDocuments({ role: "Parent" }),

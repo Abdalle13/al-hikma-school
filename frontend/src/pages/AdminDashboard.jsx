@@ -171,6 +171,29 @@ export default function AdminDashboard() {
             <p className="mt-1 text-sm text-muted">
               Today is <span className="font-medium text-fg">{todayStr}</span>. Here is the operational overview of {schoolName}.
             </p>
+
+            {/* Small metrics line showing all totals */}
+            <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
+              <span>
+                Total Accounts: <strong className="font-semibold text-fg">{overview.totalUsers ?? ((overview.students || 0) + (overview.teachers || 0) + (overview.parents || 0) + 1)}</strong>
+              </span>
+              <span>•</span>
+              <span>
+                Students: <strong className="font-semibold text-primary">{overview.students ?? 0}</strong>
+              </span>
+              <span>•</span>
+              <span>
+                Teachers: <strong className="font-semibold text-fg">{overview.teachers ?? 0}</strong>
+              </span>
+              <span>•</span>
+              <span>
+                Parents: <strong className="font-semibold text-fg">{overview.parents ?? 0}</strong>
+              </span>
+              <span>•</span>
+              <span>
+                Classes: <strong className="font-semibold text-fg">{overview.classes ?? 0}</strong>
+              </span>
+            </div>
           </div>
 
           {/* Quick Action Shortcuts */}
