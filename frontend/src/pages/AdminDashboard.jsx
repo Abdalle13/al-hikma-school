@@ -133,7 +133,8 @@ export default function AdminDashboard() {
   }));
 
   const money = (n) => formatCurrency(n, currency);
-  const who = user?.name ? user.name.split(" ")[0] : "Administrator";
+  // If user name is "School Admin" or similar, use "Administrator"
+  const who = (!user?.name || user.name.toLowerCase().includes("school")) ? "Administrator" : user.name.split(" ")[0];
   const todayStr = new Date().toLocaleDateString(undefined, {
     weekday: "long",
     year: "numeric",
