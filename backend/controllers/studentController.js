@@ -148,18 +148,30 @@ export async function listStudents(req, res, next) {
       filter.$or = [{ name: rx }, { admissionNo: rx }, { phone: rx }];
     }
 
-    const [docs, total] = await Promise.all([
+    const [docs, total, overallTotal, feeCategoryCounts] = await Promise.all([
       User.find(filter)
         .populate("schoolClass", "name section academicYear")
         .sort({ name: 1 })
         .skip((page - 1) * limit)
         .limit(limit),
       User.countDocuments(filter),
+      User.countDocuments({ role: "Student" }),
+      User.aggregate([
+        { $match: { role: "Student" } },
+        { $group: { _id: "$feeCategory", count: { $sum: 1 } } },
+      ]),
     ]);
+
+    const feeBreakdown = { Regular: 0, Orphan: 0, Scholarship: 0, StaffChild: 0 };
+    feeCategoryCounts.forEach((c) => {
+      feeBreakdown[c._id || "Regular"] = c.count;
+    });
 
     res.json({
       students: docs.map((d) => d.toSafeJSON()),
       total,
+      overallTotal,
+      feeBreakdown,
       page,
       pages: Math.ceil(total / limit) || 1,
     });

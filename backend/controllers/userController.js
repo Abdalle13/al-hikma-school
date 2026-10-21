@@ -95,14 +95,25 @@ export async function listUsers(req, res, next) {
       filter.$or = [{ name: rx }, { email: rx }, { admissionNo: rx }, { phone: rx }];
     }
 
-    const [users, total] = await Promise.all([
+    const [users, total, overallTotal, roleCounts] = await Promise.all([
       User.find(filter).sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit),
       User.countDocuments(filter),
+      User.countDocuments(),
+      User.aggregate([
+        { $group: { _id: "$role", count: { $sum: 1 } } },
+      ]),
     ]);
+
+    const roleBreakdown = { Admin: 0, Teacher: 0, Parent: 0, Student: 0 };
+    roleCounts.forEach((r) => {
+      if (r._id) roleBreakdown[r._id] = r.count;
+    });
 
     res.json({
       users: users.map((u) => u.toSafeJSON()),
       total,
+      overallTotal,
+      roleBreakdown,
       page,
       pages: Math.ceil(total / limit) || 1,
     });

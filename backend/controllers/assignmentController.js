@@ -125,7 +125,10 @@ export async function listStaff(req, res, next) {
       filter.$or = [{ name: rx }, { email: rx }, { phone: rx }];
     }
 
-    const teachers = await User.find(filter).sort({ name: 1 });
+    const [teachers, overallTotal] = await Promise.all([
+      User.find(filter).sort({ name: 1 }),
+      User.countDocuments({ role: "Teacher" }),
+    ]);
 
     const counts = await TeachingAssignment.aggregate([
       { $group: { _id: "$teacher", assignments: { $sum: 1 } } },
@@ -145,6 +148,7 @@ export async function listStaff(req, res, next) {
           .map((c) => ({ _id: c._id, name: c.name, section: c.section, academicYear: c.academicYear })),
       })),
       total: teachers.length,
+      overallTotal,
     });
   } catch (err) {
     next(err);

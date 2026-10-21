@@ -447,24 +447,52 @@ function InvoicesPanel() {
       </div>
 
       {data && (
-        <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <div className="rounded-2xl border border-border bg-surface p-3.5">
-            <p className="text-[11px] text-muted font-medium">Total Billed</p>
-            <p className="text-lg font-bold text-fg tabular-nums mt-0.5">{money(data.totals.billed)}</p>
+        <>
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3 px-4 py-3 rounded-2xl border border-border bg-surface">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20">
+                Total Invoices: {data.invoices?.length || 0}
+              </span>
+              {(status || schoolClass || search) && (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-accent/15 text-accent border border-accent/30">
+                  Filtered: {filteredInvoices.length} Invoices
+                </span>
+              )}
+            </div>
+            {(status || schoolClass || search) && (
+              <button
+                type="button"
+                onClick={() => {
+                  setStatus("");
+                  setSchoolClass("");
+                  setSearch("");
+                }}
+                className="text-xs font-semibold text-primary hover:underline"
+              >
+                Clear Invoices Filter
+              </button>
+            )}
           </div>
-          <div className="rounded-2xl border border-border bg-surface p-3.5">
-            <p className="text-[11px] text-muted font-medium">Total Collected</p>
-            <p className="text-lg font-bold text-success tabular-nums mt-0.5">{money(data.totals.paid)}</p>
+
+          <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <div className="rounded-2xl border border-border bg-surface p-3.5">
+              <p className="text-[11px] text-muted font-medium">Total Billed</p>
+              <p className="text-lg font-bold text-fg tabular-nums mt-0.5">{money(data.totals.billed)}</p>
+            </div>
+            <div className="rounded-2xl border border-border bg-surface p-3.5">
+              <p className="text-[11px] text-muted font-medium">Total Collected</p>
+              <p className="text-lg font-bold text-success tabular-nums mt-0.5">{money(data.totals.paid)}</p>
+            </div>
+            <div className="rounded-2xl border border-border bg-surface p-3.5">
+              <p className="text-[11px] text-muted font-medium">Outstanding Balance</p>
+              <p className="text-lg font-bold text-danger tabular-nums mt-0.5">{money(data.totals.outstanding)}</p>
+            </div>
+            <div className="rounded-2xl border border-border bg-surface p-3.5">
+              <p className="text-[11px] text-muted font-medium">Collection Efficiency</p>
+              <p className="text-lg font-bold text-primary tabular-nums mt-0.5">{collectionRate}%</p>
+            </div>
           </div>
-          <div className="rounded-2xl border border-border bg-surface p-3.5">
-            <p className="text-[11px] text-muted font-medium">Outstanding Balance</p>
-            <p className="text-lg font-bold text-danger tabular-nums mt-0.5">{money(data.totals.outstanding)}</p>
-          </div>
-          <div className="rounded-2xl border border-border bg-surface p-3.5">
-            <p className="text-[11px] text-muted font-medium">Collection Efficiency</p>
-            <p className="text-lg font-bold text-primary tabular-nums mt-0.5">{collectionRate}%</p>
-          </div>
-        </div>
+        </>
       )}
 
       {data && data.invoices.length > 0 && (

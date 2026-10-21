@@ -603,6 +603,9 @@ function StudentForm({ initial, classes, onCancel, onSaved }) {
 export default function AdminStudentsPage() {
   const [students, setStudents] = useState(null);
   const [meta, setMeta] = useState({ page: 1, pages: 1 });
+  const [total, setTotal] = useState(0);
+  const [overallTotal, setOverallTotal] = useState(0);
+  const [feeBreakdown, setFeeBreakdown] = useState({});
   const [classes, setClasses] = useState([]);
   const [search, setSearch] = useState("");
   const [classFilter, setClassFilter] = useState("");
@@ -627,6 +630,15 @@ export default function AdminStudentsPage() {
       });
       setStudents(data.students);
       setMeta({ page: data.page, pages: data.pages });
+      setTotal(data.total ?? data.students?.length ?? 0);
+      if (data.overallTotal !== undefined) {
+        setOverallTotal(data.overallTotal);
+      } else if (!search && !classFilter && !statusFilter && !feeCategoryFilter) {
+        setOverallTotal(data.total ?? 0);
+      }
+      if (data.feeBreakdown) {
+        setFeeBreakdown(data.feeBreakdown);
+      }
     } catch (err) {
       toast.error(apiError(err, "Could not load students"));
       setStudents([]);
@@ -641,6 +653,13 @@ export default function AdminStudentsPage() {
 
   useEffect(() => {
     api.get("/classes").then(({ data }) => setClasses(data.classes)).catch(() => {});
+    api.get("/students", { params: { limit: 1 } })
+      .then(({ data }) => {
+        if (data.overallTotal !== undefined) setOverallTotal(data.overallTotal);
+        else if (data.total !== undefined) setOverallTotal(data.total);
+        if (data.feeBreakdown) setFeeBreakdown(data.feeBreakdown);
+      })
+      .catch(() => {});
   }, []);
 
   function onSaved() {
@@ -670,7 +689,20 @@ export default function AdminStudentsPage() {
   return (
     <div>
       <PageHeader
-        title="Students"
+        title={
+          <div className="flex flex-wrap items-center gap-2.5">
+            <span>Students</span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20">
+              <Users className="h-3.5 w-3.5" />
+              Total: {overallTotal || total} Students
+            </span>
+            {(feeCategoryFilter || classFilter || statusFilter || search) && (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-accent/15 text-accent border border-accent/30 animate-in fade-in">
+                Filtered Total: {total} {total === 1 ? "Student" : "Students"}
+              </span>
+            )}
+          </div>
+        }
         description="Enrolment, class assignment, fee/orphan status and parent links."
         action={
           <Button onClick={() => setModal({ mode: "create" })}>
@@ -678,6 +710,83 @@ export default function AdminStudentsPage() {
           </Button>
         }
       />
+
+      {/* Quick Fee Category Filter Pills with Live Totals */}
+      <div className="mb-4 flex flex-wrap items-center gap-2">
+        <span className="text-xs font-semibold text-muted uppercase tracking-wider mr-1">
+          Fee Category:
+        </span>
+        <button
+          type="button"
+          onClick={() => {
+            setFeeCategoryFilter("");
+            setPage(1);
+          }}
+          className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
+            !feeCategoryFilter
+              ? "bg-primary text-primary-fg border-primary shadow-sm"
+              : "bg-surface text-muted hover:text-fg hover:bg-surface-2 border-border"
+          }`}
+        >
+          All Students ({overallTotal || total})
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setFeeCategoryFilter("Regular");
+            setPage(1);
+          }}
+          className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
+            feeCategoryFilter === "Regular"
+              ? "bg-emerald-600 text-white border-emerald-600 shadow-sm"
+              : "bg-surface text-muted hover:text-fg hover:bg-surface-2 border-border"
+          }`}
+        >
+          Caadi (Regular) {feeBreakdown?.Regular !== undefined ? `(${feeBreakdown.Regular})` : ""}
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setFeeCategoryFilter("Orphan");
+            setPage(1);
+          }}
+          className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
+            feeCategoryFilter === "Orphan"
+              ? "bg-purple-600 text-white border-purple-600 shadow-sm"
+              : "bg-surface text-muted hover:text-fg hover:bg-surface-2 border-border"
+          }`}
+        >
+          Agoon (100% Free) {feeBreakdown?.Orphan !== undefined ? `(${feeBreakdown.Orphan})` : ""}
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setFeeCategoryFilter("Scholarship");
+            setPage(1);
+          }}
+          className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
+            feeCategoryFilter === "Scholarship"
+              ? "bg-amber-600 text-white border-amber-600 shadow-sm"
+              : "bg-surface text-muted hover:text-fg hover:bg-surface-2 border-border"
+          }`}
+        >
+          Deeq (Scholarship) {feeBreakdown?.Scholarship !== undefined ? `(${feeBreakdown.Scholarship})` : ""}
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setFeeCategoryFilter("StaffChild");
+            setPage(1);
+          }}
+          className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
+            feeCategoryFilter === "StaffChild"
+              ? "bg-blue-600 text-white border-blue-600 shadow-sm"
+              : "bg-surface text-muted hover:text-fg hover:bg-surface-2 border-border"
+          }`}
+        >
+          Ilmo Shaqaale {feeBreakdown?.StaffChild !== undefined ? `(${feeBreakdown.StaffChild})` : ""}
+        </button>
+      </div>
 
       <div className="mb-4 flex flex-wrap gap-3">
         <Input
@@ -733,6 +842,56 @@ export default function AdminStudentsPage() {
         </Select>
       </div>
 
+      {/* Active Filter Summary Banner */}
+      {(feeCategoryFilter || classFilter || statusFilter || search) && (
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-2 px-4 py-2.5 rounded-xl bg-primary/5 border border-primary/20 text-xs">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-semibold text-primary">Active Filter Result:</span>
+            {feeCategoryFilter && (
+              <span className="px-2 py-0.5 rounded-md bg-purple-500/10 text-purple-700 dark:text-purple-300 font-semibold border border-purple-500/20">
+                Fee: {feeCategoryFilter === "Regular" ? "Caadi (Regular)" : feeCategoryFilter === "Orphan" ? "Agoon (100% Free)" : feeCategoryFilter}
+              </span>
+            )}
+            {classFilter && (
+              <span className="px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-700 dark:text-blue-300 font-semibold border border-blue-500/20">
+                Class: {classes.find((c) => c._id === classFilter)?.name || "Selected Class"}
+              </span>
+            )}
+            {statusFilter && (
+              <span className="px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-700 dark:text-amber-300 font-semibold border border-amber-500/20">
+                Status: {statusFilter}
+              </span>
+            )}
+            {search && (
+              <span className="px-2 py-0.5 rounded-md bg-surface text-fg font-medium border border-border">
+                Search: "{search}"
+              </span>
+            )}
+            <span className="font-bold text-fg ml-1">
+              → Found {total} student{total === 1 ? "" : "s"}
+            </span>
+            {overallTotal > 0 && (
+              <span className="text-muted">
+                (out of {overallTotal} total enrolled)
+              </span>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setSearch("");
+              setClassFilter("");
+              setStatusFilter("");
+              setFeeCategoryFilter("");
+              setPage(1);
+            }}
+            className="text-xs font-semibold text-primary hover:underline ml-auto"
+          >
+            Clear Filters
+          </button>
+        </div>
+      )}
+
       {students === null ? (
         <div className="grid place-items-center py-16">
           <Spinner />
@@ -746,6 +905,18 @@ export default function AdminStudentsPage() {
         />
       ) : (
         <>
+          <div className="mb-2 flex items-center justify-between text-xs text-muted">
+            <span>
+              {(feeCategoryFilter || classFilter || statusFilter || search)
+                ? `Showing ${students?.length || 0} of ${total} filtered students`
+                : `Showing ${students?.length || 0} of ${total} students`}
+            </span>
+            {feeCategoryFilter && (
+              <span className="font-semibold text-fg">
+                Filter Total (${feeCategoryFilter === "Regular" ? "Caadi / Regular" : feeCategoryFilter}): ${total}
+              </span>
+            )}
+          </div>
           <Table headers={["Student & Mother", "Admission no.", "Class", "Fee Status", "Gender", "Status", ""]}>
             {students.map((s) => (
               <Table.Row key={s._id}>

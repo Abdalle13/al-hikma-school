@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import {
-  Briefcase, KeyRound, Plus, ShieldOff, ShieldCheck,
+  Briefcase, KeyRound, Users, Plus, ShieldOff, ShieldCheck,
   Eye, Pencil, X, ChevronDown,
 } from "lucide-react";
 import { PageHeader } from "../components/ui/PageHeader.jsx";
@@ -372,7 +372,10 @@ function ViewProfile({ teacher, onClose, onEdit }) {
 // ─── Main page ───────────────────────────────────────────────────────────────
 export default function AdminStaffPage() {
   const [staff, setStaff] = useState(null);
+  const [total, setTotal] = useState(0);
+  const [overallTotal, setOverallTotal] = useState(0);
   const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
   const [modal, setModal] = useState(false);       // add modal
   const [editTeacher, setEditTeacher] = useState(null);
   const [viewTeacher, setViewTeacher] = useState(null);
@@ -381,8 +384,17 @@ export default function AdminStaffPage() {
 
   async function load() {
     try {
-      const { data } = await api.get("/staff", { params: search ? { search } : {} });
+      const params = {};
+      if (search) params.search = search;
+      if (statusFilter) params.status = statusFilter;
+      const { data } = await api.get("/staff", { params });
       setStaff(data.staff);
+      setTotal(data.total ?? data.staff?.length ?? 0);
+      if (data.overallTotal !== undefined) {
+        setOverallTotal(data.overallTotal);
+      } else if (!search && !statusFilter) {
+        setOverallTotal(data.staff?.length ?? 0);
+      }
     } catch (err) {
       toast.error(apiError(err, "Could not load staff"));
       setStaff([]);
@@ -393,7 +405,14 @@ export default function AdminStaffPage() {
     const t = setTimeout(load, 250);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search]);
+  }, [search, statusFilter]);
+
+  useEffect(() => {
+    api.get("/staff").then(({ data }) => {
+      if (data.overallTotal !== undefined) setOverallTotal(data.overallTotal);
+      else if (data.staff) setOverallTotal(data.staff.length);
+    }).catch(() => {});
+  }, []);
 
   async function toggleStatus(t) {
     setBusyId(t._id);
@@ -415,7 +434,20 @@ export default function AdminStaffPage() {
   return (
     <div>
       <PageHeader
-        title="Teachers"
+        title={
+          <div className="flex flex-wrap items-center gap-2.5">
+            <span>Teachers</span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20">
+              <Users className="h-3.5 w-3.5" />
+              Total: {overallTotal || total} Teachers
+            </span>
+            {(search || statusFilter) && (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-accent/15 text-accent border border-accent/30 animate-in fade-in">
+                Filtered Total: {total} {total === 1 ? "Teacher" : "Teachers"}
+              </span>
+            )}
+          </div>
+        }
         description="Manage teaching staff — profiles, qualifications and assignments."
         action={
           <Button onClick={() => setModal(true)}>
@@ -424,10 +456,83 @@ export default function AdminStaffPage() {
         }
       />
 
-      <div className="mb-4 max-w-sm">
-        <Input placeholder="Search by name, email or phone" value={search}
-          onChange={(e) => setSearch(e.target.value)} />
+      <div className="mb-4 flex flex-wrap items-center gap-3">
+        <div className="max-w-sm flex-1 min-w-[220px]">
+          <Input placeholder="Search by name, email or phone" value={search}
+            onChange={(e) => setSearch(e.target.value)} />
+        </div>
+        <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={() => setStatusFilter("")}
+            className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all border ${
+              !statusFilter
+                ? "bg-primary text-primary-fg border-primary shadow-sm"
+                : "bg-surface text-muted hover:text-fg hover:bg-surface-2 border-border"
+            }`}
+          >
+            All Teachers ({overallTotal || total})
+          </button>
+          <button
+            type="button"
+            onClick={() => setStatusFilter("Active")}
+            className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all border ${
+              statusFilter === "Active"
+                ? "bg-emerald-600 text-white border-emerald-600 shadow-sm"
+                : "bg-surface text-muted hover:text-fg hover:bg-surface-2 border-border"
+            }`}
+          >
+            Active
+          </button>
+          <button
+            type="button"
+            onClick={() => setStatusFilter("Inactive")}
+            className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all border ${
+              statusFilter === "Inactive"
+                ? "bg-rose-600 text-white border-rose-600 shadow-sm"
+                : "bg-surface text-muted hover:text-fg hover:bg-surface-2 border-border"
+            }`}
+          >
+            Inactive
+          </button>
+        </div>
       </div>
+
+      {(search || statusFilter) && (
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-2 px-4 py-2.5 rounded-xl bg-primary/5 border border-primary/20 text-xs">
+          <div className="flex items-center gap-2">
+            <span className="font-semibold text-primary">Active Filter Result:</span>
+            {statusFilter && (
+              <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 font-semibold border border-emerald-500/20">
+                Status: {statusFilter}
+              </span>
+            )}
+            {search && (
+              <span className="px-2 py-0.5 rounded-md bg-surface text-fg font-medium border border-border">
+                Search: "{search}"
+              </span>
+            )}
+            <span className="font-bold text-fg ml-1">
+              → Found {total} teacher{total === 1 ? "" : "s"}
+            </span>
+            {overallTotal > 0 && (
+              <span className="text-muted">
+                (out of {overallTotal} total staff)
+              </span>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setSearch("");
+              setStatusFilter("");
+            }}
+            className="text-xs font-semibold text-primary hover:underline ml-auto"
+          >
+            Clear Filters
+          </button>
+        </div>
+      )}
 
       {staff === null ? (
         <div className="grid place-items-center py-16"><Spinner /></div>
@@ -439,7 +544,20 @@ export default function AdminStaffPage() {
           action={<Button onClick={() => setModal(true)}>Add teacher</Button>}
         />
       ) : (
-        <Table headers={["Teacher", "Contact", "Qualification", "Class Teacher Of", "Teaches", "Status", ""]}>
+        <>
+          <div className="mb-2 flex items-center justify-between text-xs text-muted">
+            <span>
+              {(search || statusFilter)
+                ? `Showing ${staff?.length || 0} of ${total} filtered teachers`
+                : `Showing ${staff?.length || 0} of ${total} teachers`}
+            </span>
+            {statusFilter && (
+              <span className="font-semibold text-fg">
+                Filter Total ({statusFilter}): {total}
+              </span>
+            )}
+          </div>
+          <Table headers={["Teacher", "Contact", "Qualification", "Class Teacher Of", "Teaches", "Status", ""]}>
           {staff.map((t) => (
             <Table.Row key={t._id}>
               <Table.Cell>
@@ -498,6 +616,7 @@ export default function AdminStaffPage() {
             </Table.Row>
           ))}
         </Table>
+        </>
       )}
 
       {/* Add teacher modal */}

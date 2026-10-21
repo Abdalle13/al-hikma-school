@@ -243,6 +243,9 @@ export default function AdminUsersPage() {
   const me = useSelector((s) => s.auth.user);
   const [users, setUsers] = useState(null);
   const [meta, setMeta] = useState({ page: 1, pages: 1 });
+  const [total, setTotal] = useState(0);
+  const [overallTotal, setOverallTotal] = useState(0);
+  const [roleBreakdown, setRoleBreakdown] = useState({});
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -263,6 +266,15 @@ export default function AdminUsersPage() {
       const { data } = await api.get("/users", { params });
       setUsers(data.users);
       setMeta({ page: data.page, pages: data.pages });
+      setTotal(data.total ?? data.users?.length ?? 0);
+      if (data.overallTotal !== undefined) {
+        setOverallTotal(data.overallTotal);
+      } else if (!search && !roleFilter && !statusFilter) {
+        setOverallTotal(data.total ?? 0);
+      }
+      if (data.roleBreakdown) {
+        setRoleBreakdown(data.roleBreakdown);
+      }
     } catch (err) {
       toast.error(apiError(err, "Could not load user accounts"));
       setUsers([]);
@@ -274,6 +286,16 @@ export default function AdminUsersPage() {
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search, roleFilter, statusFilter, page]);
+
+  useEffect(() => {
+    api.get("/users", { params: { limit: 1 } })
+      .then(({ data }) => {
+        if (data.overallTotal !== undefined) setOverallTotal(data.overallTotal);
+        else if (data.total !== undefined) setOverallTotal(data.total);
+        if (data.roleBreakdown) setRoleBreakdown(data.roleBreakdown);
+      })
+      .catch(() => {});
+  }, []);
 
   function onSaved() {
     setModal(null);
@@ -316,7 +338,20 @@ export default function AdminUsersPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="User Accounts & Security"
+        title={
+          <div className="flex flex-wrap items-center gap-2.5">
+            <span>User Accounts & Security</span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20">
+              <Users className="h-3.5 w-3.5" />
+              Total Accounts: {overallTotal || total}
+            </span>
+            {(search || roleFilter || statusFilter) && (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-accent/15 text-accent border border-accent/30 animate-in fade-in">
+                Filtered Total: {total} {total === 1 ? "Account" : "Accounts"}
+              </span>
+            )}
+          </div>
+        }
         description="Manage portal access for administrators, parents, and faculty with secure credential provisioning."
         action={
           <Button onClick={() => setModal({ mode: "create" })}>
@@ -324,6 +359,83 @@ export default function AdminUsersPage() {
           </Button>
         }
       />
+
+      {/* Quick Role Filter Pills */}
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-xs font-semibold text-muted uppercase tracking-wider mr-1">
+          Filter by Role:
+        </span>
+        <button
+          type="button"
+          onClick={() => {
+            setRoleFilter("");
+            setPage(1);
+          }}
+          className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
+            !roleFilter
+              ? "bg-primary text-primary-fg border-primary shadow-sm"
+              : "bg-surface text-muted hover:text-fg hover:bg-surface-2 border-border"
+          }`}
+        >
+          All Accounts ({overallTotal || total})
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setRoleFilter("Admin");
+            setPage(1);
+          }}
+          className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
+            roleFilter === "Admin"
+              ? "bg-amber-600 text-white border-amber-600 shadow-sm"
+              : "bg-surface text-muted hover:text-fg hover:bg-surface-2 border-border"
+          }`}
+        >
+          Admins {roleBreakdown?.Admin !== undefined ? `(${roleBreakdown.Admin})` : ""}
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setRoleFilter("Teacher");
+            setPage(1);
+          }}
+          className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
+            roleFilter === "Teacher"
+              ? "bg-emerald-600 text-white border-emerald-600 shadow-sm"
+              : "bg-surface text-muted hover:text-fg hover:bg-surface-2 border-border"
+          }`}
+        >
+          Teachers {roleBreakdown?.Teacher !== undefined ? `(${roleBreakdown.Teacher})` : ""}
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setRoleFilter("Parent");
+            setPage(1);
+          }}
+          className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
+            roleFilter === "Parent"
+              ? "bg-blue-600 text-white border-blue-600 shadow-sm"
+              : "bg-surface text-muted hover:text-fg hover:bg-surface-2 border-border"
+          }`}
+        >
+          Parents {roleBreakdown?.Parent !== undefined ? `(${roleBreakdown.Parent})` : ""}
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setRoleFilter("Student");
+            setPage(1);
+          }}
+          className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
+            roleFilter === "Student"
+              ? "bg-purple-600 text-white border-purple-600 shadow-sm"
+              : "bg-surface text-muted hover:text-fg hover:bg-surface-2 border-border"
+          }`}
+        >
+          Students {roleBreakdown?.Student !== undefined ? `(${roleBreakdown.Student})` : ""}
+        </button>
+      </div>
 
       {/* Filter and Search Bar */}
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-surface p-4 shadow-sm">
@@ -372,6 +484,49 @@ export default function AdminUsersPage() {
         </div>
       </div>
 
+      {(search || roleFilter || statusFilter) && (
+        <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2.5 rounded-xl bg-primary/5 border border-primary/20 text-xs">
+          <div className="flex items-center gap-2">
+            <span className="font-semibold text-primary">Active Filter Result:</span>
+            {roleFilter && (
+              <span className="px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-700 dark:text-blue-300 font-semibold border border-blue-500/20">
+                Role: {roleFilter}
+              </span>
+            )}
+            {statusFilter && (
+              <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 font-semibold border border-emerald-500/20">
+                Status: {statusFilter}
+              </span>
+            )}
+            {search && (
+              <span className="px-2 py-0.5 rounded-md bg-surface text-fg font-medium border border-border">
+                Search: "{search}"
+              </span>
+            )}
+            <span className="font-bold text-fg ml-1">
+              → Found {total} account{total === 1 ? "" : "s"}
+            </span>
+            {overallTotal > 0 && (
+              <span className="text-muted">
+                (out of {overallTotal} total registered)
+              </span>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setSearch("");
+              setRoleFilter("");
+              setStatusFilter("");
+              setPage(1);
+            }}
+            className="text-xs font-semibold text-primary hover:underline ml-auto"
+          >
+            Clear Filters
+          </button>
+        </div>
+      )}
+
       {users === null ? (
         <div className="grid place-items-center py-16">
           <Spinner />
@@ -383,7 +538,20 @@ export default function AdminUsersPage() {
           description="Try broadening your search or filter parameters, or create a new user account."
         />
       ) : (
-        <div className="rounded-2xl border border-border bg-surface overflow-hidden shadow-sm">
+        <>
+          <div className="mb-2 flex items-center justify-between text-xs text-muted">
+            <span>
+              {(search || roleFilter || statusFilter)
+                ? `Showing ${users?.length || 0} of ${total} filtered user accounts`
+                : `Showing ${users?.length || 0} of ${total} user accounts`}
+            </span>
+            {roleFilter && (
+              <span className="font-semibold text-fg">
+                Filter Total ({roleFilter}): {total}
+              </span>
+            )}
+          </div>
+          <div className="rounded-2xl border border-border bg-surface overflow-hidden shadow-sm">
           <Table headers={["User Account", "Role", "Contact Info", "Account Status", "Actions"]}>
             {users.map((u) => (
               <Table.Row key={u._id}>
@@ -468,6 +636,7 @@ export default function AdminUsersPage() {
             <Pagination page={meta.page} pages={meta.pages} onChange={setPage} />
           </div>
         </div>
+        </>
       )}
 
       <Modal
